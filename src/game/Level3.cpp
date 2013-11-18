@@ -57,6 +57,7 @@
 #include "DBCEnums.h"
 #include "AuctionHouseBot/AuctionHouseBot.h"
 #include "SQLStorages.h"
+#include "LuaEngine.h"
 
 static uint32 ahbotQualityIds[MAX_AUCTION_QUALITY] =
 {
@@ -382,6 +383,14 @@ bool ChatHandler::HandleReloadConfigCommand(char* /*args*/)
     sWorld.LoadConfigSettings(true);
     sMapMgr.InitializeVisibilityDistanceInfo();
     SendGlobalSysMessage("World config settings reloaded.");
+    return true;
+}
+
+bool ChatHandler::HandleReloadElunaCommand(char* /*args*/)
+{
+    sLog.outString("Re-Loading Eluna LuaEngine...");
+    sEluna.StartEluna(true);
+    SendGlobalSysMessage("Eluna LuaEngine reloaded.");
     return true;
 }
 

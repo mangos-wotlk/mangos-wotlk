@@ -396,6 +396,7 @@ class MANGOS_DLL_SPEC ChatHandler
         bool HandleReloadAllLocalesCommand(char* args);
 
         bool HandleReloadConfigCommand(char* args);
+        bool HandleReloadElunaCommand(char* args);
 
         bool HandleReloadAchievementCriteriaRequirementCommand(char* args);
         bool HandleReloadAchievementRewardCommand(char* args);
