@@ -2017,6 +2017,9 @@ bool ScriptMgr::OnGossipHello(Player* pPlayer, Creature* pCreature)
 
 bool ScriptMgr::OnGossipHello(Player* pPlayer, GameObject* pGameObject)
 {
+    if (sHookMgr.OnGossipHello(pPlayer, pGameObject))
+        return true;
+
     return m_pOnGOGossipHello != NULL && m_pOnGOGossipHello(pPlayer, pGameObject);
 }
 
@@ -2039,6 +2042,9 @@ bool ScriptMgr::OnGossipSelect(Player* pPlayer, Creature* pCreature, uint32 send
 
 bool ScriptMgr::OnGossipSelect(Player* pPlayer, GameObject* pGameObject, uint32 sender, uint32 action, const char* code)
 {
+    if (sHookMgr.OnGossipSelect(pPlayer, pGameObject, sender, action))
+        return true;
+
     if (code)
         return m_pOnGOGossipSelectWithCode != NULL && m_pOnGOGossipSelectWithCode(pPlayer, pGameObject, sender, action, code);
     else
