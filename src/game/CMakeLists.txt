@@ -158,6 +158,8 @@ set(SRC_GRP_OBJECT
     Formulas.h
     GameObject.cpp
     GameObject.h
+    GameObjectAI.cpp
+    GameObjectAI.h
     GMTicketMgr.cpp
     GMTicketMgr.h
     GuardAI.cpp
