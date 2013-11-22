@@ -2081,6 +2081,9 @@ bool ScriptMgr::OnQuestAccept(Player* pPlayer, GameObject* pGameObject, Quest co
 
 bool ScriptMgr::OnQuestAccept(Player* pPlayer, Item* pItem, Quest const* pQuest)
 {
+	if(sHookMgr.OnQuestAccept(pPlayer, pItem, pQuest))
+        return true;
+
     return m_pOnItemQuestAccept != NULL && m_pOnItemQuestAccept(pPlayer, pItem, pQuest);
 }
 
@@ -2117,6 +2120,9 @@ bool ScriptMgr::OnGameObjectUse(Player* pPlayer, GameObject* pGameObject)
 
 bool ScriptMgr::OnItemUse(Player* pPlayer, Item* pItem, SpellCastTargets const& targets)
 {
+	if(sHookMgr.OnUse(pPlayer, pItem, targets))
+        return true;
+
     return m_pOnItemUse != NULL && m_pOnItemUse(pPlayer, pItem, targets);
 }
 
@@ -2142,6 +2148,9 @@ bool ScriptMgr::OnEffectDummy(Unit* pCaster, uint32 spellId, SpellEffectIndex ef
 
 bool ScriptMgr::OnEffectDummy(Unit* pCaster, uint32 spellId, SpellEffectIndex effIndex, Item* pTarget, ObjectGuid originalCasterGuid)
 {
+	if(sHookMgr.OnDummyEffect(pCaster, spellId, effIndex, pTarget))
+        return true;
+
     return m_pOnEffectDummyItem != NULL && m_pOnEffectDummyItem(pCaster, spellId, effIndex, pTarget, originalCasterGuid);
 }
 
