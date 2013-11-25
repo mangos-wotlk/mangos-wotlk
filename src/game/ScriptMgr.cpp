@@ -2071,11 +2071,16 @@ bool ScriptMgr::OnGossipSelect(Player* pPlayer, GameObject* pGameObject, uint32 
 
 bool ScriptMgr::OnQuestAccept(Player* pPlayer, Creature* pCreature, Quest const* pQuest)
 {
+    if (sHookMgr.OnQuestAccept(pPlayer, pCreature, pQuest))
+        return true;
+
     return m_pOnQuestAccept != NULL && m_pOnQuestAccept(pPlayer, pCreature, pQuest);
 }
 
 bool ScriptMgr::OnQuestAccept(Player* pPlayer, GameObject* pGameObject, Quest const* pQuest)
 {
+    if (sHookMgr.OnQuestAccept(pPlayer, pGameObject, pQuest))
+        return true;
     return m_pOnGOQuestAccept != NULL && m_pOnGOQuestAccept(pPlayer, pGameObject, pQuest);
 }
 
@@ -2089,16 +2094,28 @@ bool ScriptMgr::OnQuestAccept(Player* pPlayer, Item* pItem, Quest const* pQuest)
 
 bool ScriptMgr::OnQuestRewarded(Player* pPlayer, Creature* pCreature, Quest const* pQuest)
 {
+    if (sHookMgr.OnQuestReward(pPlayer, pCreature, pQuest))
+        return true;
+
     return m_pOnQuestRewarded != NULL && m_pOnQuestRewarded(pPlayer, pCreature, pQuest);
 }
 
 bool ScriptMgr::OnQuestRewarded(Player* pPlayer, GameObject* pGameObject, Quest const* pQuest)
 {
+    if (sHookMgr.OnQuestReward(pPlayer, pGameObject, pQuest))
+        return true;
+
     return m_pOnGOQuestRewarded != NULL && m_pOnGOQuestRewarded(pPlayer, pGameObject, pQuest);
 }
 
 uint32 ScriptMgr::GetDialogStatus(Player* pPlayer, Creature* pCreature)
 {
+    if (uint32 dialogId = sHookMgr.GetDialogStatus(pPlayer, pCreature))
+    {
+        pPlayer->PlayerTalkClass->ClearMenus();
+        return dialogId;
+    }
+
     if (!m_pGetNPCDialogStatus)
         return DIALOG_STATUS_UNDEFINED;
 
@@ -2107,6 +2124,12 @@ uint32 ScriptMgr::GetDialogStatus(Player* pPlayer, Creature* pCreature)
 
 uint32 ScriptMgr::GetDialogStatus(Player* pPlayer, GameObject* pGameObject)
 {
+    if (uint32 dialogId = sHookMgr.GetDialogStatus(pPlayer, pGameObject))
+    {
+        pPlayer->PlayerTalkClass->ClearMenus();
+        return dialogId;
+    }
+
     if (!m_pGetGODialogStatus)
         return DIALOG_STATUS_UNDEFINED;
 
@@ -2115,6 +2138,8 @@ uint32 ScriptMgr::GetDialogStatus(Player* pPlayer, GameObject* pGameObject)
 
 bool ScriptMgr::OnGameObjectUse(Player* pPlayer, GameObject* pGameObject)
 {
+    if (sHookMgr.OnGameObjectUse(pPlayer, pGameObject))
+        return true;
     return m_pOnGOUse != NULL && m_pOnGOUse(pPlayer, pGameObject);
 }
 
@@ -2128,6 +2153,9 @@ bool ScriptMgr::OnItemUse(Player* pPlayer, Item* pItem, SpellCastTargets const& 
 
 bool ScriptMgr::OnAreaTrigger(Player* pPlayer, AreaTriggerEntry const* atEntry)
 {
+    if(sHookMgr.OnAreaTrigger(pPlayer, atEntry))
+        return true;
+
     return m_pOnAreaTrigger != NULL && m_pOnAreaTrigger(pPlayer, atEntry);
 }
 
@@ -2138,11 +2166,17 @@ bool ScriptMgr::OnProcessEvent(uint32 eventId, Object* pSource, Object* pTarget,
 
 bool ScriptMgr::OnEffectDummy(Unit* pCaster, uint32 spellId, SpellEffectIndex effIndex, Creature* pTarget, ObjectGuid originalCasterGuid)
 {
+    if(sHookMgr.OnDummyEffect(pCaster, spellId, effIndex, pTarget))
+        return true;
+
     return m_pOnEffectDummyCreature != NULL && m_pOnEffectDummyCreature(pCaster, spellId, effIndex, pTarget, originalCasterGuid);
 }
 
 bool ScriptMgr::OnEffectDummy(Unit* pCaster, uint32 spellId, SpellEffectIndex effIndex, GameObject* pTarget, ObjectGuid originalCasterGuid)
 {
+    if(sHookMgr.OnDummyEffect(pCaster, spellId, effIndex, pTarget))
+        return true;
+
     return m_pOnEffectDummyGO != NULL && m_pOnEffectDummyGO(pCaster, spellId, effIndex, pTarget, originalCasterGuid);
 }
 
