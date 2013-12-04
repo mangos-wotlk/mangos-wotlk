@@ -1622,6 +1622,29 @@ Creature* WorldObject::SummonCreature(uint32 id, float x, float y, float z, floa
     return pCreature;
 }
 
+GameObject* WorldObject::SummonGameObject(uint32 id, float x, float y, float z, float angle, uint32 despwtime)
+{
+    GameObject* pGameObj = new GameObject;
+
+    Map *map = GetMap();
+
+    if (!map)
+        return NULL;
+
+    if (!pGameObj->Create(map->GenerateLocalLowGuid(HIGHGUID_GAMEOBJECT), id, map,
+        GetPhaseMask(), x, y, z, angle))
+    {
+        delete pGameObj;
+        return NULL;
+    }
+
+    pGameObj->SetRespawnTime(despwtime/IN_MILLISECONDS);
+
+    map->Add(pGameObj);
+
+    return pGameObj;
+}
+
 // how much space should be left in front of/ behind a mob that already uses a space
 #define OCCUPY_POS_DEPTH_FACTOR                          1.8f
 
