@@ -154,6 +154,7 @@ Creature::Creature(CreatureSubtype subtype) : Unit(),
 
     m_CreatureSpellCooldowns.clear();
     m_CreatureCategoryCooldowns.clear();
+    DisableReputationGain = false;
 
     SetWalk(true, true);
 }
