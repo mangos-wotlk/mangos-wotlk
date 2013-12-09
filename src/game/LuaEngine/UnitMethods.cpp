@@ -1808,7 +1808,7 @@ int LuaUnit::GetDifficulty(lua_State* L, Unit* unit)
     return 1;
 }
 
-int LuaUnit::GetGuildRank(lua_State* L, Unit* unit)
+int LuaUnit::GetGuildRank(lua_State* L, Unit* unit) // TODO: Move to Guild Methods
 {
     TO_PLAYER();
 
@@ -1816,7 +1816,7 @@ int LuaUnit::GetGuildRank(lua_State* L, Unit* unit)
     return 1;
 }
 
-int LuaUnit::SetGuildRank(lua_State* L, Unit* unit)
+int LuaUnit::SetGuildRank(lua_State* L, Unit* unit) // TODO: Move to Guild Methods
 {
     TO_PLAYER();
 
@@ -3534,7 +3534,7 @@ int LuaUnit::GetTeam(lua_State* L, Unit* unit)
 {
     TO_PLAYER();
 
-    // sEluna.PushInteger(L, player->GetTeamId());
+    sEluna.PushInteger(L, player->GetTeamId());
     return 1;
 }
 
@@ -3586,11 +3586,11 @@ int LuaUnit::GetPower(lua_State* L, Unit* unit)
                 type = POWER_MANA;
         }
     }
-    /*else if (type >= POWER_ALL)
+    else if (type >= POWER_ALL)
     {
         luaL_error(L, "Invalid power type (%d)", type);
         return 0;
-    }*/
+    }
 
     sEluna.PushUnsigned(L, unit->GetPower((Powers) type));
     return 1;
@@ -3628,11 +3628,11 @@ int LuaUnit::GetMaxPower(lua_State* L, Unit* unit)
                 type = POWER_MANA;
         }
     }
-    /*else if (type < 0 || type >= POWER_ALL)
+    else if (type < 0 || type >= POWER_ALL)
     {
         luaL_error(L, "Invalid index (%d)", type);
         return 0;
-    }*/
+    }
 
     sEluna.PushUnsigned(L, unit->GetMaxPower((Powers) type));
     return 1;
@@ -4616,8 +4616,8 @@ int LuaUnit::ModifyMoney(lua_State* L, Unit* unit)
     TO_PLAYER_BOOL();
 
     int32 amt = luaL_checkinteger(L, 1);
-    bool sendError = luaL_optbool(L, 2, true);
-    // sEluna.PushBoolean(L, player->ModifyMoney(amt, sendError));
+
+    player->ModifyMoney(amt); // MaNGOS does not support a bool being sent with an error value like Trinity
     return 1;
 }
 
