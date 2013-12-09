@@ -2432,7 +2432,7 @@ int LuaUnit::GetQuestLevel(lua_State* L, Unit* unit)
     if (!quest)
         return 0;
 
-    // sEluna.PushInteger(L, player->GetQuestLevel(quest));
+    sEluna.PushInteger(L, player->GetQuestLevelForPlayer(quest));
     return 1;
 }
 
