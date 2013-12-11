@@ -2937,7 +2937,7 @@ int LuaUnit::GetCurrentSpell(lua_State* L, Unit* unit)
         luaL_error(L, "Invalid spell type (%d)", type);
         return 0;
     }
-    // sEluna.PushSpell(L, unit->GetCurrentSpell(type));
+    sEluna.PushSpell(L, unit->GetCurrentSpell(type));
     return 1;
 }
 
