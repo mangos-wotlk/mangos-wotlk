@@ -17,36 +17,25 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#ifndef INCLUDES_H
-#define INCLUDES_H
+#ifndef OBJECTMETHODS_H
+#define OBJECTMETHODS_H
 
-#include "AccountMgr.h"
-#include "ArenaTeam.h"
-#include "AuctionHouseMgr.h"
-#include "Chat.h"
-#include "Channel.h"
-#include "Creature.h"
-#include "Group.h"
-#include "Guild.h"
-#include "GuildMgr.h"
-#include "Language.h"
-#include "Map.h"
-#include "MapManager.h"
-#include "ObjectMgr.h"
-#include "Pet.h"
-#include "QuestDef.h"
-#include "GossipDef.h"
-#include "ScriptMgr.h"
-#include "ReactorAI.h"
-#include "SharedDefines.h"
-#include "SystemConfig.h"
-#include "SpellAuras.h"
-#include "Vehicle.h"
-#include "ItemPrototype.h"
-#include "Spell.h"
-#include "GameObject.h"
-#include "Weather.h"
-#include "World.h"
-#include "Weather.h"
-
+namespace LuaObject
+{
+    static int GetGUID(lua_State* L, Object* obj)
+    {
+        sEluna.Push(L, obj->GetObjectGuid().GetRawValue());
+        return 1;
+    }
+    static int GetGUIDLow(lua_State* L, Object* obj)
+    {
+        sEluna.Push(L, obj->GetGUIDLow());
+        return 1;
+    }
+    static int IsInWorld(lua_State* L, Object* obj)
+    {
+        sEluna.Push(L, obj->IsInWorld());
+        return 1;
+    }
+};
 #endif

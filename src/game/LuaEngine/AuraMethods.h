@@ -22,7 +22,6 @@
 
 namespace LuaAura
 {
-    int GetObjectType(lua_State*, Aura*);
     int GetCaster(lua_State*, Aura*);
     int GetCasterGUID(lua_State*, Aura*);
     int GetCasterLevel(lua_State*, Aura*);

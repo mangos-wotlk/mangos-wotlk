@@ -698,7 +698,7 @@ class MANGOS_DLL_SPEC WorldSession
         bool CanInteractWithQuestGiver(ObjectGuid guid, char const* descr);
 
         void HandleQuestgiverQuestAutoLaunch(WorldPacket& recvPacket);
-        void HandlePushQuestToParty(WorldPacket& recvPacket);
+        void HandlePushToParty(WorldPacket& recvPacket);
         void HandleQuestPushResult(WorldPacket& recvPacket);
 
         bool processChatmessageFurtherAfterSecurityChecks(std::string&, uint32);
