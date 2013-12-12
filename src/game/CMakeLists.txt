@@ -81,6 +81,7 @@ set(SRC_GRP_LUAENGINE
     LuaEngine/AuraMethods.cpp
     LuaEngine/AuraMethods.h
     LuaEngine/CorpseMethods.h
+    LuaEngine/CreatureMethods.h
     LuaEngine/GameObjectMethods.cpp
     LuaEngine/GameObjectMethods.h
     LuaEngine/GlobalMethods.h
@@ -95,12 +96,15 @@ set(SRC_GRP_LUAENGINE
     LuaEngine/LuaFunctions.cpp
     LuaEngine/LuaHooks.cpp
     LuaEngine/MapMethods.h
+    LuaEngine/ObjectMethods.h
+    LuaEngine/PlayerMethods.h
     LuaEngine/QueryMethods.h
     LuaEngine/QuestMethods.h
     LuaEngine/SpellMethods.h
     LuaEngine/UnitMethods.cpp
     LuaEngine/UnitMethods.h
     LuaEngine/WeatherMethods.h
+    LuaEngine/WorldObjectMethods.h
     LuaEngine/WorldPacketMethods.h
 )
 
