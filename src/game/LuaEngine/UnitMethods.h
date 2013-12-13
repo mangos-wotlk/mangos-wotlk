@@ -3196,12 +3196,6 @@ namespace LuaUnit
         return 1;
     }
 
-    int GetName(lua_State* L, Unit* unit)
-    {
-        sEluna.Push(L, unit->GetName());
-        return 1;
-    }
-
     int GetLevel(lua_State* L, Unit* unit)
     {
         sEluna.Push(L, unit->getLevel());
