@@ -142,6 +142,7 @@ ElunaRegister<Object> ObjectMethods[] =
 
     // Boolean
     {"IsInWorld", &LuaObject::IsInWorld},                           // :IsInWorld() - Returns if the object is in world
+    {"HasFlag", &LuaObject::HasFlag},                               // :HasFlag(index, flag)
 
     // Other
     {"ToGameObject", &LuaObject::ToGameObject},                     // :ToGameObject()
@@ -623,7 +624,6 @@ ElunaRegister<Unit> UnitMethods[] =
     //{"IsMoving", &LuaUnit::IsMoving},                       // :IsMoving()
     //{"IsFlying", &LuaUnit::IsFlying},                       // :IsFlying()
     {"IsStopped", &LuaUnit::IsStopped},                     // :IsStopped()
-    {"HasFlag", &LuaUnit::HasFlag},                         // :HasFlag(index, flag)
     {"HasUnitState", &LuaUnit::HasUnitState},               // :HasUnitState(state) - state from UnitState enum
     {"IsQuestGiver", &LuaUnit::IsQuestGiver},               // :IsQuestGiver() - Returns true if the unit is a quest giver, false if not
     {"IsWithinDistInMap", &LuaUnit::IsWithinDistInMap},     // :IsWithinDistInMap(worldObject, radius) - Returns if the unit is within distance in map of the worldObject
