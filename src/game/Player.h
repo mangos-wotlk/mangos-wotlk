@@ -2313,6 +2313,10 @@ class MANGOS_DLL_SPEC Player : public Unit
         void SetTitle(CharTitlesEntry const* title, bool lost = false);
 
         bool canSeeSpellClickOn(Creature const* creature) const;
+
+        uint32 GetChampioningFaction() const { return m_ChampioningFaction; }
+        void SetChampioningFaction(uint32 faction) { m_ChampioningFaction = faction; }
+        Spell* m_spellModTakingSpell;
     protected:
 
         uint32 m_contestedPvPTimer;
@@ -2447,6 +2451,8 @@ class MANGOS_DLL_SPEC Player : public Unit
         PlayerTalentMap m_talents[MAX_TALENT_SPEC_COUNT];
         SpellCooldowns m_spellCooldowns;
         uint32 m_lastPotionId;                              // last used health/mana potion in combat, that block next potion use
+
+        uint32 m_ChampioningFaction;
 
         GlobalCooldownMgr m_GlobalCooldownMgr;
 
