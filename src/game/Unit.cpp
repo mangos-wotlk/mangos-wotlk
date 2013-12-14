@@ -8053,7 +8053,7 @@ void Unit::SetInCombatState(bool PvP, Unit* enemy)
             GetMap()->GetCreatureLinkingHolder()->DoCreatureLinkingEvent(LINKING_EVENT_AGGRO, pCreature, enemy);
     }
 
-    if (Player* player = ToPlayer())
+    if (GetTypeId() == TYPEID_PLAYER)
         sHookMgr.OnPlayerEnterCombat(ToPlayer(), enemy);
 }
 
