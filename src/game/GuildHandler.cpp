@@ -28,6 +28,7 @@
 #include "GossipDef.h"
 #include "SocialMgr.h"
 #include "Calendar.h"
+#include "HookMgr.h"
 
 void WorldSession::HandleGuildQueryOpcode(WorldPacket& recvPacket)
 {
@@ -927,6 +928,9 @@ void WorldSession::HandleGuildBankDepositMoney(WorldPacket& recv_data)
 
     // log
     pGuild->LogBankEvent(GUILD_BANK_LOG_DEPOSIT_MONEY, uint8(0), GetPlayer()->GetGUIDLow(), money);
+
+    // Trigger OnMemberDepositMoney event
+    sHookMgr.OnMemberDepositMoney(pGuild, GetPlayer(), money);
 
     pGuild->DisplayGuildBankTabsInfo(this);
     pGuild->DisplayGuildBankContent(this, 0);
