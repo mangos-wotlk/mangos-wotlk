@@ -18,7 +18,7 @@
  */
 
 #include "LuaEngine.h"
-#include "HookMgr.h"
+// #include "HookMgr.h"
 
 INSTANTIATE_SINGLETON_1(Eluna);
 
@@ -47,76 +47,65 @@ template<> const char* GetTName<Weather>() { return "Weather"; }
 
 extern void RegisterFunctions(lua_State* L);
 
-void Eluna::Initialize()
-{
-    // Check config file for eluna is enabled or disabled
-    if (sWorld.getConfig(CONFIG_BOOL_ELUNA_ENABLED))
-        sEluna.StartEluna(false);
-    else
-        sLog.outError("[Eluna]: LuaEngine is Disabled. (If you want to use it please set config in 'mangosd.conf')");
-}
-
-void Eluna::StartEluna(bool restart)
+void StartEluna(bool restart)
 {
     if (restart)
     {
         sHookMgr.OnEngineRestart();
         sLog.outString("[Eluna]: Restarting Lua Engine");
 
-        if (L)
+        if (sEluna.L)
         {
             // Unregisters and stops all timed events
-            EventMgr::RemoveEvents();
+            sEluna.EventMgr.RemoveEvents();
 
             // Remove bindings
-            for (std::map<int, std::vector<int> >::iterator itr = ServerEventBindings.begin(); itr != ServerEventBindings.end(); ++itr)
+            for (std::map<int, std::vector<int> >::iterator itr = sEluna.ServerEventBindings.begin(); itr != sEluna.ServerEventBindings.end(); ++itr)
             {
                 for (std::vector<int>::const_iterator it = itr->second.begin(); it != itr->second.end(); ++it)
-                    luaL_unref(L, LUA_REGISTRYINDEX, (*it));
+                    luaL_unref(sEluna.L, LUA_REGISTRYINDEX, (*it));
                 itr->second.clear();
             }
-            CreatureEventBindings->Clear();
-            CreatureGossipBindings->Clear();
-            GameObjectEventBindings->Clear();
-            GameObjectGossipBindings->Clear();
-            ItemEventBindings->Clear();
-            ItemGossipBindings->Clear();
-            playerGossipBindings->Clear();
+            sEluna.CreatureEventBindings->Clear();
+            sEluna.CreatureGossipBindings->Clear();
+            sEluna.GameObjectEventBindings->Clear();
+            sEluna.GameObjectGossipBindings->Clear();
+            sEluna.ItemEventBindings->Clear();
+            sEluna.ItemGossipBindings->Clear();
+            sEluna.playerGossipBindings->Clear();
 
-            lua_close(L);
+            lua_close(sEluna.L);
         }
     }
-    else
-        AddScriptHooks();
 
-    L = luaL_newstate();
+    sEluna.L = luaL_newstate();
     sLog.outString();
     sLog.outString("[Eluna]: Lua Engine loaded.");
     sLog.outString();
 
     LoadedScripts loadedScripts;
-    LoadDirectory("lua_scripts", &loadedScripts);
-    luaL_openlibs(L);
+    sEluna.LoadDirectory("lua_scripts", &loadedScripts);
+    luaL_openlibs(sEluna.L);
     // Register functions here
-    RegisterFunctions(L);
+    RegisterFunctions(sEluna.L);
 
     uint32 count = 0;
     char filename[200];
     for (std::set<std::string>::const_iterator itr = loadedScripts.luaFiles.begin(); itr !=  loadedScripts.luaFiles.end(); ++itr)
     {
         strcpy(filename, itr->c_str());
-        if (luaL_loadfile(L, filename) != 0)
+        if (luaL_loadfile(sEluna.L, filename) != 0)
         {
             sLog.outErrorEluna("[Eluna]: Error loading file `%s`.", itr->c_str());
-            report(L);
+            sEluna.report(sEluna.L);
         }
         else
         {
-            int err = lua_pcall(L, 0, 0, 0);
+            int err = lua_pcall(sEluna.L, 0, 0, 0);
             if (err != 0 && err == LUA_ERRRUN)
             {
                 sLog.outErrorEluna("[Eluna]: Error loading file `%s`.", itr->c_str());
-                report(L);
+                sEluna.report(sEluna.L);
             }
         }
         ++count;
@@ -170,9 +159,8 @@ void Eluna::LoadDirectory(char* Dirname, LoadedScripts* lscr)
     hFile = FindFirstFile(SearchName, &FindData);
     if (hFile == INVALID_HANDLE_VALUE)
     {
-        sLog.outErrorEluna("[Eluna]: Error No `lua_scripts` directory found! Creating a 'lua_scripts' directory and restarting Eluna.");
+        sLog.outErrorEluna("[Eluna]: Error No `lua_scripts` directory found! Creating a 'lua_scripts' directory.");
         CreateDirectory("lua_scripts", NULL);
-        StartEluna(true);
         return;
     }
 
@@ -249,6 +237,15 @@ void Eluna::LoadDirectory(char* Dirname, LoadedScripts* lscr)
     }
     free(list);
 #endif
+}
+
+void Eluna::Initialize()
+{
+    // Check config file for eluna is enabled or disabled
+    if (sWorld.getConfig(CONFIG_BOOL_ELUNA_ENABLED))
+        StartEluna(false);
+    else
+        sLog.outError("[Eluna]: LuaEngine is Disabled. (If you want to use it please set config in 'mangosd.conf')");
 }
 
 void Eluna::report(lua_State* L)
@@ -568,15 +565,21 @@ void Eluna::ElunaBind::Insert(uint32 entryId, uint32 eventId, int funcRef)
         Bindings[entryId][eventId] = funcRef;
 }
 
-EventMgr::EventMap EventMgr::LuaEvents;
+EventMgr::LuaEvent::LuaEvent(EventProcessor* _events, int _funcRef, uint32 _delay, uint32 _calls, Object* _obj) :
+    events(_events), funcRef(_funcRef), delay(_delay), calls(_calls), obj(_obj)
+{
+    hasObject = _obj;
+    if (_events)
+        sEluna.EventMgr.LuaEvents[_events].insert(this); // Able to access the event if we have the processor
+}
 EventMgr::LuaEvent::~LuaEvent()
 {
     if (events)
     {
         // Attempt to remove the pointer from LuaEvents
-        EventMap::const_iterator it = LuaEvents.find(events); // Get event set
-        if (it != LuaEvents.end())
-            LuaEvents[events].erase(this); // Remove pointer
+        EventMgr::EventMap::const_iterator it = sEluna.EventMgr.LuaEvents.find(events); // Get event set
+        if (it != sEluna.EventMgr.LuaEvents.end())
+            sEluna.EventMgr.LuaEvents[events].erase(this); // Remove pointer
     }
     luaL_unref(sEluna.L, LUA_REGISTRYINDEX, funcRef); // Free lua function ref
 }

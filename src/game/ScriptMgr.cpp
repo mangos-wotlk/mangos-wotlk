@@ -32,7 +32,6 @@
 #include "OutdoorPvP/OutdoorPvP.h"
 #include "WaypointMovementGenerator.h"
 #include "HookMgr.h"
-#include "LuaEngine.h"
 
 #include "revision_nr.h"
 
@@ -1993,7 +1992,7 @@ char const* ScriptMgr::GetScriptLibraryVersion() const
 
 CreatureAI* ScriptMgr::GetCreatureAI(Creature* pCreature)
 {
-    if( CreatureAI* luaAI = sEluna.LuaCreatureAI->GetAI(pCreature))
+    if (CreatureAI* luaAI = sHookMgr.GetAI(pCreature))
         return luaAI;
 
     if (!m_pGetCreatureAI)
@@ -2012,7 +2011,7 @@ InstanceData* ScriptMgr::CreateInstanceData(Map* pMap)
 
 GameObjectAI* ScriptMgr::GetGameObjectAI(GameObject* pGameObject)
 {
-    if (GameObjectAI* luaAI = sEluna.LuaGameObjectAI->GetAI(pGameObject))
+    if (GameObjectAI* luaAI = sHookMgr.GetAI(pGameObject))
         return luaAI;
 
     if (!m_pGetGameObjectAI)
@@ -2113,10 +2112,7 @@ bool ScriptMgr::OnQuestRewarded(Player* pPlayer, GameObject* pGameObject, Quest 
 uint32 ScriptMgr::GetDialogStatus(Player* pPlayer, Creature* pCreature)
 {
     if (uint32 dialogId = sHookMgr.GetDialogStatus(pPlayer, pCreature))
-    {
-        pPlayer->PlayerTalkClass->ClearMenus();
         return dialogId;
-    }
 
     if (!m_pGetNPCDialogStatus)
         return DIALOG_STATUS_UNDEFINED;
@@ -2127,10 +2123,7 @@ uint32 ScriptMgr::GetDialogStatus(Player* pPlayer, Creature* pCreature)
 uint32 ScriptMgr::GetDialogStatus(Player* pPlayer, GameObject* pGameObject)
 {
     if (uint32 dialogId = sHookMgr.GetDialogStatus(pPlayer, pGameObject))
-    {
-        pPlayer->PlayerTalkClass->ClearMenus();
         return dialogId;
-    }
 
     if (!m_pGetGODialogStatus)
         return DIALOG_STATUS_UNDEFINED;

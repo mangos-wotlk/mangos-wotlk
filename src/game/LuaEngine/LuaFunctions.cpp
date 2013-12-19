@@ -18,14 +18,13 @@
  */
 
 #include "LuaEngine.h"
-#include "GlobalMethods.h"
 
+#include "GlobalMethods.h"
 #include "ObjectMethods.h"
 #include "WorldObjectMethods.h"
 #include "UnitMethods.h"
 #include "PlayerMethods.h"
 #include "CreatureMethods.h"
-
 #include "GroupMethods.h"
 #include "GuildMethods.h"
 #include "GameObjectMethods.h"
