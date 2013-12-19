@@ -92,7 +92,6 @@ set(SRC_GRP_LUAENGINE
     LuaEngine/LuaEngine.cpp
     LuaEngine/LuaEngine.h
     LuaEngine/LuaFunctions.cpp
-    LuaEngine/LuaHooks.cpp
     LuaEngine/MapMethods.h
     LuaEngine/ObjectMethods.h
     LuaEngine/PlayerMethods.h
