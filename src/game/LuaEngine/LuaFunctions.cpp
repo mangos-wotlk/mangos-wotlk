@@ -41,7 +41,10 @@
 void RegisterGlobals(lua_State* L)
 {
     // Hooks
-    lua_register(L, "RegisterServerHook", &LuaGlobalFunctions::RegisterServerHook);                         // RegisterServerHook(event, function)
+    lua_register(L, "RegisterServerEvent", &LuaGlobalFunctions::RegisterServerEvent);                       // RegisterServerEvent(event, function)
+    lua_register(L, "RegisterPlayerEvent", &LuaGlobalFunctions::RegisterPlayerEvent);                       // RegisterPlayerEvent(event, function)
+    lua_register(L, "RegisterGuildEvent", &LuaGlobalFunctions::RegisterGuildEvent);                         // RegisterGuildEvent(event, function)
+    lua_register(L, "RegisterGroupEvent", &LuaGlobalFunctions::RegisterGroupEvent);                         // RegisterGroupEvent(event, function)
     lua_register(L, "RegisterCreatureEvent", &LuaGlobalFunctions::RegisterCreatureEvent);                   // RegisterCreatureEvent(entry, event, function)
     lua_register(L, "RegisterCreatureGossipEvent", &LuaGlobalFunctions::RegisterCreatureGossipEvent);       // RegisterCreatureGossipEvent(entry, event, function)
     lua_register(L, "RegisterGameObjectEvent", &LuaGlobalFunctions::RegisterGameObjectEvent);               // RegisterGameObjectEvent(entry, event, function)
@@ -230,7 +233,6 @@ ElunaRegister<Unit> UnitMethods[] =
     {"SetNativeDisplayId", &LuaUnit::SetNativeDisplayId},   // :SetNativeDisplayId(id)
     {"SetFacing", &LuaUnit::SetFacing},                     // :SetFacing(o) - Sets the Unit facing to arg
     {"SetPhaseMask", &LuaUnit::SetPhaseMask},               // :SetPhaseMask(Phase[, update]) - Sets the phase of the unit
-    //{"SetWalk", &LuaUnit::SetWalk},                       // :SetWalk([enable]) - If false, creature runs, otherwise walks
     {"SetSpeed", &LuaUnit::SetSpeed},                       // :SetSpeed(type, speed[, forced]) - Sets speed for the movement type (0 = walk, 1 = run ..)
     //{"SetStunned", &LuaUnit::SetStunned},                 // :SetStunned([enable]) - Stuns or removes stun
     //{"SetRooted", &LuaUnit::SetRooted},                   // :SetRooted([enable]) - Roots or removes root
@@ -249,6 +251,7 @@ ElunaRegister<Unit> UnitMethods[] =
     {"SetCharmerGUID", &LuaUnit::SetCharmerGUID},           // :SetCharmerGUID(uint64 ownerGUID) - Sets the UNIT_FIELD_CHARMEDBY charmer GUID
     {"SetPetGUID", &LuaUnit::SetPetGUID},                   // :SetPetGUID(uint64 guid) - Sets the pet's guid
     //{"SetCritterGUID", &LuaUnit::SetCritterGUID},         // :SetCritterGUID(uint64 guid) - Sets the critter's guid
+    {"SetWaterWalk", &LuaUnit::SetWaterWalk},               // :SetWaterWalk([enable]) - Sets WaterWalk on or off
 
     // Boolean
     {"IsAlive", &LuaUnit::IsAlive},                         // :IsAlive()
@@ -264,6 +267,16 @@ ElunaRegister<Unit> UnitMethods[] =
     {"IsInWater", &LuaUnit::IsInWater},                     // :IsInWater() - Returns true if the unit is in water
     {"IsUnderWater", &LuaUnit::IsUnderWater},               // :IsUnderWater() - Returns true if the unit is under water
     {"IsAuctioneer", &LuaUnit::IsAuctioneer},               // :IsAuctioneer()
+    {"IsGuildMaster", &LuaUnit::IsGuildMaster},             // :IsGuildMaster()
+    {"IsInnkeeper", &LuaUnit::IsInnkeeper},                 // :IsInnkeeper()
+    {"IsTrainer", &LuaUnit::IsTrainer},                     // :IsTrainer()
+    {"IsGossip", &LuaUnit::IsGossip},                       // :IsGossip()
+    {"IsTaxi", &LuaUnit::IsTaxi},                           // :IsTaxi()
+    {"IsSpiritHealer", &LuaUnit::IsSpiritHealer},           // :IsSpiritHealer()
+    {"IsSpiritGuide", &LuaUnit::IsSpiritGuide},             // :IsSpiritGuide()
+    {"IsTabardDesigner", &LuaUnit::IsTabardDesigner},       // :IsSpiritGuide()
+    {"IsServiceProvider", &LuaUnit::IsServiceProvider},     // :IsServiceProvider()
+    {"IsSpiritService", &LuaUnit::IsSpiritService},         // :IsSpiritService()
     {"HealthBelowPct", &LuaUnit::HealthBelowPct},           // :HealthBelowPct(int32 pct)
     {"HealthAbovePct", &LuaUnit::HealthAbovePct},           // :HealthAbovePct(int32 pct)
     {"IsMounted", &LuaUnit::IsMounted},                     // :IsMounted()
@@ -279,6 +292,8 @@ ElunaRegister<Unit> UnitMethods[] =
     {"IsInAccessiblePlaceFor", &LuaUnit::IsInAccessiblePlaceFor},                                           // :IsInAccessiblePlaceFor(creature) - Returns if the unit is in an accessible place for the specified creature
     {"IsVendor", &LuaUnit::IsVendor},                       // :IsVendor() - Returns if the unit is a vendor or not
     {"IsWithinLoS", &LuaUnit::IsWithinLoS},                 // :IsWithinLoS(x, y, z)
+    {"IsRooted", &LuaUnit::IsRooted},                       // :IsRooted()
+    {"IsFullHealth", &LuaUnit::IsFullHealth},               // :IsFullHealth() - Returns if the unit is full health
 
     // Other
     {"RegisterEvent", &LuaUnit::RegisterEvent},             // :RegisterEvent(function, delay, calls)
@@ -440,7 +455,7 @@ ElunaRegister<Player> PlayerMethods[] =
     {"SetQuestStatus", &LuaPlayer::SetQuestStatus},         // :SetQuestStatus(entry, status) - Sets the quest's status
     {"SetReputation", &LuaPlayer::SetReputation},           // :SetReputation(faction, value) - Sets the faction reputation for the player
     {"SetFreeTalentPoints", &LuaPlayer::SetFreeTalentPoints}, // :SetFreeTalentPoints(points) - Sets the amount of unused talent points
-    //{"SetGuildRank", &LuaPlayer::SetGuildRank},           // :SetGuildRank(rank) - Sets player's guild rank
+    {"SetGuildRank", &LuaPlayer::SetGuildRank},             // :SetGuildRank(rank) - Sets player's guild rank
     //{"SetMovement", &LuaPlayer::SetMovement},             // :SetMovement(type) - Sets player's movement type
     {"SetSkill", &LuaPlayer::SetSkill},                     // :SetSkill(skill, step, currVal, maxVal) - Sets the skill's boundaries and value
     {"SetFactionForRace", &LuaPlayer::SetFactionForRace},   // :SetFactionForRace(race) - Sets the faction by raceID
@@ -463,7 +478,7 @@ ElunaRegister<Player> PlayerMethods[] =
     {"AddItem", &LuaPlayer::AddItem},                       // :AddItem(id, amount) - Adds amount of item to player. Returns true if success and false if not
     {"IsInArenaTeam", &LuaPlayer::IsInArenaTeam},           // :IsInArenaTeam(type) - type : 0 = 2v2, 1 = 3v3, 2 = 5v5
     {"CanEquipItem", &LuaPlayer::CanEquipItem},             // :CanEquipItem(entry/item, slot) - Returns true if the player can equip given item/item entry
-    //{"IsFalling", &LuaPlayer::IsFalling},                 // :IsFalling() - Returns true if the unit is falling
+    {"IsFalling", &LuaPlayer::IsFalling},                 // :IsFalling() - Returns true if the unit is falling
     {"ToggleAFK", &LuaPlayer::ToggleAFK},                   // :ToggleAFK() - Toggles AFK state for player
     {"ToggleDND", &LuaPlayer::ToggleDND},                   // :ToggleDND() - Toggles DND state for player
     {"IsAFK", &LuaPlayer::IsAFK},                           // :IsAFK() - Returns true if the player is afk
@@ -490,7 +505,7 @@ ElunaRegister<Player> PlayerMethods[] =
     {"HasQuestForGO", &LuaPlayer::HasQuestForGO},           // :HasQuestForGO(entry) - Returns true if the player has the quest for the gameobject
     {"CanShareQuest", &LuaPlayer::CanShareQuest},           // :CanShareQuest(entry) - Returns true if the quest entry is shareable by the player
     //{"HasReceivedQuestReward", &LuaPlayer::HasReceivedQuestReward},                                           // :HasReceivedQuestReward(entry) - Returns true if the player has recieved the quest's reward
-    //{"HasTalent", &LuaPlayer::HasTalent},                 // :HasTalent(spellid, spec) - Returns true if the player has the talent spell in given spec
+    {"HasTalent", &LuaPlayer::HasTalent},                   // :HasTalent(talentId, spec) - Returns true if the player has the talent in given spec
     {"IsInSameGroupWith", &LuaPlayer::IsInSameGroupWith},   // :IsInSameGroupWith(player) - Returns true if the players are in the same group
     {"IsInSameRaidWith", &LuaPlayer::IsInSameRaidWith},     // :IsInSameRaidWith(player) - Returns true if the players are in the same raid
     {"IsGroupVisibleFor", &LuaPlayer::IsGroupVisibleFor},   // :IsGroupVisibleFor(player) - Player is group visible for the target
@@ -539,7 +554,7 @@ ElunaRegister<Player> PlayerMethods[] =
     {"ResetTypeCooldowns", &LuaPlayer::ResetTypeCooldowns}, // :ResetTypeCooldowns(category, update(bool~optional)) - Resets all cooldowns for the spell category(type). If update is true, it will send WorldPacket SMSG_CLEAR_COOLDOWN to the player, else it will just clear the spellId from m_spellCooldowns. This is true by default
     {"ResetAllCooldowns", &LuaPlayer::ResetAllCooldowns},   // :ResetAllCooldowns() - Resets all spell cooldowns
     {"GiveLevel", &LuaPlayer::GiveLevel},                   // :GiveLevel(level) - Gives levels to the player
-    {"GiveXP", &LuaPlayer::GiveXP},                       // :GiveXP(xp[, victim, pureXP, triggerHook]) - Gives XP to the player. If pure is false, bonuses are count in. If triggerHook is false, GiveXp hook is not triggered.
+    {"GiveXP", &LuaPlayer::GiveXP},                         // :GiveXP(xp[, victim, pureXP, triggerHook]) - Gives XP to the player. If pure is false, bonuses are count in. If triggerHook is false, GiveXp hook is not triggered.
     //{"RemovePet", &LuaPlayer::RemovePet},                 // :RemovePet([mode, returnreagent]) - Removes the player's pet. Mode determines if the pet is saved and how
     //{"SummonPet", &LuaPlayer::SummonPet},                 // :SummonPet(entry, x, y, z, o, petType, despwtime) - Summons a pet for the player
     {"Say", &LuaPlayer::Say},                               // :Say(text, lang) - The player says the text
@@ -559,8 +574,8 @@ ElunaRegister<Player> PlayerMethods[] =
     {"TalkedToCreature", &LuaPlayer::TalkedToCreature},     // :TalkedToCreature(npcEntry, creature) - Satisfies creature talk objective for the player
     //{"ResetPetTalents", &LuaPlayer::ResetPetTalents},     // :ResetPetTalents() - Resets player's pet's talents
     {"RegenerateAll", &LuaPlayer::RegenerateAll},           // :RegenerateAll() - Regenerates all player's powers
-    //{"Regenerate", &LuaPlayer::Regenerate},               // :Regenerate(powerType) - Regenerates the given power type
-    //{"RegenerateHealth", &LuaPlayer::RegenerateHealth},   // :RegenerateHealth() - Regenerates health
+    {"Regenerate", &LuaPlayer::Regenerate},                 // :Regenerate(powerType) - Regenerates the given power type
+    {"RegenerateHealth", &LuaPlayer::RegenerateHealth},     // :RegenerateHealth() - Regenerates health
     {"AddComboPoints", &LuaPlayer::AddComboPoints},         // :AddComboPoints(target, count[, spell]) - Adds combo points to the target for the player
     //{"GainSpellComboPoints", &LuaPlayer::GainSpellComboPoints},                                               // :GainSpellComboPoints(amount) - Player gains spell combo points
     {"ClearComboPoints", &LuaPlayer::ClearComboPoints},     // :ClearComboPoints() - Clears player's combo points
@@ -603,7 +618,7 @@ ElunaRegister<Player> PlayerMethods[] =
     {"RemovedInsignia", &LuaPlayer::RemovedInsignia},       // :RemovedInsignia(looter) - Looter removes the player's corpse, looting the player and replacing with lootable bones
     {"SendGuildInvite", &LuaPlayer::SendGuildInvite},       // :SendGuildInvite(player) - Sends a guild invite to the specific player
     {"CreateCorpse", &LuaPlayer::CreateCorpse},             // :CreateCorpse() - Creates the player's corpse
-    //{"Mute", &LuaUnit::Mute},                             // :Mute(time[, reason]) - Mutes the player for given time in seconds.
+    {"Mute", &LuaPlayer::Mute},                             // :Mute(time[, reason]) - Mutes the player for given time in seconds.
     {"SummonPlayer", &LuaPlayer::SummonPlayer},             // :SummonPlayer(player, map, x, y, z, zoneId[, delay]) - Sends a popup to the player asking if he wants to be summoned if yes, teleported to coords. ZoneID defines the location name shown in the popup Delay is the time until the popup closes automatically.
     {"SaveToDB", &LuaPlayer::SaveToDB},                     // :SaveToDB() - Saves to database
 
@@ -642,6 +657,7 @@ ElunaRegister<Creature> CreatureMethods[] =
 
     // Setters
     //{"SetHover", &LuaCreature::SetHover},                 // :SetHover([enable]) - Sets hover on or off
+    {"SetLevitate", &LuaCreature::SetLevitate},             // :SetLevitate([enable]) - Sets Levitate on or off
     //{"SetDisableGravity", &LuaCreature::SetDisableGravity},     // :SetDisableGravity([disable, packetOnly]) - Disables or enables gravity
     {"SetReactState", &LuaCreature::SetReactState},         // :SetReactState(state) - Sets react state
     {"SetNoCallAssistance", &LuaCreature::SetNoCallAssistance}, // :SetNoCallAssistance([noCall]) - Sets call assistance to false or true
@@ -654,6 +670,7 @@ ElunaRegister<Creature> CreatureMethods[] =
     //{"SetLootMode", &LuaCreature::SetLootMode},           // :SetLootMode(lootMode) - Sets the lootmode
     {"SetNPCFlags", &LuaCreature::SetNPCFlags},             // :SetNPCFlags(flags) - Sets NPC flags
     {"SetDeathState", &LuaCreature::SetDeathState},         // :SetDeathState(value) - 0 = alive 1 = just died 2 = corpse 3 = dead
+    {"SetWalk", &LuaCreature::SetWalk},                     // :SetWalk([enable]) - If false, creature runs, otherwise walks
 
     // Booleans
     {"IsWorldBoss", &LuaCreature::IsWorldBoss},             // :IsWorldBoss() - Returns true if the creature is a WorldBoss, false if not

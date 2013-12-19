@@ -29,10 +29,7 @@ extern "C"
 
 #include "Includes.h"
 
-struct LoadedScripts
-{
-    std::set<std::string> luaFiles;
-};
+typedef std::set<std::string> LoadedScripts;
 
 template<typename T> const char* GetTName();
 
@@ -404,6 +401,9 @@ class Eluna
         typedef UNORDERED_MAP<uint32, ElunaBindingMap> ElunaEntryMap;
         struct ElunaBind;
         std::map<int, std::vector<int> > ServerEventBindings;
+        std::map<int, std::vector<int> > PlayerEventBindings;
+        std::map<int, std::vector<int> > GuildEventBindings;
+        std::map<int, std::vector<int> > GroupEventBindings;
         ElunaBind* CreatureEventBindings;
         ElunaBind* CreatureGossipBindings;
         ElunaBind* GameObjectEventBindings;
@@ -529,6 +529,24 @@ class Eluna
                 std::vector<int> _vector;
                 ServerEventBindings.insert(std::pair<int, std::vector<int> >(i, _vector));
             }
+
+            for (int i = 0; i < PLAYER_EVENT_COUNT; ++i)
+            {
+                std::vector<int> _vector;
+                PlayerEventBindings.insert(std::pair<int, std::vector<int> >(i, _vector));
+            }
+
+            for (int i = 0; i < GUILD_EVENT_COUNT; ++i)
+            {
+                std::vector<int> _vector;
+                GuildEventBindings.insert(std::pair<int, std::vector<int> >(i, _vector));
+            }
+
+            for (int i = 0; i < GROUP_EVENT_COUNT; ++i)
+            {
+                std::vector<int> _vector;
+                GroupEventBindings.insert(std::pair<int, std::vector<int> >(i, _vector));
+            }
             CreatureEventBindings = new ElunaBind;
             CreatureGossipBindings = new ElunaBind;
             GameObjectEventBindings = new ElunaBind;
@@ -546,7 +564,31 @@ class Eluna
                     luaL_unref(L, LUA_REGISTRYINDEX, (*it));
                 itr->second.clear();
             }
+
+            for (std::map<int, std::vector<int> >::iterator itr = PlayerEventBindings.begin(); itr != PlayerEventBindings.end(); ++itr)
+            {
+                for (std::vector<int>::iterator it = itr->second.begin(); it != itr->second.end(); ++it)
+                    luaL_unref(L, LUA_REGISTRYINDEX, (*it));
+                itr->second.clear();
+            }
+
+            for (std::map<int, std::vector<int> >::iterator itr = GuildEventBindings.begin(); itr != GuildEventBindings.end(); ++itr)
+            {
+                for (std::vector<int>::iterator it = itr->second.begin(); it != itr->second.end(); ++it)
+                    luaL_unref(L, LUA_REGISTRYINDEX, (*it));
+                itr->second.clear();
+            }
+
+            for (std::map<int, std::vector<int> >::iterator itr = GroupEventBindings.begin(); itr != GroupEventBindings.end(); ++itr)
+            {
+                for (std::vector<int>::iterator it = itr->second.begin(); it != itr->second.end(); ++it)
+                    luaL_unref(L, LUA_REGISTRYINDEX, (*it));
+                itr->second.clear();
+            }
             ServerEventBindings.clear();
+            PlayerEventBindings.clear();
+            GuildEventBindings.clear();
+            GroupEventBindings.clear();
             CreatureEventBindings->Clear();
             CreatureGossipBindings->Clear();
             GameObjectEventBindings->Clear();

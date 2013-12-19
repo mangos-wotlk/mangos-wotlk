@@ -66,6 +66,27 @@ void StartEluna(bool restart)
                     luaL_unref(sEluna.L, LUA_REGISTRYINDEX, (*it));
                 itr->second.clear();
             }
+
+            for (std::map<int, std::vector<int> >::iterator itr = sEluna.PlayerEventBindings.begin(); itr != sEluna.PlayerEventBindings.end(); ++itr)
+            {
+                for (std::vector<int>::const_iterator it = itr->second.begin(); it != itr->second.end(); ++it)
+                    luaL_unref(sEluna.L, LUA_REGISTRYINDEX, (*it));
+                itr->second.clear();
+            }
+
+            for (std::map<int, std::vector<int> >::iterator itr = sEluna.GuildEventBindings.begin(); itr != sEluna.GuildEventBindings.end(); ++itr)
+            {
+                for (std::vector<int>::const_iterator it = itr->second.begin(); it != itr->second.end(); ++it)
+                    luaL_unref(sEluna.L, LUA_REGISTRYINDEX, (*it));
+                itr->second.clear();
+            }
+
+            for (std::map<int, std::vector<int> >::iterator itr = sEluna.GroupEventBindings.begin(); itr != sEluna.GroupEventBindings.end(); ++itr)
+            {
+                for (std::vector<int>::const_iterator it = itr->second.begin(); it != itr->second.end(); ++it)
+                    luaL_unref(sEluna.L, LUA_REGISTRYINDEX, (*it));
+                itr->second.clear();
+            }
             sEluna.CreatureEventBindings->Clear();
             sEluna.CreatureGossipBindings->Clear();
             sEluna.GameObjectEventBindings->Clear();
@@ -91,7 +112,7 @@ void StartEluna(bool restart)
 
     uint32 count = 0;
     char filename[200];
-    for (std::set<std::string>::const_iterator itr = loadedScripts.luaFiles.begin(); itr !=  loadedScripts.luaFiles.end(); ++itr)
+    for (std::set<std::string>::const_iterator itr = loadedScripts.begin(); itr !=  loadedScripts.end(); ++itr)
     {
         strcpy(filename, itr->c_str());
         if (luaL_loadfile(sEluna.L, filename) != 0)
@@ -192,7 +213,7 @@ void Eluna::LoadDirectory(char* Dirname, LoadedScripts* lscr)
             if (!_stricmp(ext, "aul."))
             {
                 sLog.outDebug("[Eluna]: Load File: %s", fname.c_str());
-                lscr->luaFiles.insert(fname);
+                lscr->insert(fname);
             }
         }
     }
@@ -231,7 +252,7 @@ void Eluna::LoadDirectory(char* Dirname, LoadedScripts* lscr)
         {
             char* ext = strrchr(list[fileCount]->d_name, '.');
             if (ext && !strcmp(ext, ".lua"))
-                lscr->luaFiles.insert(_path);
+                lscr->insert(_path);
         }
         free(list[fileCount]);
     }
@@ -442,6 +463,30 @@ void Eluna::Register(uint8 regtype, uint32 id, uint32 evt, int functionRef)
             if (evt < SERVER_EVENT_COUNT)
             {
                 ServerEventBindings[evt].push_back(functionRef);
+                return;
+            }
+            break;
+
+        case REGTYPE_PLAYER:
+            if (evt < PLAYER_EVENT_COUNT)
+            {
+                PlayerEventBindings[evt].push_back(functionRef);
+                return;
+            }
+            break;
+
+        case REGTYPE_GUILD:
+            if (evt < GUILD_EVENT_COUNT)
+            {
+                GuildEventBindings[evt].push_back(functionRef);
+                return;
+            }
+            break;
+
+        case REGTYPE_GROUP:
+            if (evt < GROUP_EVENT_COUNT)
+            {
+                GroupEventBindings[evt].push_back(functionRef);
                 return;
             }
             break;

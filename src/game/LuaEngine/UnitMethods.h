@@ -114,6 +114,18 @@ namespace LuaUnit
         return 1;
     }
 
+    int IsRooted(lua_State* L, Unit* unit)
+    {
+        sEluna.Push(L, unit->IsRooted());
+        return 1;
+    }
+
+    int IsFullHealth(lua_State* L, Unit* unit)
+    {
+        sEluna.Push(L, unit->IsFullHealth());
+        return 1;
+    }
+
     int IsWithinDistInMap(lua_State* L, Unit* unit)
     {
         WorldObject* obj = sEluna.CHECK_WORLDOBJECT(L, 1);
@@ -265,6 +277,66 @@ namespace LuaUnit
     int IsAuctioneer(lua_State* L, Unit* unit)
     {
         sEluna.Push(L, unit->isAuctioner());
+        return 1;
+    }
+
+    int IsGuildMaster(lua_State* L, Unit* unit)
+    {
+        sEluna.Push(L, unit->isGuildMaster());
+        return 1;
+    }
+
+    int IsInnkeeper(lua_State* L, Unit* unit)
+    {
+        sEluna.Push(L, unit->isInnkeeper());
+        return 1;
+    }
+
+    int IsTrainer(lua_State* L, Unit* unit)
+    {
+        sEluna.Push(L, unit->isTrainer());
+        return 1;
+    }
+
+    int IsGossip(lua_State* L, Unit* unit)
+    {
+        sEluna.Push(L, unit->isGossip());
+        return 1;
+    }
+
+    int IsTaxi(lua_State* L, Unit* unit)
+    {
+        sEluna.Push(L, unit->isTaxi());
+        return 1;
+    }
+
+    int IsSpiritHealer(lua_State* L, Unit* unit)
+    {
+        sEluna.Push(L, unit->isSpiritHealer());
+        return 1;
+    }
+
+    int IsSpiritGuide(lua_State* L, Unit* unit)
+    {
+        sEluna.Push(L, unit->isSpiritGuide());
+        return 1;
+    }
+
+    int IsTabardDesigner(lua_State* L, Unit* unit)
+    {
+        sEluna.Push(L, unit->isTabardDesigner());
+        return 1;
+    }
+
+    int IsServiceProvider(lua_State* L, Unit* unit)
+    {
+        sEluna.Push(L, unit->isServiceProvider());
+        return 1;
+    }
+
+    int IsSpiritService(lua_State* L, Unit* unit)
+    {
+        sEluna.Push(L, unit->isSpiritService());
         return 1;
     }
 
@@ -586,17 +658,6 @@ namespace LuaUnit
         bool left = luaL_optbool(L, 2, true);
         // unit->GetMotionMaster()->MoveRotate(time, left ? ROTATE_DIRECTION_LEFT : ROTATE_DIRECTION_RIGHT);
         return 0;
-    }
-
-    int SetWalk(lua_State* L, Unit* unit)
-    {
-        bool enable = luaL_optbool(L, 1, true);
-        // Todo, also separate to Player and Creature method files
-        /*if (Creature* creature = unit->ToCreature())
-        sEluna.Push(L, creature->SetWalk(enable));
-        else
-        sEluna.Push(L, unit->SetWalk(enable));*/
-        return 1;
     }
 
     int SetSpeed(lua_State* L, Unit* unit)
@@ -955,6 +1016,14 @@ namespace LuaUnit
     {
         // ObjectGuid guid = unit->GetObjectGuid();
         // unit->SetCritterGuid(guid);
+        return 0;
+    }
+
+    int SetWaterWalk(lua_State* L, Unit* unit)
+    {
+        bool enable = luaL_optbool(L, 1, true);
+
+        unit->SetWaterWalk(enable);
         return 0;
     }
 

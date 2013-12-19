@@ -68,16 +68,11 @@ namespace LuaPlayer
     int Mute(lua_State* L, Player* player)
     {
         uint32 muteseconds = luaL_checkunsigned(L, 1);
-        const char* reason = luaL_checkstring(L, 2);
+        /*const char* reason = luaL_checkstring(L, 2);*/ // Mangos does not have a reason field in database.
 
-        /*PreparedStatement* stmt = LoginDatabase.GetPreparedStatement(LOGIN_UPD_MUTE_TIME);
-        int64 muteTime = time(NULL) + muteseconds;
+        uint64 muteTime = time(NULL) + muteseconds;
         player->GetSession()->m_muteTime = muteTime;
-        stmt->setInt64(0, muteTime);
-        stmt->setString(1, reason ? reason : "");
-        stmt->setString(2, "Eluna");
-        stmt->setUInt32(3, player->GetSession()->GetAccountId());
-        LoginDatabase.Execute(stmt);*/
+        LoginDatabase.PExecute("UPDATE account SET mutetime = " UI64FMTD " WHERE id = '%u'", muteTime, player->GetSession()->GetAccountId());
         return 0;
     }
 
@@ -745,8 +740,8 @@ namespace LuaPlayer
     {
         uint8 rank = luaL_checkunsigned(L, 1);
 
-        // if (!player->GetGuild())
-        // return 0;
+        if (!player->GetGuildId())
+            return 0;
 
         player->SetRank(rank);
         return 0;
@@ -813,12 +808,12 @@ namespace LuaPlayer
 
     int HasTalent(lua_State* L, Player* player)
     {
-        uint32 spellId = luaL_checkunsigned(L, 1);
+        uint32 talentId = luaL_checkunsigned(L, 1);
         uint8 spec = luaL_checkunsigned(L, 2);
-        /*if (spec >= MAX_TALENT_SPECS)
-        sEluna.Push(L, false);
+        if (spec >= MAX_TALENT_SPEC_COUNT)
+            sEluna.Push(L, false);
         else
-        sEluna.Push(L, player->HasTalent(spellId, spec));*/
+            sEluna.Push(L, player->HasTalent(talentId, spec));
         return 1;
     }
 
@@ -946,7 +941,7 @@ namespace LuaPlayer
 
     int RegenerateHealth(lua_State* L, Player* player)
     {
-        // player->RegenerateHealth();
+        player->RegenerateHealth(REGEN_TIME_FULL);
         return 0;
     }
 
@@ -956,7 +951,7 @@ namespace LuaPlayer
         if (power >= MAX_POWERS)
             return 0;
 
-        // player->Regenerate((Powers)power);
+        player->Regenerate((Powers)power, REGEN_TIME_FULL);
         return 0;
     }
 
@@ -1446,7 +1441,7 @@ namespace LuaPlayer
 
     int IsFalling(lua_State* L, Player* player)
     {
-        // sEluna.Push(L, player->IsFalling());
+        sEluna.Push(L, player->IsFalling());
         return 1;
     }
 

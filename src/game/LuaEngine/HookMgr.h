@@ -20,11 +20,29 @@
 #ifndef LUAHOOKS_H
 #define LUAHOOKS_H
 
-#include "ScriptMgr.h"
+struct AreaTriggerEntry;
+struct SpellEntry;
+class Aura;
+class Creature;
+class CreatureAI;
+class GameObject;
+class GameObjectAI;
+class InstanceData;
+class Item;
+class Map;
+class Object;
+class Player;
+class Quest;
+class SpellCastTargets;
+class Unit;
+class WorldObject;
 
 enum RegisterTypes
 {
     REGTYPE_SERVER,
+    REGTYPE_PLAYER,
+    REGTYPE_GUILD,
+    REGTYPE_GROUP,
     REGTYPE_CREATURE,
     REGTYPE_CREATURE_GOSSIP,
     REGTYPE_GAMEOBJECT,
@@ -35,52 +53,9 @@ enum RegisterTypes
     REGTYPE_COUNT
 };
 
-// RegisterServerHook(EventId, function)
+// RegisterServerEvent(EventId, function)
 enum ServerEvents
 {
-    // Player
-    PLAYER_EVENT_ON_CHARACTER_CREATE        =     1,        // (event, player)
-    PLAYER_EVENT_ON_CHARACTER_DELETE        =     2,        // (event, guid)
-    PLAYER_EVENT_ON_LOGIN                   =     3,        // (event, player)
-    PLAYER_EVENT_ON_LOGOUT                  =     4,        // (event, player)
-    PLAYER_EVENT_ON_SPELL_CAST              =     5,        // (event, player, spell, skipCheck)
-    PLAYER_EVENT_ON_KILL_PLAYER             =     6,        // (event, killer, killed)
-    PLAYER_EVENT_ON_KILL_CREATURE           =     7,        // (event, killer, killed)
-    PLAYER_EVENT_ON_KILLED_BY_CREATURE      =     8,        // (event, killer, killed)
-    PLAYER_EVENT_ON_DUEL_REQUEST            =     9,        // (event, target, challenger)
-    PLAYER_EVENT_ON_DUEL_START              =     10,       // (event, player1, player2)
-    PLAYER_EVENT_ON_DUEL_END                =     11,       // (event, winner, loser, type)
-    PLAYER_EVENT_ON_GIVE_XP                 =     12,       // (event, player, amount, victim)
-    PLAYER_EVENT_ON_LEVEL_CHANGE            =     13,       // (event, player, oldLevel)
-    PLAYER_EVENT_ON_MONEY_CHANGE            =     14,       // (event, player, amount)
-    PLAYER_EVENT_ON_REPUTATION_CHANGE       =     15,       // (event, player, factionId, standing, incremental)
-    PLAYER_EVENT_ON_TALENTS_CHANGE          =     16,       // (event, player, points)
-    PLAYER_EVENT_ON_TALENTS_RESET           =     17,       // (event, player, noCost)
-    PLAYER_EVENT_ON_CHAT                    =     18,       // (event, player, msg, Type, lang) - Can return false
-    PLAYER_EVENT_ON_WHISPER                 =     19,       // (event, player, msg, Type, lang, receiver)
-    PLAYER_EVENT_ON_GROUP_CHAT              =     20,       // (event, player, msg, Type, lang, group) - Can return false
-    PLAYER_EVENT_ON_GUILD_CHAT              =     21,       // (event, player, msg, Type, lang, guild) - Can return false
-    PLAYER_EVENT_ON_CHANNEL_CHAT            =     22,       // (event, player, msg, Type, lang, channel) - Can return false
-    PLAYER_EVENT_ON_EMOTE                   =     23,       // (event, player, emote) - Not triggered on any known emote
-    PLAYER_EVENT_ON_TEXT_EMOTE              =     24,       // (event, player, textEmote, emoteNum, guid)
-    PLAYER_EVENT_ON_SAVE                    =     25,       // (event, player)
-    PLAYER_EVENT_ON_BIND_TO_INSTANCE        =     26,       // (event, player, difficulty, mapid, permanent)
-    PLAYER_EVENT_ON_UPDATE_ZONE             =     27,       // (event, player, newZone, newArea)
-    PLAYER_EVENT_ON_MAP_CHANGE              =     28,       // (event, player)
-
-    // Guild
-    GUILD_EVENT_ON_ADD_MEMBER               =     29,       // (event, guild, player, rank)
-    GUILD_EVENT_ON_REMOVE_MEMBER            =     30,       // (event, guild, isDisbanding, isKicked)
-    GUILD_EVENT_ON_MOTD_CHANGE              =     31,       // (event, guild, newMotd)
-    GUILD_EVENT_ON_INFO_CHANGE              =     32,       // (event, guild, newInfo)
-    GUILD_EVENT_ON_CREATE                   =     33,       // (event, guild, leader, name)
-    GUILD_EVENT_ON_DISBAND                  =     34,       // (event, guild)
-    GUILD_EVENT_ON_MONEY_WITHDRAW           =     35,       // (event, guild, player, amount, isRepair)
-    GUILD_EVENT_ON_MONEY_DEPOSIT            =     36,       // (event, guild, player, amount)
-    GUILD_EVENT_ON_ITEM_MOVE                =     37,       // (event, guild, player, item, isSrcBank, srcContainer, srcSlotId, isDestBank, destContainer, destSlotId)
-    GUILD_EVENT_ON_EVENT                    =     38,       // (event, guild, eventType, plrGUIDLow1, plrGUIDLow2, newRank)
-    GUILD_EVENT_ON_BANK_EVENT               =     39,       // (event, guild, eventType, tabId, playerGUIDLow, itemOrMoney, itemStackCount, destTabId)
-
     // Server
     SERVER_EVENT_ON_NETWORK_START           =     40,       // Not Implemented
     SERVER_EVENT_ON_NETWORK_STOP            =     41,       // Not Implemented
@@ -124,24 +99,84 @@ enum ServerEvents
     AUCTION_EVENT_ON_SUCCESFUL              =     67,       // Not Implemented
     AUCTION_EVENT_ON_EXPIRE                 =     68,       // Not Implemented
 
-    // Group
-    GROUP_EVENT_ON_MEMBER_ADD               =     69,       // (event, group, guid)
-    GROUP_EVENT_ON_MEMBER_INVITE            =     70,       // (event, group, guid)
-    GROUP_EVENT_ON_MEMBER_REMOVE            =     71,       // (event, group, guid, method, kicker, reason)
-    GROUP_EVENT_ON_LEADER_CHANGE            =     72,       // (event, group, newLeaderGuid, oldLeaderGuid)
-    GROUP_EVENT_ON_DISBAND                  =     73,       // (event, group)
-
-    // Custom
-    PLAYER_EVENT_ON_EQUIP                   =     74,       // (event, player, item, bag, slot)
-    PLAYER_EVENT_ON_FIRST_LOGIN             =     75,       // (event, player)
-    PLAYER_EVENT_ON_CAN_USE_ITEM            =     76,       // (event, player, itemEntry)
-    PLAYER_EVENT_ON_LOOT_ITEM               =     77,       // (event, player, item, count)
-    PLAYER_EVENT_ON_ENTER_COMBAT            =     78,       // (event, player, enemy)
-    PLAYER_EVENT_ON_LEAVE_COMBAT            =     79,       // (event, player)
-    PLAYER_EVENT_ON_REPOP                   =     80,       // (event, player)
-    PLAYER_EVENT_ON_RESURRECT               =     81,       // (event, player)
-
     SERVER_EVENT_COUNT
+};
+
+// RegisterPlayerEvent(eventId, function)
+enum PlayerEvents
+{
+    PLAYER_EVENT_ON_CHARACTER_CREATE        =     1,        // (event, player)
+    PLAYER_EVENT_ON_CHARACTER_DELETE        =     2,        // (event, guid)
+    PLAYER_EVENT_ON_LOGIN                   =     3,        // (event, player)
+    PLAYER_EVENT_ON_LOGOUT                  =     4,        // (event, player)
+    PLAYER_EVENT_ON_SPELL_CAST              =     5,        // (event, player, spell, skipCheck)
+    PLAYER_EVENT_ON_KILL_PLAYER             =     6,        // (event, killer, killed)
+    PLAYER_EVENT_ON_KILL_CREATURE           =     7,        // (event, killer, killed)
+    PLAYER_EVENT_ON_KILLED_BY_CREATURE      =     8,        // (event, killer, killed)
+    PLAYER_EVENT_ON_DUEL_REQUEST            =     9,        // (event, target, challenger)
+    PLAYER_EVENT_ON_DUEL_START              =     10,       // (event, player1, player2)
+    PLAYER_EVENT_ON_DUEL_END                =     11,       // (event, winner, loser, type)
+    PLAYER_EVENT_ON_GIVE_XP                 =     12,       // (event, player, amount, victim)
+    PLAYER_EVENT_ON_LEVEL_CHANGE            =     13,       // (event, player, oldLevel)
+    PLAYER_EVENT_ON_MONEY_CHANGE            =     14,       // (event, player, amount)
+    PLAYER_EVENT_ON_REPUTATION_CHANGE       =     15,       // (event, player, factionId, standing, incremental)
+    PLAYER_EVENT_ON_TALENTS_CHANGE          =     16,       // (event, player, points)
+    PLAYER_EVENT_ON_TALENTS_RESET           =     17,       // (event, player, noCost)
+    PLAYER_EVENT_ON_CHAT                    =     18,       // (event, player, msg, Type, lang) - Can return false
+    PLAYER_EVENT_ON_WHISPER                 =     19,       // (event, player, msg, Type, lang, receiver)
+    PLAYER_EVENT_ON_GROUP_CHAT              =     20,       // (event, player, msg, Type, lang, group) - Can return false
+    PLAYER_EVENT_ON_GUILD_CHAT              =     21,       // (event, player, msg, Type, lang, guild) - Can return false
+    PLAYER_EVENT_ON_CHANNEL_CHAT            =     22,       // (event, player, msg, Type, lang, channel) - Can return false
+    PLAYER_EVENT_ON_EMOTE                   =     23,       // (event, player, emote) - Not triggered on any known emote
+    PLAYER_EVENT_ON_TEXT_EMOTE              =     24,       // (event, player, textEmote, emoteNum, guid)
+    PLAYER_EVENT_ON_SAVE                    =     25,       // (event, player)
+    PLAYER_EVENT_ON_BIND_TO_INSTANCE        =     26,       // (event, player, difficulty, mapid, permanent)
+    PLAYER_EVENT_ON_UPDATE_ZONE             =     27,       // (event, player, newZone, newArea)
+    PLAYER_EVENT_ON_MAP_CHANGE              =     28,       // (event, player)
+    // Custom
+    PLAYER_EVENT_ON_EQUIP                   =     29,       // (event, player, item, bag, slot)
+    PLAYER_EVENT_ON_FIRST_LOGIN             =     30,       // (event, player)
+    PLAYER_EVENT_ON_CAN_USE_ITEM            =     31,       // (event, player, itemEntry)
+    PLAYER_EVENT_ON_LOOT_ITEM               =     32,       // (event, player, item, count)
+    PLAYER_EVENT_ON_ENTER_COMBAT            =     33,       // (event, player, enemy)
+    PLAYER_EVENT_ON_LEAVE_COMBAT            =     34,       // (event, player)
+    PLAYER_EVENT_ON_REPOP                   =     35,       // (event, player)
+    PLAYER_EVENT_ON_RESURRECT               =     36,       // (event, player)
+
+    PLAYER_EVENT_COUNT
+};
+
+// RegisterGuildEvent(eventId, function)
+enum GuildEventTypes
+{
+    // Guild
+    GUILD_EVENT_ON_ADD_MEMBER               =     1,       // (event, guild, player, rank)
+    GUILD_EVENT_ON_REMOVE_MEMBER            =     2,       // (event, guild, isDisbanding, isKicked)
+    GUILD_EVENT_ON_MOTD_CHANGE              =     3,       // (event, guild, newMotd)
+    GUILD_EVENT_ON_INFO_CHANGE              =     4,       // (event, guild, newInfo)
+    GUILD_EVENT_ON_CREATE                   =     5,       // (event, guild, leader, name)
+    GUILD_EVENT_ON_DISBAND                  =     6,       // (event, guild)
+    GUILD_EVENT_ON_MONEY_WITHDRAW           =     7,       // (event, guild, player, amount, isRepair)
+    GUILD_EVENT_ON_MONEY_DEPOSIT            =     8,       // (event, guild, player, amount)
+    GUILD_EVENT_ON_ITEM_MOVE                =     9,       // (event, guild, player, item, isSrcBank, srcContainer, srcSlotId, isDestBank, destContainer, destSlotId)
+    GUILD_EVENT_ON_EVENT                    =     10,      // (event, guild, eventType, plrGUIDLow1, plrGUIDLow2, newRank)
+    GUILD_EVENT_ON_BANK_EVENT               =     11,      // (event, guild, eventType, tabId, playerGUIDLow, itemOrMoney, itemStackCount, destTabId)
+
+    GUILD_EVENT_COUNT
+};
+
+// RegisterGroupEvent(eventId, function)
+enum GroupEvents
+{
+    // Group
+    GROUP_EVENT_ON_MEMBER_ADD               =     1,       // (event, group, guid)
+    GROUP_EVENT_ON_MEMBER_INVITE            =     2,       // (event, group, guid)
+    GROUP_EVENT_ON_MEMBER_REMOVE            =     3,       // (event, group, guid, method, kicker, reason)
+    GROUP_EVENT_ON_LEADER_CHANGE            =     4,       // (event, group, newLeaderGuid, oldLeaderGuid)
+    GROUP_EVENT_ON_DISBAND                  =     5,       // (event, group)
+    GROUP_EVENT_ON_CREATE                   =     6,       // (event, group, leaderGuid, groupType)
+
+    GROUP_EVENT_COUNT
 };
 
 // RegisterCreatureEvent(entry, EventId, function)
@@ -198,6 +233,7 @@ enum GameObjectEvents
     GAMEOBJECT_EVENT_ON_DAMAGED                     = 8,    // (event, go, player)          // TODO
     GAMEOBJECT_EVENT_ON_LOOT_STATE_CHANGE           = 9,    // (event, go, state, unit)     // TODO
     GAMEOBJECT_EVENT_ON_GO_STATE_CHANGED            = 10,   // (event, go, state)           // TODO
+    GAMEOBJECT_EVENT_ON_QUEST_COMPLETE              = 11,   // (event, player, go, quest)
     GAMEOBJECT_EVENT_COUNT
 };
 
@@ -221,23 +257,6 @@ enum GossipEvents
     GOSSIP_EVENT_ON_SELECT                          = 2,    // (event, player, object, sender, intid, code, menu_id) - Object is the Creature/GameObject/Item/Player, menu_id is only for player gossip
     GOSSIP_EVENT_COUNT
 };
-
-struct AreaTriggerEntry;
-struct SpellEntry;
-class Aura;
-class Creature;
-class CreatureAI;
-class GameObject;
-class GameObjectAI;
-class InstanceData;
-class Item;
-class Map;
-class Object;
-class Player;
-class Quest;
-class SpellCastTargets;
-class Unit;
-class WorldObject;
 
 struct HookMgr
 {
@@ -277,6 +296,7 @@ struct HookMgr
     bool OnGossipSelect(Player* pPlayer, GameObject* pGameObject, uint32 sender, uint32 action);
     bool OnGossipSelectCode(Player* pPlayer, GameObject* pGameObject, uint32 sender, uint32 action, const char* code);
     bool OnQuestAccept(Player* pPlayer, GameObject* pGameObject, Quest const* pQuest);
+    bool OnQuestComplete(Player* pPlayer, GameObject* pGameObject, Quest const* pQuest);
     bool OnQuestReward(Player* pPlayer, GameObject* pGameObject, Quest const* pQuest);
     bool OnGameObjectUse(Player* pPlayer, GameObject* pGameObject) { return false; }; // TODO? Not on TC
     uint32 GetDialogStatus(Player* pPlayer, GameObject* pGameObject);
@@ -327,6 +347,25 @@ struct HookMgr
     void OnAddCreaturePassenger(Transport* transport, Creature* creature); // TODO
     void OnRemovePassenger(Transport* transport, Player* player); // TODO
     void OnRelocate(Transport* transport, uint32 waypointId, uint32 mapId, float x, float y, float z); // TODO
+    /* Guild */
+    void OnAddMember(Guild* guild, Player* player, uint32 plRank);
+    void OnRemoveMember(Guild* guild, Player* player, bool isDisbanding, bool isKicked); // IsKicked not a part of Mangos, implement?
+    void OnMOTDChanged(Guild* guild, const std::string& newMotd);
+    void OnInfoChanged(Guild* guild, const std::string& newInfo);
+    void OnCreate(Guild* guild, Player* leader, const std::string& name);
+    void OnDisband(Guild* guild);
+    void OnMemberWitdrawMoney(Guild* guild, Player* player, uint32 &amount, bool isRepair);
+    void OnMemberDepositMoney(Guild* guild, Player* player, uint32 &amount);
+    void OnItemMove(Guild* guild, Player* player, Item* pItem, bool isSrcBank, uint8 srcContainer, uint8 srcSlotId, bool isDestBank, uint8 destContainer, uint8 destSlotId); // TODO: Implement
+    void OnEvent(Guild* guild, uint8 eventType, uint32 playerGuid1, uint32 playerGuid2, uint8 newRank); // TODO: Implement
+    void OnBankEvent(Guild* guild, uint8 eventType, uint8 tabId, uint32 playerGuid, uint32 itemOrMoney, uint16 itemStackCount, uint8 destTabId);
+    /* Group */
+    void OnAddMember(Group* group, uint64 guid);
+    void OnInviteMember(Group* group, uint64 guid);
+    void OnRemoveMember(Group* group, uint64 guid, uint8 method, uint64 kicker, const char* reason); // Kicker and Reason not a part of Mangos, implement?
+    void OnChangeLeader(Group* group, uint64 newLeaderGuid, uint64 oldLeaderGuid);
+    void OnDisband(Group* group);
+    void OnCreate(Group* group, uint64 leaderGuid, GroupType groupType);
 };
 #define sHookMgr MaNGOS::Singleton<HookMgr>::Instance()
 
