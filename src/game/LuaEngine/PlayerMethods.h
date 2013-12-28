@@ -878,7 +878,7 @@ namespace LuaPlayer
     {
         uint32 faction = luaL_checkunsigned(L, 1);
         int32 value = luaL_checkinteger(L, 2);
-        
+
         FactionEntry const* factionEntry = sFactionStore.LookupEntry(faction);
         player->GetReputationMgr().SetReputation(factionEntry, value);
         return 0;
@@ -2230,7 +2230,7 @@ namespace LuaPlayer
         uint32 sheathed = luaL_checkunsigned(L, 1);
         if (sheathed >= MAX_SHEATH_STATE)
             return 0;
-        
+
         player->SetSheath((SheathState)sheathed);
         return 0;
     }
