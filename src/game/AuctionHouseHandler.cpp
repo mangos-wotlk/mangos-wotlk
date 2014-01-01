@@ -29,6 +29,7 @@
 #include "Mail.h"
 #include "Util.h"
 #include "Chat.h"
+#include "HookMgr.h"
 
 // please DO NOT use iterator++, because it is slower than ++iterator!!!
 // post-incrementation is always slower than pre-incrementation !
@@ -367,6 +368,8 @@ void WorldSession::HandleAuctionSellItem(WorldPacket& recv_data)
         SendAuctionCommandResult(AH, AUCTION_STARTED, AUCTION_OK);
 
         GetPlayer()->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_CREATE_AUCTION, 1);
+
+        sHookMgr.OnAdd(auctionHouse);
     }
 }
 
@@ -522,6 +525,8 @@ void WorldSession::HandleAuctionRemoveItem(WorldPacket& recv_data)
     sAuctionMgr.RemoveAItem(auction->itemGuidLow);
     auctionHouse->RemoveAuction(auction->Id);
     delete auction;
+
+    sHookMgr.OnRemove(auctionHouse);
 }
 
 // called when player lists his bids
