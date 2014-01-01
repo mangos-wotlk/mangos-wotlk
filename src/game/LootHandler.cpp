@@ -277,6 +277,8 @@ void WorldSession::HandleLootMoneyOpcode(WorldPacket& /*recv_data*/)
             player->GetSession()->SendPacket(&data);
         }
 
+        sHookMgr.OnLootMoney(player, pLoot->gold);
+
         pLoot->gold = 0;
 
         if (pItem)
