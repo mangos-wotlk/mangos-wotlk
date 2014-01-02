@@ -807,6 +807,7 @@ uint32 Unit::DealDamage(Unit* pVictim, uint32 damage, CleanDamage const* cleanDa
 
         if (Creature* killer = ToCreature())
         {
+            // used by eluna
             if (Player* killed = pVictim->ToPlayer())
                 sHookMgr.OnPlayerKilledByCreature(killer, killed);
         }
@@ -875,6 +876,7 @@ uint32 Unit::DealDamage(Unit* pVictim, uint32 damage, CleanDamage const* cleanDa
                         outdoorPvP->HandlePlayerKill(player_tap, playerVictim);
                 }
 
+                // used by eluna
                 sHookMgr.OnPVPKill(player_tap, playerVictim);
             }
         }
@@ -1096,6 +1098,7 @@ void Unit::JustKilledCreature(Creature* victim, Player* responsiblePlayer)
         if (BattleGround* bg = responsiblePlayer->GetBattleGround())
             bg->HandleKillUnit(victim, responsiblePlayer);
 
+        // used by eluna
         sHookMgr.OnCreatureKill(responsiblePlayer, victim);
     }
     // Notify the outdoor pvp script
@@ -8053,6 +8056,7 @@ void Unit::SetInCombatState(bool PvP, Unit* enemy)
             GetMap()->GetCreatureLinkingHolder()->DoCreatureLinkingEvent(LINKING_EVENT_AGGRO, pCreature, enemy);
     }
 
+    // used by eluna
     if (GetTypeId() == TYPEID_PLAYER)
         sHookMgr.OnPlayerEnterCombat(ToPlayer(), enemy);
 }
@@ -8065,6 +8069,7 @@ void Unit::ClearInCombat()
     if (isCharmed() || (GetTypeId() != TYPEID_PLAYER && ((Creature*)this)->IsPet()))
         RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_PET_IN_COMBAT);
 
+    // used by eluna
     if (GetTypeId() == TYPEID_PLAYER)
         sHookMgr.OnPlayerLeaveCombat(ToPlayer());
 
