@@ -1,6 +1,6 @@
 /*
  * This file is part of the CMaNGOS Project. See AUTHORS file for Copyright information
- * Copyright (C) 2010 - 2013 Eluna Lua Engine <http://emudevs.com/>
+ * Copyright (C) 2010 - 2014 Eluna Lua Engine <http://emudevs.com/>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -48,6 +48,19 @@ void HookMgr::OnLootItem(Player* pPlayer, Item* pItem, uint32 count, uint64 guid
     }
 }
 
+void HookMgr::OnLootMoney(Player* pPlayer, uint32 amount)
+{
+    for (std::vector<int>::const_iterator itr = sEluna.PlayerEventBindings[PLAYER_EVENT_ON_LOOT_MONEY].begin();
+        itr != sEluna.PlayerEventBindings[PLAYER_EVENT_ON_LOOT_MONEY].end(); ++itr)
+    {
+        sEluna.BeginCall((*itr));
+        sEluna.Push(sEluna.L, PLAYER_EVENT_ON_LOOT_MONEY);
+        sEluna.Push(sEluna.L, pPlayer);
+        sEluna.Push(sEluna.L, amount);
+        sEluna.ExecuteCall(3, 0);
+    }
+}
+
 void HookMgr::OnFirstLogin(Player* pPlayer)
 {
     for (std::vector<int>::const_iterator itr = sEluna.PlayerEventBindings[PLAYER_EVENT_ON_FIRST_LOGIN].begin();
@@ -79,6 +92,57 @@ void HookMgr::OnResurrect(Player* pPlayer)
     {
         sEluna.BeginCall((*itr));
         sEluna.Push(sEluna.L, PLAYER_EVENT_ON_RESURRECT);
+        sEluna.Push(sEluna.L, pPlayer);
+        sEluna.ExecuteCall(2, 0);
+    }
+}
+
+void HookMgr::OnQuestAbandon(Player* pPlayer, uint32 questId)
+{
+    for (std::vector<int>::const_iterator itr = sEluna.PlayerEventBindings[PLAYER_EVENT_ON_QUEST_ABANDON].begin();
+        itr != sEluna.PlayerEventBindings[PLAYER_EVENT_ON_QUEST_ABANDON].end(); ++itr)
+    {
+        sEluna.BeginCall((*itr));
+        sEluna.Push(sEluna.L, PLAYER_EVENT_ON_QUEST_ABANDON);
+        sEluna.Push(sEluna.L, pPlayer);
+        sEluna.Push(sEluna.L, questId);
+        sEluna.ExecuteCall(3, 0);
+    }
+}
+
+void HookMgr::OnGmTicketCreate(Player* pPlayer, std::string& ticketText)
+{
+    for (std::vector<int>::const_iterator itr = sEluna.PlayerEventBindings[PLAYER_EVENT_ON_GM_TICKET_CREATE].begin();
+        itr != sEluna.PlayerEventBindings[PLAYER_EVENT_ON_GM_TICKET_CREATE].end(); ++itr)
+    {
+        sEluna.BeginCall((*itr));
+        sEluna.Push(sEluna.L, PLAYER_EVENT_ON_GM_TICKET_CREATE);
+        sEluna.Push(sEluna.L, pPlayer);
+        sEluna.Push(sEluna.L, ticketText);
+        sEluna.ExecuteCall(3, 0);
+    }
+}
+
+void HookMgr::OnGmTicketUpdate(Player* pPlayer, std::string& ticketText)
+{
+    for (std::vector<int>::const_iterator itr = sEluna.PlayerEventBindings[PLAYER_EVENT_ON_GM_TICKET_UPDATE].begin();
+        itr != sEluna.PlayerEventBindings[PLAYER_EVENT_ON_GM_TICKET_UPDATE].end(); ++itr)
+    {
+        sEluna.BeginCall((*itr));
+        sEluna.Push(sEluna.L, PLAYER_EVENT_ON_GM_TICKET_UPDATE);
+        sEluna.Push(sEluna.L, pPlayer);
+        sEluna.Push(sEluna.L, ticketText);
+        sEluna.ExecuteCall(3, 0);
+    }
+}
+
+void HookMgr::OnGmTicketDelete(Player* pPlayer)
+{
+    for (std::vector<int>::const_iterator itr = sEluna.PlayerEventBindings[PLAYER_EVENT_ON_GM_TICKET_DELETE].begin();
+        itr != sEluna.PlayerEventBindings[PLAYER_EVENT_ON_GM_TICKET_DELETE].end(); ++itr)
+    {
+        sEluna.BeginCall((*itr));
+        sEluna.Push(sEluna.L, PLAYER_EVENT_ON_GM_TICKET_DELETE);
         sEluna.Push(sEluna.L, pPlayer);
         sEluna.ExecuteCall(2, 0);
     }
@@ -1025,6 +1089,55 @@ void HookMgr::OnRemovePassenger(Transport* transport, Player* player)
 }
 void HookMgr::OnRelocate(Transport* transport, uint32 waypointId, uint32 mapId, float x, float y, float z)
 {
+}
+
+// Auction House
+void HookMgr::OnAdd(AuctionHouseObject* auctionHouse)
+{
+    for (std::vector<int>::const_iterator itr = sEluna.ServerEventBindings[AUCTION_EVENT_ON_ADD].begin();
+        itr != sEluna.ServerEventBindings[AUCTION_EVENT_ON_ADD].end(); ++itr)
+    {
+        sEluna.BeginCall((*itr));
+        sEluna.Push(sEluna.L, AUCTION_EVENT_ON_ADD);
+        sEluna.Push(sEluna.L, (auctionHouse));
+        sEluna.ExecuteCall(2, 0);
+    }
+}
+
+void HookMgr::OnRemove(AuctionHouseObject* auctionHouse)
+{
+    for (std::vector<int>::const_iterator itr = sEluna.ServerEventBindings[AUCTION_EVENT_ON_REMOVE].begin();
+        itr != sEluna.ServerEventBindings[AUCTION_EVENT_ON_REMOVE].end(); ++itr)
+    {
+        sEluna.BeginCall((*itr));
+        sEluna.Push(sEluna.L, AUCTION_EVENT_ON_REMOVE);
+        sEluna.Push(sEluna.L, (auctionHouse));
+        sEluna.ExecuteCall(2, 0);
+    }
+}
+
+void HookMgr::OnSuccessful(AuctionHouseObject* auctionHouse)
+{
+    for (std::vector<int>::const_iterator itr = sEluna.ServerEventBindings[AUCTION_EVENT_ON_SUCCESSFUL].begin();
+        itr != sEluna.ServerEventBindings[AUCTION_EVENT_ON_SUCCESSFUL].end(); ++itr)
+    {
+        sEluna.BeginCall((*itr));
+        sEluna.Push(sEluna.L, AUCTION_EVENT_ON_SUCCESSFUL);
+        sEluna.Push(sEluna.L, (auctionHouse));
+        sEluna.ExecuteCall(2, 0);
+    }
+}
+
+void HookMgr::OnExpire(AuctionHouseObject* auctionHouse)
+{
+    for (std::vector<int>::const_iterator itr = sEluna.ServerEventBindings[AUCTION_EVENT_ON_EXPIRE].begin();
+        itr != sEluna.ServerEventBindings[AUCTION_EVENT_ON_EXPIRE].end(); ++itr)
+    {
+        sEluna.BeginCall((*itr));
+        sEluna.Push(sEluna.L, AUCTION_EVENT_ON_EXPIRE);
+        sEluna.Push(sEluna.L, (auctionHouse));
+        sEluna.ExecuteCall(2, 0);
+    }
 }
 
 /*

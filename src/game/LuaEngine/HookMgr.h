@@ -1,6 +1,6 @@
 /*
  * This file is part of the CMaNGOS Project. See AUTHORS file for Copyright information
- * Copyright (C) 2010 - 2013 Eluna Lua Engine <http://emudevs.com/>
+ * Copyright (C) 2010 - 2014 Eluna Lua Engine <http://emudevs.com/>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -66,8 +66,8 @@ enum ServerEvents
     SERVER_EVENT_ON_PACKET_SEND             =     7,       // Not Implemented
 
     // World
-    WORLD_EVENT_ON_OPEN_STATE_CHANGE        =     8,       // (event, open)
-    WORLD_EVENT_ON_CONFIG_LOAD              =     9,       // (event, reload)
+    WORLD_EVENT_ON_OPEN_STATE_CHANGE        =     8,        // (event, open)
+    WORLD_EVENT_ON_CONFIG_LOAD              =     9,        // (event, reload)
     WORLD_EVENT_ON_MOTD_CHANGE              =     10,       // (event, newMOTD)
     WORLD_EVENT_ON_SHUTDOWN_INIT            =     11,       // (event, code, mask)
     WORLD_EVENT_ON_SHUTDOWN_CANCEL          =     12,       // (event)
@@ -94,10 +94,10 @@ enum ServerEvents
     WEATHER_EVENT_ON_CHANGE                 =     25,       // (event, weather, state, grade)
 
     // Auction house
-    AUCTION_EVENT_ON_ADD                    =     26,       // Not Implemented
-    AUCTION_EVENT_ON_REMOVE                 =     27,       // Not Implemented
-    AUCTION_EVENT_ON_SUCCESFUL              =     28,       // Not Implemented
-    AUCTION_EVENT_ON_EXPIRE                 =     29,       // Not Implemented
+    AUCTION_EVENT_ON_ADD                    =     26,       // (event, AHObject)
+    AUCTION_EVENT_ON_REMOVE                 =     27,       // (event, AHObject)
+    AUCTION_EVENT_ON_SUCCESSFUL             =     28,       // (event, AHObject) // NOT SUPPORTED YET
+    AUCTION_EVENT_ON_EXPIRE                 =     29,       // (event, AHObject) // NOT SUPPORTED YET
 
     SERVER_EVENT_COUNT
 };
@@ -133,6 +133,7 @@ enum PlayerEvents
     PLAYER_EVENT_ON_BIND_TO_INSTANCE        =     26,       // (event, player, difficulty, mapid, permanent)
     PLAYER_EVENT_ON_UPDATE_ZONE             =     27,       // (event, player, newZone, newArea)
     PLAYER_EVENT_ON_MAP_CHANGE              =     28,       // (event, player)
+
     // Custom
     PLAYER_EVENT_ON_EQUIP                   =     29,       // (event, player, item, bag, slot)
     PLAYER_EVENT_ON_FIRST_LOGIN             =     30,       // (event, player)
@@ -142,6 +143,11 @@ enum PlayerEvents
     PLAYER_EVENT_ON_LEAVE_COMBAT            =     34,       // (event, player)
     PLAYER_EVENT_ON_REPOP                   =     35,       // (event, player)
     PLAYER_EVENT_ON_RESURRECT               =     36,       // (event, player)
+    PLAYER_EVENT_ON_LOOT_MONEY              =     37,       // (event, player, amount)
+    PLAYER_EVENT_ON_QUEST_ABANDON           =     38,       // (event, player, questId)
+    PLAYER_EVENT_ON_GM_TICKET_CREATE        =     39,       // (event, player, ticketText)
+    PLAYER_EVENT_ON_GM_TICKET_UPDATE        =     40,       // (event, player, ticketText)
+    PLAYER_EVENT_ON_GM_TICKET_DELETE        =     41,       // (event, player)
 
     PLAYER_EVENT_COUNT
 };
@@ -268,18 +274,25 @@ struct HookMgr
     /* Misc */
     void OnWorldUpdate(uint32 diff);
     void OnLootItem(Player* pPlayer, Item* pItem, uint32 count, uint64 guid);
+    void OnLootMoney(Player* pPlayer, uint32 amount);
     void OnFirstLogin(Player* pPlayer);
     void OnEquip(Player* pPlayer, Item* pItem, uint8 bag, uint8 slot);
     void OnRepop(Player* pPlayer);
     void OnResurrect(Player* pPlayer);
+    void OnQuestAbandon(Player* pPlayer, uint32 questId);
+    void OnGmTicketCreate(Player* pPlayer, std::string& ticketText);
+    void OnGmTicketUpdate(Player* pPlayer, std::string& ticketText);
+    void OnGmTicketDelete(Player* pPlayer);
     InventoryResult OnCanUseItem(const Player* pPlayer, uint32 itemEntry);
     void OnEngineRestart();
+
     /* Item */
     bool OnDummyEffect(Unit* pCaster, uint32 spellId, SpellEffectIndex effIndex, Item* pTarget);
     bool OnQuestAccept(Player* pPlayer, Item* pItem, Quest const* pQuest);
     bool OnUse(Player* pPlayer, Item* pItem, SpellCastTargets const& targets);
     bool OnExpire(Player* pPlayer, ItemPrototype const* pProto);
     void HandleGossipSelectOption(Player* pPlayer, Item* item, uint32 sender, uint32 action, std::string code);
+
     /* Creature */
     bool OnDummyEffect(Unit* pCaster, uint32 spellId, SpellEffectIndex effIndex, Creature* pTarget);
     bool OnGossipHello(Player* pPlayer, Creature* pCreature);
@@ -290,6 +303,7 @@ struct HookMgr
     bool OnQuestComplete(Player* pPlayer, Creature* pCreature, Quest const* pQuest);
     bool OnQuestReward(Player* pPlayer, Creature* pCreature, Quest const* pQuest);
     uint32 GetDialogStatus(Player* pPlayer, Creature* pCreature);
+
     /* GameObject */
     bool OnDummyEffect(Unit* pCaster, uint32 spellId, SpellEffectIndex effIndex, GameObject* pTarget);
     bool OnGossipHello(Player* pPlayer, GameObject* pGameObject);
@@ -304,6 +318,7 @@ struct HookMgr
     void OnDamaged(GameObject* pGameObject, Player* pPlayer); // TODO
     void OnLootStateChanged(GameObject* pGameObject, uint32 state, Unit* pUnit); // TODO
     void OnGameObjectStateChanged(GameObject* pGameObject, uint32 state); // TODO
+
     /* Player */
     void OnPlayerEnterCombat(Player* pPlayer, Unit* pEnemy);
     void OnPlayerLeaveCombat(Player* pPlayer);
@@ -336,17 +351,28 @@ struct HookMgr
     void OnUpdateZone(Player* pPlayer, uint32 newZone, uint32 newArea);
     void OnMapChanged(Player* pPlayer); // TODO
     void HandleGossipSelectOption(Player* pPlayer, uint32 menuId, uint32 sender, uint32 action, std::string code);
+
     /* AreaTrigger */
     bool OnAreaTrigger(Player* pPlayer, AreaTriggerEntry const* pTrigger);
+
     /* Weather */
     void OnChange(Weather* weather, WeatherState state, float grade); // TODO
-    // condition
+
+    /* Auction House */
+    void OnAdd(AuctionHouseObject* auctionHouse);
+    void OnRemove(AuctionHouseObject* auctionHouse);
+    void OnSuccessful(AuctionHouseObject* auctionHouse);
+    void OnExpire(AuctionHouseObject* auctionHouse);
+
+    /* Condition */
     // bool OnConditionCheck(Condition* condition, ConditionSourceInfo& sourceInfo); // TODO ?
-    // transport
+
+    /* Transport */
     void OnAddPassenger(Transport* transport, Player* player); // TODO
     void OnAddCreaturePassenger(Transport* transport, Creature* creature); // TODO
     void OnRemovePassenger(Transport* transport, Player* player); // TODO
     void OnRelocate(Transport* transport, uint32 waypointId, uint32 mapId, float x, float y, float z); // TODO
+
     /* Guild */
     void OnAddMember(Guild* guild, Player* player, uint32 plRank);
     void OnRemoveMember(Guild* guild, Player* player, bool isDisbanding, bool isKicked); // IsKicked not a part of Mangos, implement?
@@ -359,6 +385,7 @@ struct HookMgr
     void OnItemMove(Guild* guild, Player* player, Item* pItem, bool isSrcBank, uint8 srcContainer, uint8 srcSlotId, bool isDestBank, uint8 destContainer, uint8 destSlotId); // TODO: Implement
     void OnEvent(Guild* guild, uint8 eventType, uint32 playerGuid1, uint32 playerGuid2, uint8 newRank); // TODO: Implement
     void OnBankEvent(Guild* guild, uint8 eventType, uint8 tabId, uint32 playerGuid, uint32 itemOrMoney, uint16 itemStackCount, uint8 destTabId);
+
     /* Group */
     void OnAddMember(Group* group, uint64 guid);
     void OnInviteMember(Group* group, uint64 guid);

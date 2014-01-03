@@ -1,6 +1,6 @@
 /*
  * This file is part of the CMaNGOS Project. See AUTHORS file for Copyright information
- * Copyright (C) 2010 - 2013 Eluna Lua Engine <http://emudevs.com/>
+ * Copyright (C) 2010 - 2014 Eluna Lua Engine <http://emudevs.com/>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -92,14 +92,13 @@ namespace LuaPlayer
         return 0;
     }
 
-    /*int HasAura(lua_State* L, Player* player)
+    int HasAura(lua_State* L, Player* player)
     {
         uint32 spell = luaL_checkunsigned(L, 1);
-        WorldObject* caster = sEluna.CHECK_WORLDOBJECT(L, 2);
 
-        sEluna.Push(L, player->HasAura(spell, caster ? caster->GetGUIDLow() : 0));
+        sEluna.Push(L, player->HasAura(spell));
         return 1;
-    }*/
+    }
 
     /*int IsARecruiter(lua_State* L, Player* player)
     {

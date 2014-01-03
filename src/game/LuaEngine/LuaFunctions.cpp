@@ -1,6 +1,6 @@
 /*
  * This file is part of the CMaNGOS Project. See AUTHORS file for Copyright information
- * Copyright (C) 2010 - 2013 Eluna Lua Engine <http://emudevs.com/>
+ * Copyright (C) 2010 - 2014 Eluna Lua Engine <http://emudevs.com/>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -126,6 +126,7 @@ ElunaRegister<Object> ObjectMethods[] =
     {"GetByteValue", &LuaObject::GetByteValue},             // :GetByteValue(index, offset) - returns a byte value from object fields
     {"GetUInt16Value", &LuaObject::GetUInt16Value},         // :GetUInt16Value(index, offset) - returns a uint16 value from object fields
     {"GetScale", &LuaObject::GetScale},                     // :GetScale()
+    {"GetTypeId", &LuaObject::GetTypeId},                   // :GetTypeId() - Returns the object's typeId
 
     // Setters
     {"SetInt32Value", &LuaObject::SetInt32Value},           // :SetInt32Value(index, value) - Sets an int value for the object
@@ -299,7 +300,7 @@ ElunaRegister<Unit> UnitMethods[] =
     {"RegisterEvent", &LuaUnit::RegisterEvent},             // :RegisterEvent(function, delay, calls)
     {"RemoveEventById", &LuaUnit::RemoveEventById},         // :RemoveEventById(eventID)
     {"RemoveEvents", &LuaUnit::RemoveEvents},               // :RemoveEvents()
-    // {"AddAura", &LuaUnit::AddAura},                      // :AddAura(spellId, target) - Adds an aura to the specified target
+    {"AddAura", &LuaUnit::AddAura},                         // :AddAura(spellId, target) - Adds an aura to the specified target
     {"RemoveAura", &LuaUnit::RemoveAura},                   // :RemoveAura(spellId[, casterGUID]) - Removes an aura from the unit by the spellId, casterGUID(Original caster) is optional
     {"RemoveAllAuras", &LuaUnit::RemoveAllAuras},           // :RemoveAllAuras() - Removes all the unit's auras
     {"ClearInCombat", &LuaUnit::ClearInCombat},             // :ClearInCombat() - Clears the unit's combat list (unit will be out of combat), resets the timer to 0, etc
@@ -523,7 +524,7 @@ ElunaRegister<Player> PlayerMethods[] =
     {"HasSpellCooldown", &LuaPlayer::HasSpellCooldown},     // :HasSpellCooldown(spellId) - Returns true if the spell is on cooldown
     {"IsInWater", &LuaPlayer::IsInWater},                   // :IsInWater() - Returns true if the player is in water
     {"CanFly", &LuaPlayer::CanFly},                         // :CanFly() - Returns true if the player can fly
-    // {"HasAura", &LuaPlayer::HasAura},                    // :HasAura(spellId[, caster]) - Returns true if the unit has the aura from the spell and casted by the caster if provided
+    {"HasAura", &LuaPlayer::HasAura},                       // :HasAura(spellId) - Returns true if the unit has the aura from the spell
 
     // Gossip
     {"GossipMenuAddItem", &LuaPlayer::GossipMenuAddItem},   // :GossipMenuAddItem(icon, msg, sender, intid[, code, popup, money])
@@ -742,6 +743,7 @@ ElunaRegister<GameObject> GameObjectMethods[] =
     {"RegisterEvent", &LuaGameObject::RegisterEvent},       // :RegisterEvent(function, delay, calls)
     {"RemoveEventById", &LuaGameObject::RemoveEventById},   // :RemoveEventById(eventID)
     {"RemoveEvents", &LuaGameObject::RemoveEvents},         // :RemoveEvents()
+    {"RemoveFromWorld", &LuaGameObject::RemoveFromWorld},   // :RemoveFromWorld(del)
     {"SummonGameObject", &LuaGameObject::SummonGameObject}, // :SummonGameObject(entry, x, y, z, o[, respawnDelay]) - Spawns an object to location. Returns the object or nil
     {"UseDoorOrButton", &LuaGameObject::UseDoorOrButton},   // :UseDoorOrButton(delay) - Activates/closes/opens after X delay UNDOCUMENTED
     {"Despawn", &LuaGameObject::Despawn},                   // :Despawn([delay]) - Despawns the object after delay
@@ -1072,6 +1074,11 @@ ElunaRegister<Weather> WeatherMethods[] =
     {NULL, NULL}
 };
 
+ElunaRegister<AuctionHouseObject> AuctionMethods[] =
+{
+    {NULL, NULL}
+};
+
 template<typename T> const char* ElunaTemplate<T>::typeName;
 void RegisterFunctions(lua_State* L)
 {
@@ -1142,6 +1149,8 @@ void RegisterFunctions(lua_State* L)
 
     ElunaTemplate<Weather>::Register(L, "Weather");
     SetMethods(L, WeatherMethods);
+
+    ElunaTemplate<AuctionHouseObject>::Register(L, "AuctionHouseObject");
 
     lua_settop(L, 0); // clean stack
 }

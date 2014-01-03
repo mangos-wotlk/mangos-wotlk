@@ -64,6 +64,7 @@ void WorldSession::HandleRepopRequestOpcode(WorldPacket& recv_data)
         GetPlayer()->KillPlayer();
     }
 
+    // used by eluna
     sHookMgr.OnRepop(GetPlayer());
 
     // this is spirit release confirm?
@@ -795,6 +796,7 @@ void WorldSession::HandleAreaTriggerOpcode(WorldPacket& recv_data)
             }
         }
 
+        // used by eluna
         sHookMgr.OnResurrect(player);
 
         // now we can resurrect player, and then check teleport requirements

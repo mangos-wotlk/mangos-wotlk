@@ -142,7 +142,7 @@ bool Guild::Create(Player* leader, std::string gname)
 
     CreateDefaultGuildRanks(lSession->GetSessionDbLocaleIndex());
 
-    // Trigger OnCreate event
+    // used by eluna
     sHookMgr.OnCreate(this, leader, gname.c_str());
 
     return AddMember(m_LeaderGuid, (uint32)GR_GUILDMASTER);
@@ -245,7 +245,7 @@ bool Guild::AddMember(ObjectGuid plGuid, uint32 plRank)
 
     UpdateAccountsNumber();
 
-    // Trigger OnAddMember event
+    // used by eluna
     sHookMgr.OnAddMember(this, pl, newmember.RankId);
 
     return true;
@@ -259,7 +259,7 @@ void Guild::SetMOTD(std::string motd)
     CharacterDatabase.escape_string(motd);
     CharacterDatabase.PExecute("UPDATE guild SET motd='%s' WHERE guildid='%u'", motd.c_str(), m_Id);
 
-    // Trigger OnMOTDChanged event
+    // used by eluna
     sHookMgr.OnMOTDChanged(this, motd);
 }
 
@@ -271,7 +271,7 @@ void Guild::SetGINFO(std::string ginfo)
     CharacterDatabase.escape_string(ginfo);
     CharacterDatabase.PExecute("UPDATE guild SET info='%s' WHERE guildid='%u'", ginfo.c_str(), m_Id);
 
-    // Trigger OnMOTDChanged event
+    // used by eluna
     sHookMgr.OnInfoChanged(this, ginfo);
 }
 
@@ -568,7 +568,7 @@ bool Guild::DelMember(ObjectGuid guid, bool isDisbanding)
     if (!isDisbanding)
         UpdateAccountsNumber();
 
-    // Trigger OnRemoveMember event
+    // used by eluna
     sHookMgr.OnRemoveMember(this, player, isDisbanding, true); // IsKicked not a part of Mangos, implement?
 
     return members.empty();
@@ -783,7 +783,7 @@ void Guild::Disband()
     CharacterDatabase.PExecute("DELETE FROM guild_eventlog WHERE guildid = '%u'", m_Id);
     CharacterDatabase.CommitTransaction();
 
-    // Trigger OnDisband event
+    // used by eluna
     sHookMgr.OnDisband(this);
 
     sGuildMgr.RemoveGuild(m_Id);
@@ -1302,6 +1302,8 @@ bool Guild::MemberMoneyWithdraw(uint32 amount, uint32 LowGuid)
 
     // Trigger OnMemberWitdrawMoney event
     Player* player = sObjectMgr.GetPlayer(ObjectGuid(HIGHGUID_PLAYER, LowGuid));
+
+    // used by eluna
     sHookMgr.OnMemberWitdrawMoney(this, player, amount, false); // IsRepair not a part of Mangos, implement?
 
     return true;
@@ -1693,7 +1695,7 @@ void Guild::LogBankEvent(uint8 EventType, uint8 TabId, uint32 PlayerGuidLow, uin
         m_GuildBankEventLog_Item[TabId].push_back(NewEvent);
     }
 
-    // Trigger OnBankEvent event
+    // used by eluna
     sHookMgr.OnBankEvent(this, EventType, TabId, PlayerGuidLow, ItemOrMoney, ItemStackCount, DestTabId);
 
     // save event to database
