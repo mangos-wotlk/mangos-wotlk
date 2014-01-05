@@ -211,6 +211,7 @@ void GameObject::Update(uint32 update_diff, uint32 p_time)
         return;
     }
 
+    // used by eluna
     sHookMgr.UpdateAI(this, update_diff, p_time);
 
     switch (m_lootState)
