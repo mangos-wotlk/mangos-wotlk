@@ -126,7 +126,7 @@ bool ChatHandler::HandleDebugSendOpcodeCommand(char* /*args*/)
     if (!stream.is_open())
         return false;
 
-    uint32 opcode;
+    uint32 opcode = 0;
     if (!stream >> opcode)
     {
         stream.close();
@@ -312,7 +312,7 @@ bool ChatHandler::HandleDebugSendChatMsgCommand(char* args)
         return false;
 
     WorldPacket data;
-    ChatHandler::BuildChatPacket(data, ChatMsg(type), msg, LANG_UNIVERSAL, m_session->GetPlayer()->GetObjectGuid(), m_session->GetPlayerName());
+    ChatHandler::BuildChatPacket(data, ChatMsg(type), msg, LANG_UNIVERSAL, CHAT_TAG_NONE, m_session->GetPlayer()->GetObjectGuid(), m_session->GetPlayerName());
     m_session->SendPacket(&data);
     return true;
 }
