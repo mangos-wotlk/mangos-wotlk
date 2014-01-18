@@ -965,6 +965,8 @@ void WorldSession::SendRedirectClient(std::string& ip, uint16 port)
 
 void WorldSession::ExecuteOpcode(OpcodeHandler const& opHandle, WorldPacket* packet)
 {
+    if (!sHookMgr.OnPacketReceive(this, *packet))
+        return;
     // need prevent do internal far teleports in handlers because some handlers do lot steps
     // or call code that can do far teleports in some conditions unexpectedly for generic way work code
     if (_player)
