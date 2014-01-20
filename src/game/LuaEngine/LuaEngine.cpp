@@ -452,35 +452,51 @@ template<> double Eluna::CHECKVAL<double>(lua_State* L, int narg, double def)
 {
     return luaL_optnumber(L, narg, def);
 }
-template<> unsigned int Eluna::CHECKVAL<unsigned int>(lua_State* L, int narg)
+template<> int8 Eluna::CHECKVAL<int8>(lua_State* L, int narg)
+{
+    return luaL_checkint(L, narg);
+}
+template<> int8 Eluna::CHECKVAL<int8>(lua_State* L, int narg, int8 def)
+{
+    return luaL_optint(L, narg, def);
+}
+template<> uint8 Eluna::CHECKVAL<uint8>(lua_State* L, int narg)
 {
     return luaL_checkunsigned(L, narg);
 }
-template<> unsigned int Eluna::CHECKVAL<unsigned int>(lua_State* L, int narg, unsigned int def)
+template<> uint8 Eluna::CHECKVAL<uint8>(lua_State* L, int narg, uint8 def)
 {
     return luaL_optunsigned(L, narg, def);
 }
-template<> unsigned long int Eluna::CHECKVAL<unsigned long int>(lua_State* L, int narg)
+template<> int16 Eluna::CHECKVAL<int16>(lua_State* L, int narg)
+{
+    return luaL_checkint(L, narg);
+}
+template<> int16 Eluna::CHECKVAL<int16>(lua_State* L, int narg, int16 def)
+{
+    return luaL_optint(L, narg, def);
+}
+template<> uint16 Eluna::CHECKVAL<uint16>(lua_State* L, int narg)
 {
     return luaL_checkunsigned(L, narg);
 }
-template<> unsigned long int Eluna::CHECKVAL<unsigned long int>(lua_State* L, int narg, unsigned long int def)
+template<> uint16 Eluna::CHECKVAL<uint16>(lua_State* L, int narg, uint16 def)
 {
     return luaL_optunsigned(L, narg, def);
 }
-template<> int Eluna::CHECKVAL<int>(lua_State* L, int narg)
+template<> uint32 Eluna::CHECKVAL<uint32>(lua_State* L, int narg)
+{
+    return luaL_checkunsigned(L, narg);
+}
+template<> uint32 Eluna::CHECKVAL<uint32>(lua_State* L, int narg, uint32 def)
+{
+    return luaL_optunsigned(L, narg, def);
+}
+template<> int32 Eluna::CHECKVAL<int32>(lua_State* L, int narg)
 {
     return luaL_checklong(L, narg);
 }
-template<> int Eluna::CHECKVAL<int>(lua_State* L, int narg, int def)
-{
-    return luaL_optlong(L, narg, def);
-}
-template<> long int Eluna::CHECKVAL<long int>(lua_State* L, int narg)
-{
-    return luaL_checklong(L, narg);
-}
-template<> long int Eluna::CHECKVAL<long int>(lua_State* L, int narg, long int def)
+template<> int32 Eluna::CHECKVAL<int32>(lua_State* L, int narg, int32 def)
 {
     return luaL_optlong(L, narg, def);
 }
