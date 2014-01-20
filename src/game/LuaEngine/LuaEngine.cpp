@@ -613,7 +613,8 @@ void Eluna::EventBind::ExecuteCall()
         sEluna.ExecuteCall(params, LUA_MULTRET); // Do call and leave results to stack
     }
     for (int i = 1; i <= params; ++i) // Remove original pushed params
-        lua_remove(sEluna.L, i);
+        if (!lua_isnone(sEluna.L, 1))
+            lua_remove(sEluna.L, 1);
     // Results in stack, otherwise stack clean
 }
 
