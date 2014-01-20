@@ -145,11 +145,19 @@ class ElunaTemplate
             return lua_gettop(L);
         }
 
-        static T* check(lua_State* L, int narg)
+        static T* check(lua_State* L, int narg, bool error = true)
         {
             T** ptrHold = static_cast<T**>(lua_touserdata(L, narg));
             if (!ptrHold)
+            {
+                if (error)
+                {
+                    std::string errmsg(ElunaTemplate<Unit>::tname);
+                    errmsg += " expected";
+                    luaL_argerror(L, narg, errmsg.c_str());
+                }
                 return NULL;
+            }
             return *ptrHold;
         }
 
@@ -577,6 +585,10 @@ class Eluna
         uint64 CHECK_ULONG(lua_State* L, int narg);
         int64 CHECK_LONG(lua_State* L, int narg);
         Item* CHECK_ITEM(lua_State* L, int narg);
+        // Specializations in LuaEngine.cpp
+        template<typename T> static T CHECKVAL(lua_State* L, int narg);
+        template<typename T> static T CHECKVAL(lua_State* L, int narg, T def);
+        template<typename T> static T* CHECKOBJ(lua_State* L, int narg, bool error = true);
 
         // Creates new binding stores
         Eluna()

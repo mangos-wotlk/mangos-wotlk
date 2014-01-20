@@ -428,6 +428,159 @@ Item* Eluna::CHECK_ITEM(lua_State* L, int narg)
     return ElunaTemplate<Item>::check(L, narg);
 }
 
+template<> bool Eluna::CHECKVAL<bool>(lua_State* L, int narg)
+{
+    return luaL_checknumber(L, narg);
+}
+template<> bool Eluna::CHECKVAL<bool>(lua_State* L, int narg, bool def)
+{
+    return luaL_optnumber(L, narg, def);
+}
+template<> float Eluna::CHECKVAL<float>(lua_State* L, int narg)
+{
+    return luaL_checknumber(L, narg);
+}
+template<> float Eluna::CHECKVAL<float>(lua_State* L, int narg, float def)
+{
+    return luaL_optnumber(L, narg, def);
+}
+template<> double Eluna::CHECKVAL<double>(lua_State* L, int narg)
+{
+    return luaL_checknumber(L, narg);
+}
+template<> double Eluna::CHECKVAL<double>(lua_State* L, int narg, double def)
+{
+    return luaL_optnumber(L, narg, def);
+}
+template<> unsigned int Eluna::CHECKVAL<unsigned int>(lua_State* L, int narg)
+{
+    return luaL_checkunsigned(L, narg);
+}
+template<> unsigned int Eluna::CHECKVAL<unsigned int>(lua_State* L, int narg, unsigned int def)
+{
+    return luaL_optunsigned(L, narg, def);
+}
+template<> unsigned long int Eluna::CHECKVAL<unsigned long int>(lua_State* L, int narg)
+{
+    return luaL_checkunsigned(L, narg);
+}
+template<> unsigned long int Eluna::CHECKVAL<unsigned long int>(lua_State* L, int narg, unsigned long int def)
+{
+    return luaL_optunsigned(L, narg, def);
+}
+template<> int Eluna::CHECKVAL<int>(lua_State* L, int narg)
+{
+    return luaL_checklong(L, narg);
+}
+template<> int Eluna::CHECKVAL<int>(lua_State* L, int narg, int def)
+{
+    return luaL_optlong(L, narg, def);
+}
+template<> long int Eluna::CHECKVAL<long int>(lua_State* L, int narg)
+{
+    return luaL_checklong(L, narg);
+}
+template<> long int Eluna::CHECKVAL<long int>(lua_State* L, int narg, long int def)
+{
+    return luaL_optlong(L, narg, def);
+}
+template<> const char* Eluna::CHECKVAL<const char*>(lua_State* L, int narg)
+{
+    return luaL_checkstring(L, narg);
+}
+template<> const char* Eluna::CHECKVAL<const char*>(lua_State* L, int narg, const char* def)
+{
+    return luaL_optstring(L, narg, def);
+}
+template<> std::string Eluna::CHECKVAL<std::string>(lua_State* L, int narg)
+{
+    return luaL_checkstring(L, narg);
+}
+template<> std::string Eluna::CHECKVAL<std::string>(lua_State* L, int narg, std::string def)
+{
+    return luaL_optstring(L, narg, def.c_str());
+}
+template<> uint64 Eluna::CHECKVAL<uint64>(lua_State* L, int narg)
+{
+    const char* c_str = luaL_checkstring(L, narg);
+    if (!c_str)
+        return luaL_argerror(L, narg, "uint64 (as string) expected");
+    uint64 l = 0;
+    sscanf(c_str, UI64FMTD, &l);
+    return l;
+}
+template<> uint64 Eluna::CHECKVAL<uint64>(lua_State* L, int narg, uint64 def)
+{
+    const char* c_str = luaL_checkstring(L, narg);
+    if (!c_str)
+        return def;
+    uint64 l = 0;
+    sscanf(c_str, UI64FMTD, &l);
+    return l;
+}
+template<> int64 Eluna::CHECKVAL<int64>(lua_State* L, int narg)
+{
+    const char* c_str = luaL_checkstring(L, narg);
+    if (!c_str)
+        return luaL_argerror(L, narg, "int64 (as string) expected");
+    int64 l = 0;
+    sscanf(c_str, SI64FMTD, &l);
+    return l;
+}
+template<> int64 Eluna::CHECKVAL<int64>(lua_State* L, int narg, int64 def)
+{
+    const char* c_str = luaL_checkstring(L, narg);
+    if (!c_str)
+        return def;
+    int64 l = 0;
+    sscanf(c_str, SI64FMTD, &l);
+    return l;
+}
+#define TEST_OBJ(T, O, E, F)\
+{\
+    if (!O || !O->F())\
+    {\
+        if (E)\
+        {\
+            std::string errmsg(ElunaTemplate<T>::tname);\
+            errmsg += " expected";\
+            luaL_argerror(L, narg, errmsg.c_str());\
+        }\
+        return NULL;\
+    }\
+    return O->F();\
+}
+template<typename T> T* Eluna::CHECKOBJ(lua_State* L, int narg, bool error)
+{
+    return ElunaTemplate<T>::check(L, narg, error);
+}
+template<> Unit* Eluna::CHECKOBJ<Unit>(lua_State* L, int narg, bool error)
+{
+    WorldObject* obj = CHECKOBJ<WorldObject>(L, narg, false);
+    TEST_OBJ(Unit, obj, error, ToUnit);
+}
+template<> Player* Eluna::CHECKOBJ<Player>(lua_State* L, int narg, bool error)
+{
+    WorldObject* obj = CHECKOBJ<WorldObject>(L, narg, false);
+    TEST_OBJ(Player, obj, error, ToPlayer);
+}
+template<> Creature* Eluna::CHECKOBJ<Creature>(lua_State* L, int narg, bool error)
+{
+    WorldObject* obj = CHECKOBJ<WorldObject>(L, narg, false);
+    TEST_OBJ(Creature, obj, error, ToCreature);
+}
+template<> GameObject* Eluna::CHECKOBJ<GameObject>(lua_State* L, int narg, bool error)
+{
+    WorldObject* obj = CHECKOBJ<WorldObject>(L, narg, false);
+    TEST_OBJ(GameObject, obj, error, ToGameObject);
+}
+template<> Corpse* Eluna::CHECKOBJ<Corpse>(lua_State* L, int narg, bool error)
+{
+    WorldObject* obj = CHECKOBJ<WorldObject>(L, narg, false);
+    TEST_OBJ(Corpse, obj, error, ToCorpse);
+}
+#undef TEST_OBJ
+
 // Saves the function reference ID given to the register type's store for given entry under the given event
 void Eluna::Register(uint8 regtype, uint32 id, uint32 evt, int functionRef)
 {
