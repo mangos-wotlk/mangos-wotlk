@@ -204,7 +204,7 @@ namespace LuaGlobalFunctions
 
     int GetPlayerByName(lua_State* L)
     {
-        const char* message = luaL_checkstring(L, 1);
+        const char* message = sEluna.CHECKVAL<const char*>(L, 1);
         sEluna.Push(L, sObjectAccessor.FindPlayerByName(message));
         return 1;
     }
@@ -221,7 +221,7 @@ namespace LuaGlobalFunctions
 
     int SendWorldMessage(lua_State* L)
     {
-        const char* message = luaL_checkstring(L, 1);
+        const char* message = sEluna.CHECKVAL<const char*>(L, 1);
         sWorld.SendServerMessage(SERVER_MSG_CUSTOM, message);
         return 0;
     }
@@ -289,7 +289,7 @@ namespace LuaGlobalFunctions
 
     int WorldDBQuery(lua_State* L)
     {
-        const char* query = luaL_checkstring(L, 1);
+        const char* query = sEluna.CHECKVAL<const char*>(L, 1);
         if (!query)
             return 0;
 
@@ -303,7 +303,7 @@ namespace LuaGlobalFunctions
 
     int WorldDBExecute(lua_State* L)
     {
-        const char* query = luaL_checkstring(L, 1);
+        const char* query = sEluna.CHECKVAL<const char*>(L, 1);
         if (!query)
             return 0;
 
@@ -313,7 +313,7 @@ namespace LuaGlobalFunctions
 
     int CharDBQuery(lua_State* L)
     {
-        const char* query = luaL_checkstring(L, 1);
+        const char* query = sEluna.CHECKVAL<const char*>(L, 1);
         if (!query)
             return 0;
 
@@ -327,7 +327,7 @@ namespace LuaGlobalFunctions
 
     int CharDBExecute(lua_State* L)
     {
-        const char* query = luaL_checkstring(L, 1);
+        const char* query = sEluna.CHECKVAL<const char*>(L, 1);
         if (!query)
             return 0;
 
@@ -337,7 +337,7 @@ namespace LuaGlobalFunctions
 
     int AuthDBQuery(lua_State* L)
     {
-        const char* query = luaL_checkstring(L, 1);
+        const char* query = sEluna.CHECKVAL<const char*>(L, 1);
         if (!query)
             return 0;
 
@@ -351,7 +351,7 @@ namespace LuaGlobalFunctions
 
     int AuthDBExecute(lua_State* L)
     {
-        const char* query = luaL_checkstring(L, 1);
+        const char* query = sEluna.CHECKVAL<const char*>(L, 1);
         if (!query)
             return 0;
 
@@ -361,7 +361,7 @@ namespace LuaGlobalFunctions
 
     int GetGuildByName(lua_State* L)
     {
-        const char* name = luaL_checkstring(L, 1);
+        const char* name = sEluna.CHECKVAL<const char*>(L, 1);
         sEluna.Push(L, sGuildMgr.GetGuildByName(name));
         return 1;
     }
@@ -608,14 +608,11 @@ namespace LuaGlobalFunctions
     // CreatePacket(opcode, size)
     int CreatePacket(lua_State* L)
     {
-        uint16 opcode = sEluna.CHECKVAL<uint16>(L, 1);
-        size_t size = luaL_checkunsigned(L, 2);
-
+        uint32 opcode = sEluna.CHECKVAL<uint32>(L, 1);
+        uint32 size = sEluna.CHECKVAL<uint32>(L, 2);
         if (opcode >= NUM_MSG_TYPES)
-        {
-            luaL_error(L, "Invalid opcode type (%d)", opcode);
-            return 0;
-        }
+            return luaL_argerror(L, 1, "valid opcode expected");
+
         WorldPacket* data = new WorldPacket((Opcodes)opcode, size);
         sEluna.Push(L, data); // copies the packet
         delete data; // Can delete original
@@ -629,11 +626,7 @@ namespace LuaGlobalFunctions
         int maxcount = sEluna.CHECKVAL<int>(L, 3);
         uint32 incrtime = sEluna.CHECKVAL<uint32>(L, 4);
         uint32 extendedcost = sEluna.CHECKVAL<uint32>(L, 5);
-        if (!sObjectMgr.GetCreatureTemplate(entry))
-        {
-            luaL_error(L, "Couldn't find a creature with (ID: %d)!", entry);
-            return 0;
-        }
+            return luaL_argerror(L, 1, "valid CreatureEntry expected");
 
         if (!sObjectMgr.IsVendorItemValid(false, "npc_vendor", entry, item, maxcount, incrtime, extendedcost, 0))
             return 0;
@@ -646,10 +639,7 @@ namespace LuaGlobalFunctions
         uint32 entry = sEluna.CHECKVAL<uint32>(L, 1);
         uint32 item = sEluna.CHECKVAL<uint32>(L, 2);
         if (!sObjectMgr.GetCreatureTemplate(entry))
-        {
-            luaL_error(L, "Couldn't find a creature with (ID: %d)!", entry);
-            return 0;
-        }
+            return luaL_argerror(L, 1, "valid CreatureEntry expected");
 
         sObjectMgr.RemoveVendorItem(entry, item);
         return 0;
@@ -681,9 +671,9 @@ namespace LuaGlobalFunctions
     int Ban(lua_State* L)
     {
         int banMode = sEluna.CHECKVAL<int>(L, 1);
-        const char* nameOrIP_cstr = luaL_checkstring(L, 2);
+        const char* nameOrIP_cstr = sEluna.CHECKVAL<const char*>(L, 2);
         uint32 duration = sEluna.CHECKVAL<uint32>(L, 3);
-        const char* reason = luaL_checkstring(L, 4);
+        const char* reason = sEluna.CHECKVAL<const char*>(L, 4);
         Player* whoBanned = sEluna.CHECK_PLAYER(L, 5);
         if (!nameOrIP_cstr)
             return 0;
@@ -744,8 +734,8 @@ namespace LuaGlobalFunctions
     int SendMail(lua_State* L)
     {
         uint8 i = 0;
-        const char* subject_cstr = luaL_checkstring(L, ++i);
-        const char* text_cstr = luaL_checkstring(L, ++i);
+        const char* subject_cstr = sEluna.CHECKVAL<const char*>(L, ++i);
+        const char* text_cstr = sEluna.CHECKVAL<const char*>(L, ++i);
         uint32 receiverGUIDLow = sEluna.CHECKVAL<uint32>(L, ++i);
         Player* senderPlayer = sEluna.CHECK_PLAYER(L, ++i);
         uint32 stationary = sEluna.CHECKVAL<uint32>(L, ++i, MAIL_STATIONERY_DEFAULT);
@@ -772,12 +762,12 @@ namespace LuaGlobalFunctions
             ItemPrototype const* item_proto = ObjectMgr::GetItemPrototype(entry);
             if (!item_proto)
             {
-                luaL_error(L, "Item entry %d does not exist", entry);
+                // luaL_error(L, "Item entry %d does not exist", entry);
                 continue;
             }
             if (amount < 1 || (item_proto->MaxCount > 0 && amount > uint32(item_proto->MaxCount)))
             {
-                luaL_error(L, "Item entry %d has invalid amount %d", entry, amount);
+                // luaL_error(L, "Item entry %d has invalid amount %d", entry, amount);
                 continue;
             }
             if (Item* item = Item::CreateItem(entry, amount, senderPlayer))
@@ -877,11 +867,11 @@ namespace LuaGlobalFunctions
         int start = lua_gettop(L);
         int end = start;
 
-        lua_pushnil(L);
+        sEluna.Push(L);
         while (lua_next(L, -2) != 0)
         {
             luaL_checktype(L, -1, LUA_TTABLE);
-            lua_pushnil(L);
+            sEluna.Push(L);
             while (lua_next(L, -2) != 0)
             {
                 lua_insert(L, end++);
@@ -898,20 +888,20 @@ namespace LuaGlobalFunctions
 
             while (end - start < 8) // fill optional args with 0
             {
-                lua_pushunsigned(L, 0);
+                sEluna.Push(L, 0);
                 lua_insert(L, end++);
             }
             TaxiPathNodeEntry* entry = new TaxiPathNodeEntry();
             // mandatory
-            entry->mapid = luaL_checkunsigned(L, start);
-            entry->x = luaL_checknumber(L, start + 1);
-            entry->y = luaL_checknumber(L, start + 2);
-            entry->z = luaL_checknumber(L, start + 3);
+            entry->mapid = sEluna.CHECKVAL<uint32>(L, start);
+            entry->x = sEluna.CHECKVAL<float>(L, start + 1);
+            entry->y = sEluna.CHECKVAL<float>(L, start + 2);
+            entry->z = sEluna.CHECKVAL<float>(L, start + 3);
             // optional
-            entry->actionFlag = luaL_checkunsigned(L, start + 4);
-            entry->delay = luaL_checkunsigned(L, start + 5);
-            entry->arrivalEventID = luaL_checkunsigned(L, start + 6);
-            entry->departureEventID = luaL_checkunsigned(L, start + 7);
+            entry->actionFlag = sEluna.CHECKVAL<uint32>(L, start + 4);
+            entry->delay = sEluna.CHECKVAL<uint32>(L, start + 5);
+            entry->arrivalEventID = sEluna.CHECKVAL<uint32>(L, start + 6);
+            entry->departureEventID = sEluna.CHECKVAL<uint32>(L, start + 7);
 
             nodes.push_back(*entry);
 
@@ -942,17 +932,11 @@ namespace LuaGlobalFunctions
         uint32 entry = sEluna.CHECKVAL<uint32>(L, 1);
         int loc_idx = sEluna.CHECKVAL<int>(L, 2, DEFAULT_LOCALE);
         if (loc_idx < 0 || loc_idx >= MAX_LOCALE)
-        {
-            luaL_error(L, "Invalid locale index (%d)", loc_idx);
-            return 0;
-        }
+            return luaL_argerror(L, 2, "valid LocaleConstant expected");
 
         const ItemPrototype* temp = sObjectMgr.GetItemPrototype(entry);
         if (!temp)
-        {
-            luaL_error(L, "Invalid item entry (%d)", entry);
-            return 0;
-        }
+            return luaL_argerror(L, 1, "valid ItemEntry expected");
 
         std::string name = temp->Name1;
         if (ItemLocale const* il = sObjectMgr.GetItemLocale(entry))

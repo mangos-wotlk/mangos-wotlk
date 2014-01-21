@@ -1539,9 +1539,9 @@ namespace LuaPlayer
 
     int SetGender(lua_State* L, Player* player)
     {
-        Gender gender;
         uint32 _gender = sEluna.CHECKVAL<uint32>(L, 1);
-
+        
+        Gender gender;
         switch (_gender)
         {
             case 0:
@@ -1551,8 +1551,7 @@ namespace LuaPlayer
                 gender = GENDER_FEMALE;
                 break;
             default:
-                luaL_error(L, "Invalid gender (%d)", _gender);
-                return 0;
+                return luaL_argerror(L, 1, "valid Gender expected");
         }
 
         player->SetByteValue(UNIT_FIELD_BYTES_0, 2, gender);
@@ -1899,7 +1898,7 @@ namespace LuaPlayer
 
     int SendBroadcastMessage(lua_State* L, Player* player)
     {
-        const char* message = luaL_checkstring(L, 1);
+        const char* message = sEluna.CHECKVAL<const char*>(L, 1);
         if (std::string(message).length() > 0)
             ChatHandler(player->GetSession()).SendSysMessage(message);
         return 0;
@@ -1907,7 +1906,7 @@ namespace LuaPlayer
 
     int SendAreaTriggerMessage(lua_State* L, Player* player)
     {
-        const char* msg = luaL_checkstring(L, 1);
+        const char* msg = sEluna.CHECKVAL<const char*>(L, 1);
         if (std::string(msg).length() > 0)
             player->GetSession()->SendAreaTriggerMessage(msg);
         return 0;
@@ -1915,7 +1914,7 @@ namespace LuaPlayer
 
     int SendNotification(lua_State* L, Player* player)
     {
-        const char* msg = luaL_checkstring(L, 1);
+        const char* msg = sEluna.CHECKVAL<const char*>(L, 1);
         if (std::string(msg).length() > 0)
             player->GetSession()->SendNotification(msg);
         return 0;
@@ -2027,11 +2026,11 @@ namespace LuaPlayer
     int GossipMenuAddItem(lua_State* L, Player* player)
     {
         uint32 _icon = sEluna.CHECKVAL<uint32>(L, 1);
-        const char* msg = luaL_checkstring(L, 2);
+        const char* msg = sEluna.CHECKVAL<const char*>(L, 2);
         uint32 _sender = sEluna.CHECKVAL<uint32>(L, 3);
         uint32 _intid = sEluna.CHECKVAL<uint32>(L, 4);
         bool _code = sEluna.CHECKVAL<bool>(L, 5, false);
-        const char* _promptMsg = luaL_optstring(L, 6, "");
+        const char* _promptMsg = sEluna.CHECKVAL<const char*>(L, 6, "");
         uint32 _money = sEluna.CHECKVAL<uint32>(L, 7, 0);
         player->PlayerTalkClass->GetGossipMenu().AddMenuItem(_icon, msg, _sender, _intid, _promptMsg, _money, _code);
         return 0;

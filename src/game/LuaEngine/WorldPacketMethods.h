@@ -39,11 +39,10 @@ namespace LuaPacket
     // SetOpcode(opcode)
     int SetOpcode(lua_State* L, WorldPacket* packet)
     {
-        uint16 opcode = sEluna.CHECKVAL<uint16>(L, 1);
+        uint32 opcode = sEluna.CHECKVAL<uint32>(L, 1);
         if (opcode >= NUM_MSG_TYPES)
-            luaL_error(L, "Invalid opcode type (%d)", opcode);
-        else
-            packet->SetOpcode((Opcodes)opcode);
+            return luaL_argerror(L, 1, "valid opcode expected");
+        packet->SetOpcode((Opcodes)opcode);
         return 0;
     }
 
@@ -148,7 +147,7 @@ namespace LuaPacket
     // WriteString(string)
     int WriteString(lua_State* L, WorldPacket* packet)
     {
-        std::string _val = std::string(luaL_checkstring(L, 1));
+        std::string _val = sEluna.CHECKVAL<std::string>(L, 1);
         (*packet) << _val;
         return 0;
     }

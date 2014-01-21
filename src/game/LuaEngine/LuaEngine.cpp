@@ -518,7 +518,7 @@ template<> std::string Eluna::CHECKVAL<std::string>(lua_State* L, int narg, std:
 }
 template<> uint64 Eluna::CHECKVAL<uint64>(lua_State* L, int narg)
 {
-    const char* c_str = luaL_checkstring(L, narg);
+    const char* c_str = luaL_optstring(L, narg, NULL);
     if (!c_str)
         return luaL_argerror(L, narg, "uint64 (as string) expected");
     uint64 l = 0;
@@ -536,7 +536,7 @@ template<> uint64 Eluna::CHECKVAL<uint64>(lua_State* L, int narg, uint64 def)
 }
 template<> int64 Eluna::CHECKVAL<int64>(lua_State* L, int narg)
 {
-    const char* c_str = luaL_checkstring(L, narg);
+    const char* c_str = luaL_optstring(L, narg, NULL);
     if (!c_str)
         return luaL_argerror(L, narg, "int64 (as string) expected");
     int64 l = 0;
@@ -809,8 +809,8 @@ void Eluna::EntryBind::Insert(uint32 entryId, int eventId, int funcRef)
 {
     if (Bindings[entryId][eventId])
     {
-        luaL_error(sEluna.L, "A function is already registered for entry (%d) event (%d)", entryId, eventId);
         luaL_unref(sEluna.L, LUA_REGISTRYINDEX, funcRef); // free the unused ref
+        luaL_error(sEluna.L, "A function is already registered for entry (%d) event (%d)", entryId, eventId);
     }
     else
         Bindings[entryId][eventId] = funcRef;

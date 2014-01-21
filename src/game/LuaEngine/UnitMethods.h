@@ -342,31 +342,31 @@ namespace LuaUnit
 
     int HealthBelowPct(lua_State* L, Unit* unit)
     {
-        sEluna.Push(L, unit->HealthBelowPct(luaL_checkint(L, 1)));
+        sEluna.Push(L, unit->HealthBelowPct(sEluna.CHECKVAL<int32>(L, 1)));
         return 1;
     }
 
     int HealthAbovePct(lua_State* L, Unit* unit)
     {
-        sEluna.Push(L, unit->HealthAbovePct(luaL_checkint(L, 1)));
+        sEluna.Push(L, unit->HealthAbovePct(sEluna.CHECKVAL<int32>(L, 1)));
         return 1;
     }
 
     int Emote(lua_State* L, Unit* unit)
     {
-        unit->HandleEmoteCommand(luaL_checkunsigned(L, 1));
+        unit->HandleEmoteCommand(sEluna.CHECKVAL<uint32>(L, 1));
         return 0;
     }
 
     int CountPctFromCurHealth(lua_State* L, Unit* unit)
     {
-        sEluna.Push(L, unit->CountPctFromCurHealth(luaL_checkint(L, 1)));
+        sEluna.Push(L, unit->CountPctFromCurHealth(sEluna.CHECKVAL<int32>(L, 1)));
         return 1;
     }
 
     int CountPctFromMaxHealth(lua_State* L, Unit* unit)
     {
-        sEluna.Push(L, unit->CountPctFromMaxHealth(luaL_checkint(L, 1)));
+        sEluna.Push(L, unit->CountPctFromMaxHealth(sEluna.CHECKVAL<int32>(L, 1)));
         return 1;
     }
 
@@ -374,7 +374,7 @@ namespace LuaUnit
     {
         uint32 sheathed = sEluna.CHECKVAL<uint32>(L, 1);
         if (sheathed >= MAX_SHEATH_STATE)
-            return 0;
+            return luaL_argerror(L, 1, "valid SheathState expected");
 
         unit->SetSheath((SheathState)sheathed);
         return 0;
@@ -402,7 +402,7 @@ namespace LuaUnit
     {
         uint8 type = sEluna.CHECKVAL<uint8>(L, 1);
         uint32 lang = sEluna.CHECKVAL<uint32>(L, 2);
-        const char* msg = luaL_checkstring(L, 3);
+        const char* msg = sEluna.CHECKVAL<const char*>(L, 3);
         Player* target = sEluna.CHECK_PLAYER(L, 4);
         if (!target || type == CHAT_MSG_CHANNEL)
             return 0;
@@ -429,10 +429,7 @@ namespace LuaUnit
     {
         uint32 type = sEluna.CHECKVAL<uint32>(L, 1);
         if (type >= CURRENT_MAX_SPELL)
-        {
-            luaL_error(L, "Invalid spell type (%d)", type);
-            return 0;
-        }
+            return luaL_argerror(L, 1, "valid CurrentSpellTypes expected");
         sEluna.Push(L, unit->GetCurrentSpell(type));
         return 1;
     }
@@ -484,8 +481,7 @@ namespace LuaUnit
                 type = TEMPSUMMON_MANUAL_DESPAWN;
                 break;
             default:
-                luaL_error(L, "Invalid spawn type (%u)", spawnType);
-                return 0;
+                return luaL_argerror(L, 6, "valid SpawnType expected");
         }
         sEluna.Push(L, unit->SummonCreature(entry, x, y, z, o, type, despawnTimer));
         return 1;
@@ -571,7 +567,7 @@ namespace LuaUnit
 
     int SetName(lua_State* L, Unit* unit)
     {
-        const char* name = luaL_checkstring(L, 1);
+        const char* name = sEluna.CHECKVAL<const char*>(L, 1);
         if (std::string(name).length() > 0)
             unit->SetName(name);
         return 0;
@@ -654,9 +650,8 @@ namespace LuaUnit
         float rate = sEluna.CHECKVAL<float>(L, 2);
         bool forced = sEluna.CHECKVAL<bool>(L, 3, false);
         if (type >= MAX_MOVE_TYPE)
-            luaL_error(L, "Invalid movement type (%d)", type);
-        else
-            unit->SetSpeedRate((UnitMoveType)type, rate, forced);
+            return luaL_argerror(L, 1, "valid UnitMoveType expected");
+        unit->SetSpeedRate((UnitMoveType)type, rate, forced);
         return 0;
     }
 
@@ -714,11 +709,8 @@ namespace LuaUnit
                     type = POWER_MANA;
             }
         }
-        else if (type >= POWER_ALL)
-        {
-            luaL_error(L, "Invalid power type (%d)", type);
-            return 0;
-        }
+        else if (type < 0 || type >= POWER_ALL)
+            return luaL_argerror(L, 1, "valid Powers expected");
 
         sEluna.Push(L, unit->GetPower((Powers) type));
         return 1;
@@ -755,10 +747,7 @@ namespace LuaUnit
             }
         }
         else if (type < 0 || type >= POWER_ALL)
-        {
-            luaL_error(L, "Invalid index (%d)", type);
-            return 0;
-        }
+            return luaL_argerror(L, 1, "valid Powers expected");
 
         sEluna.Push(L, unit->GetMaxPower((Powers) type));
         return 1;
@@ -849,7 +838,7 @@ namespace LuaUnit
                 str = "Druid";
                 break;
             default:
-                str = "NULL";
+                str = NULL;
                 break;
         }
 
@@ -919,7 +908,7 @@ namespace LuaUnit
                 unit->SetPower(POWER_RUNIC_POWER, amt);
                 break;
             default:
-                luaL_error(L, "Invalid power type (%d)", type);
+                return luaL_argerror(L, 1, "valid Powers expected");
                 break;
         }
         return 0;
@@ -928,7 +917,7 @@ namespace LuaUnit
     int SetMaxPower(lua_State* L, Unit* unit)
     {
         int type = sEluna.CHECKVAL<int>(L, 1);
-        int amt = sEluna.CHECKVAL<int>(L, 2);
+        uint32 amt = sEluna.CHECKVAL<uint32>(L, 2);
 
         switch (type)
         {
@@ -945,7 +934,7 @@ namespace LuaUnit
                 unit->SetMaxPower(POWER_RUNIC_POWER, amt);
                 break;
             default:
-                luaL_error(L, "Invalid power type (%d)", type);
+                return luaL_argerror(L, 1, "valid Powers expected");
                 break;
         }
         return 0;
@@ -1104,7 +1093,7 @@ namespace LuaUnit
 
     int SendUnitWhisper(lua_State* L, Unit* unit)
     {
-        const char* msg = luaL_checkstring(L, 1);
+        const char* msg = sEluna.CHECKVAL<const char*>(L, 1);
         Unit* receiver = sEluna.CHECK_UNIT(L, 2);
         bool bossWhisper = sEluna.CHECKVAL<bool>(L, 3, false);
         if (receiver && std::string(msg).length() > 0)
@@ -1114,7 +1103,7 @@ namespace LuaUnit
 
     int SendUnitEmote(lua_State* L, Unit* unit)
     {
-        const char* msg = luaL_checkstring(L, 1);
+        const char* msg = sEluna.CHECKVAL<const char*>(L, 1);
         Unit* receiver = sEluna.CHECK_UNIT(L, 2);
         bool bossEmote = sEluna.CHECKVAL<bool>(L, 3, false);
         if (std::string(msg).length() > 0)
@@ -1124,7 +1113,7 @@ namespace LuaUnit
 
     int SendUnitSay(lua_State* L, Unit* unit)
     {
-        const char* msg = luaL_checkstring(L, 1);
+        const char* msg = sEluna.CHECKVAL<const char*>(L, 1);
         uint32 language = sEluna.CHECKVAL<uint32>(L, 2);
         if (std::string(msg).length() > 0)
             unit->MonsterSay(msg, language, unit);
@@ -1133,7 +1122,7 @@ namespace LuaUnit
 
     int SendUnitYell(lua_State* L, Unit* unit)
     {
-        const char* msg = luaL_checkstring(L, 1);
+        const char* msg = sEluna.CHECKVAL<const char*>(L, 1);
         uint32 language = sEluna.CHECKVAL<uint32>(L, 2);
         if (std::string(msg).length() > 0)
             unit->MonsterYell(msg, language, unit);

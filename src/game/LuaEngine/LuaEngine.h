@@ -132,8 +132,8 @@ class ElunaTemplate
                 return lua_gettop(L);
             }
             luaL_getmetatable(L, tname);
-            if (lua_isnil(L, -1))
-                luaL_error(L, "%s missing metatable", tname);
+            if (lua_isnoneornil(L, -1))
+                return luaL_error(L, "%s missing metatable", tname);
             T const** ptrHold = (T const**)lua_newuserdata(L, sizeof(T**));
             if (ptrHold)
             {

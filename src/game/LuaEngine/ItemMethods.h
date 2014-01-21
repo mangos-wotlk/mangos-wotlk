@@ -36,10 +36,7 @@ namespace LuaItem
 
         int loc_idx = sEluna.CHECKVAL<int>(L, 1, DEFAULT_LOCALE);
         if (loc_idx < 0 || loc_idx >= MAX_LOCALE)
-        {
-            luaL_error(L, "Invalid locale index (%d)", loc_idx);
-            return 0;
-        }
+            return luaL_argerror(L, 1, "valid LocaleConstant expected");
 
         const ItemPrototype* temp = item->GetProto();
         std::string name = temp->Name1;
@@ -290,14 +287,10 @@ namespace LuaItem
             sEluna.Push(L, false);
             return 1;
         }
-
-        EnchantmentSlot slot = EnchantmentSlot(luaL_checkunsigned(L, 2));
+        
+        EnchantmentSlot slot = (EnchantmentSlot)sEluna.CHECKVAL<uint32>(L, 2);
         if (slot >= MAX_INSPECTED_ENCHANTMENT_SLOT)
-        {
-            luaL_error(L, "Invalid enchantment slot (%d)", slot);
-            sEluna.Push(L, false);
-            return 1;
-        }
+            return luaL_argerror(L, 1, "valid EnchantmentSlot expected");
 
         owner->ApplyEnchantment(item, slot, false);
         item->SetEnchantment(slot, enchant, 0, 0);
@@ -315,13 +308,9 @@ namespace LuaItem
             return 1;
         }
 
-        EnchantmentSlot slot = EnchantmentSlot(luaL_checkunsigned(L, 1));
+        EnchantmentSlot slot = (EnchantmentSlot)sEluna.CHECKVAL<uint32>(L, 1);
         if (slot >= MAX_INSPECTED_ENCHANTMENT_SLOT)
-        {
-            luaL_error(L, "Invalid enchantment slot (%d)", slot);
-            sEluna.Push(L, false);
-            return 1;
-        }
+            return luaL_argerror(L, 1, "valid EnchantmentSlot expected");
 
         if (!item->GetEnchantmentId(slot))
         {
@@ -356,10 +345,7 @@ namespace LuaItem
     {
         uint32 index = sEluna.CHECKVAL<uint32>(L, 1);
         if (index >= MAX_ITEM_PROTO_SPELLS)
-        {
-            luaL_error(L, "Invalid index (%d)", index);
-            return 0;
-        }
+            return luaL_argerror(L, 1, "valid SpellIndex expected");
 
         sEluna.Push(L, item->GetProto()->Spells[index].SpellId);
         return 1;
@@ -369,10 +355,7 @@ namespace LuaItem
     {
         uint32 index = sEluna.CHECKVAL<uint32>(L, 1);
         if (index >= MAX_ITEM_PROTO_SPELLS)
-        {
-            luaL_error(L, "Invalid index (%d)", index);
-            return 0;
-        }
+            return luaL_argerror(L, 1, "valid SpellIndex expected");
 
         sEluna.Push(L, item->GetProto()->Spells[index].SpellTrigger);
         return 1;

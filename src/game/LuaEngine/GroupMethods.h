@@ -78,10 +78,10 @@ namespace LuaGroup
     {
         Player* player = sEluna.CHECK_PLAYER(L, 1);
         if (!player)
-            if (const char* name = luaL_checkstring(L, 1))
+            if (const char* name = sEluna.CHECKVAL<const char*>(L, 1))
                 player = sObjectAccessor.FindPlayerByName(name);
         if (!player)
-            return 0;
+            return luaL_argerror(L, 1, "valid player or player name expected");
 
         sEluna.Push(L, group->IsLeader(player->GetObjectGuid()));
         return 1;
@@ -194,7 +194,7 @@ namespace LuaGroup
 
     int GetMemberGUID(lua_State* L, Group* group)
     {
-        const char* name = luaL_checkstring(L, 1);
+        const char* name = sEluna.CHECKVAL<const char*>(L, 1);
         sEluna.Push(L, group->GetMemberGuid(name));
         return 1;
     }

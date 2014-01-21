@@ -159,7 +159,7 @@ namespace LuaGuild
     int SetBankTabText(lua_State* L, Guild* guild)
     {
         uint8 tabId = sEluna.CHECKVAL<uint8>(L, 1);
-        const char* text = luaL_checkstring(L, 2);
+        const char* text = sEluna.CHECKVAL<const char*>(L, 2);
         guild->SetGuildBankTabText(tabId, text);
         return 0;
     }
