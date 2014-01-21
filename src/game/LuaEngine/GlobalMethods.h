@@ -28,13 +28,7 @@ namespace LuaGlobalFunctions
     {
         lua_settop(L, 2);
         uint32 ev = sEluna.CHECKVAL<uint32>(L, 1);
-        if (ev == 0)
-        {
-            luaL_error(L, "0 is not a valid event");
-            return 0;
-        }
         luaL_checktype(L, lua_gettop(L), LUA_TFUNCTION);
-
         int functionRef  = lua_ref(L, true);
         if (functionRef > 0)
             sEluna.Register(REGTYPE_PACKET, 0, ev, functionRef);
@@ -45,13 +39,7 @@ namespace LuaGlobalFunctions
     {
         lua_settop(L, 2);
         uint32 ev = sEluna.CHECKVAL<uint32>(L, 1);
-        if (ev == 0)
-        {
-            luaL_error(L, "0 is not a valid event");
-            return 0;
-        }
         luaL_checktype(L, lua_gettop(L), LUA_TFUNCTION);
-
         int functionRef  = lua_ref(L, true);
         if (functionRef > 0)
             sEluna.Register(REGTYPE_SERVER, 0, ev, functionRef);
@@ -62,13 +50,7 @@ namespace LuaGlobalFunctions
     {
         lua_settop(L, 2);
         uint32 ev = sEluna.CHECKVAL<uint32>(L, 1);
-        if (ev == 0)
-        {
-            luaL_error(L, "0 is not a valid event");
-            return 0;
-        }
         luaL_checktype(L, lua_gettop(L), LUA_TFUNCTION);
-
         int functionRef  = lua_ref(L, true);
         if (functionRef > 0)
             sEluna.Register(REGTYPE_PLAYER, 0, ev, functionRef);
@@ -79,13 +61,7 @@ namespace LuaGlobalFunctions
     {
         lua_settop(L, 2);
         uint32 ev = sEluna.CHECKVAL<uint32>(L, 1);
-        if (ev == 0)
-        {
-            luaL_error(L, "0 is not a valid event");
-            return 0;
-        }
         luaL_checktype(L, lua_gettop(L), LUA_TFUNCTION);
-
         int functionRef  = lua_ref(L, true);
         if (functionRef > 0)
             sEluna.Register(REGTYPE_GUILD, 0, ev, functionRef);
@@ -96,13 +72,7 @@ namespace LuaGlobalFunctions
     {
         lua_settop(L, 2);
         uint32 ev = sEluna.CHECKVAL<uint32>(L, 1);
-        if (ev == 0)
-        {
-            luaL_error(L, "0 is not a valid event");
-            return 0;
-        }
         luaL_checktype(L, lua_gettop(L), LUA_TFUNCTION);
-
         int functionRef  = lua_ref(L, true);
         if (functionRef > 0)
             sEluna.Register(REGTYPE_GROUP, 0, ev, functionRef);
@@ -114,13 +84,7 @@ namespace LuaGlobalFunctions
         lua_settop(L, 3);
         uint32 entry = sEluna.CHECKVAL<uint32>(L, 1);
         uint32 ev = sEluna.CHECKVAL<uint32>(L, 2);
-        if (ev == 0)
-        {
-            luaL_error(L, "0 is not a valid event");
-            return 0;
-        }
         luaL_checktype(L, lua_gettop(L), LUA_TFUNCTION);
-
         int functionRef  = lua_ref(L, true);
         if (functionRef > 0)
             sEluna.Register(REGTYPE_CREATURE_GOSSIP, entry, ev, functionRef);
@@ -132,13 +96,7 @@ namespace LuaGlobalFunctions
         lua_settop(L, 3);
         uint32 entry = sEluna.CHECKVAL<uint32>(L, 1);
         uint32 ev = sEluna.CHECKVAL<uint32>(L, 2);
-        if (ev == 0)
-        {
-            luaL_error(L, "0 is not a valid event");
-            return 0;
-        }
         luaL_checktype(L, lua_gettop(L), LUA_TFUNCTION);
-
         int functionRef  = lua_ref(L, true);
         if (functionRef > 0)
             sEluna.Register(REGTYPE_GAMEOBJECT_GOSSIP, entry, ev, functionRef);
@@ -150,13 +108,7 @@ namespace LuaGlobalFunctions
         lua_settop(L, 3);
         uint32 entry = sEluna.CHECKVAL<uint32>(L, 1);
         uint32 ev = sEluna.CHECKVAL<uint32>(L, 2);
-        if (ev == 0)
-        {
-            luaL_error(L, "0 is not a valid event");
-            return 0;
-        }
         luaL_checktype(L, lua_gettop(L), LUA_TFUNCTION);
-
         int functionRef  = lua_ref(L, true);
         if (functionRef > 0)
             sEluna.Register(REGTYPE_ITEM, entry, ev, functionRef);
@@ -168,13 +120,7 @@ namespace LuaGlobalFunctions
         lua_settop(L, 3);
         uint32 entry = sEluna.CHECKVAL<uint32>(L, 1);
         uint32 ev = sEluna.CHECKVAL<uint32>(L, 2);
-        if (ev == 0)
-        {
-            luaL_error(L, "0 is not a valid event");
-            return 0;
-        }
         luaL_checktype(L, lua_gettop(L), LUA_TFUNCTION);
-
         int functionRef  = lua_ref(L, true);
         if (functionRef > 0)
             sEluna.Register(REGTYPE_ITEM_GOSSIP, entry, ev, functionRef);
@@ -186,13 +132,7 @@ namespace LuaGlobalFunctions
         lua_settop(L, 3);
         uint32 menu_id = sEluna.CHECKVAL<uint32>(L, 1);
         uint32 ev = sEluna.CHECKVAL<uint32>(L, 2);
-        if (ev == 0)
-        {
-            luaL_error(L, "0 is not a valid event");
-            return 0;
-        }
         luaL_checktype(L, lua_gettop(L), LUA_TFUNCTION);
-
         int functionRef  = lua_ref(L, true);
         if (functionRef > 0)
             sEluna.Register(REGTYPE_PLAYER_GOSSIP, menu_id, ev, functionRef);
@@ -204,13 +144,7 @@ namespace LuaGlobalFunctions
         lua_settop(L, 3);
         uint32 entry = sEluna.CHECKVAL<uint32>(L, 1);
         uint32 ev = sEluna.CHECKVAL<uint32>(L, 2);
-        if (ev == 0)
-        {
-            luaL_error(L, "0 is not a valid event");
-            return 0;
-        }
         luaL_checktype(L, lua_gettop(L), LUA_TFUNCTION);
-
         int functionRef  = lua_ref(L, true);
         if (functionRef > 0)
             sEluna.Register(REGTYPE_CREATURE, entry, ev, functionRef);
@@ -222,13 +156,7 @@ namespace LuaGlobalFunctions
         lua_settop(L, 3);
         uint32 entry = sEluna.CHECKVAL<uint32>(L, 1);
         uint32 ev = sEluna.CHECKVAL<uint32>(L, 2);
-        if (ev == 0)
-        {
-            luaL_error(L, "0 is not a valid event");
-            return 0;
-        }
         luaL_checktype(L, lua_gettop(L), LUA_TFUNCTION);
-
         int functionRef  = lua_ref(L, true);
         if (functionRef > 0)
             sEluna.Register(REGTYPE_GAMEOBJECT, entry, ev, functionRef);

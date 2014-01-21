@@ -525,7 +525,7 @@ namespace LuaCreature
 
     int GetAITarget(lua_State* L, Creature* creature)
     {
-        SelectAggroTarget targetType = (SelectAggroTarget)luaL_checkunsigned(L, 1);
+        uint32 targetType = sEluna.CHECKVAL<uint32>(L, 1);
         bool playerOnly = sEluna.CHECKVAL<bool>(L, 2, false);
         uint32 position = sEluna.CHECKVAL<uint32>(L, 3, 0);
         float dist = sEluna.CHECKVAL<float>(L, 4, 0.0f);
@@ -590,7 +590,7 @@ namespace LuaCreature
                 return 1;
             }
             default:
-                break;
+                luaL_argerror(L, 1, "SelectAggroTarget expected");
         }
 
         sEluna.Push(L);
