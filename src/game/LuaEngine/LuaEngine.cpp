@@ -772,7 +772,7 @@ bool Eluna::EventBind::BeginCall(int eventId) const
 
 void Eluna::EventBind::ExecuteCall()
 {
-    int eventId = luaL_checkinteger(sEluna.L, 1);
+    int eventId = sEluna.CHECKVAL<int>(sEluna.L, 1);
     int params = lua_gettop(sEluna.L);
     for (ElunaBindingMap::const_iterator it = Bindings[eventId].begin(); it != Bindings[eventId].end(); ++it)
     {

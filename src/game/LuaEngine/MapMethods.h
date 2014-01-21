@@ -32,9 +32,9 @@ namespace LuaMap
     // GetHeight(x, y[, phase])
     int GetHeight(lua_State* L, Map* map)
     {
-        float x = luaL_checknumber(L, 1);
-        float y = luaL_checknumber(L, 2);
-        uint32 phasemask = luaL_optunsigned(L, 3, 1);
+        float x = sEluna.CHECKVAL<float>(L, 1);
+        float y = sEluna.CHECKVAL<float>(L, 2);
+        uint32 phasemask = sEluna.CHECKVAL<uint32>(L, 3, 1);
 
         float z = map->GetHeight(phasemask, x, y, MAX_HEIGHT);
         if (z == INVALID_HEIGHT)
@@ -74,9 +74,9 @@ namespace LuaMap
     // :GetAreaId(x, y, z)
     int GetAreaId(lua_State* L, Map* map)
     {
-        float x = luaL_checknumber(L, 1);
-        float y = luaL_checknumber(L, 2);
-        float z = luaL_checknumber(L, 3);
+        float x = sEluna.CHECKVAL<float>(L, 1);
+        float y = sEluna.CHECKVAL<float>(L, 2);
+        float z = sEluna.CHECKVAL<float>(L, 3);
 
         sEluna.Push(L, map->GetTerrain()->GetAreaId(x, y, z));
         return 1;

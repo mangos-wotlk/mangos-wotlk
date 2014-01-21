@@ -34,7 +34,7 @@ namespace LuaItem
         // LOCALE_esMX = 7,
         // LOCALE_ruRU = 8
 
-        int loc_idx = luaL_optint(L, 1, DEFAULT_LOCALE);
+        int loc_idx = sEluna.CHECKVAL<int>(L, 1, DEFAULT_LOCALE);
         if (loc_idx < 0 || loc_idx >= MAX_LOCALE)
         {
             luaL_error(L, "Invalid locale index (%d)", loc_idx);
@@ -116,7 +116,7 @@ namespace LuaItem
 
     int SetBinding(lua_State* L, Item* item)
     {
-        bool soulbound = luaL_checkbool(L, 1);
+        bool soulbound = sEluna.CHECKVAL<bool>(L, 1);
 
         item->SetBinding(soulbound);
         return 0;
@@ -182,7 +182,7 @@ namespace LuaItem
 
     int CanBeTraded(lua_State* L, Item* item) // TODO: Implement trade bool
     {
-        bool mail = luaL_optbool(L, 1, false);
+        bool mail = sEluna.CHECKVAL<bool>(L, 1, false);
         // bool trade = luaL_optbool(L, 2, false);
         sEluna.Push(L, item->CanBeTraded(mail/*, trade*/));
         return 1;
@@ -202,7 +202,7 @@ namespace LuaItem
 
     int SetCount(lua_State* L, Item* item)
     {
-        uint32 count = luaL_checkunsigned(L, 1);
+        uint32 count = sEluna.CHECKVAL<uint32>(L, 1);
         item->SetCount(count);
         return 0;
     }
@@ -239,7 +239,7 @@ namespace LuaItem
 
     int HasQuest(lua_State* L, Item* item)
     {
-        uint32 quest = luaL_checkunsigned(L, 1);
+        uint32 quest = sEluna.CHECKVAL<uint32>(L, 1);
         sEluna.Push(L, item->HasQuest(quest));
         return 1;
     }
@@ -284,7 +284,7 @@ namespace LuaItem
             return 1;
         }
 
-        uint32 enchant = luaL_checkunsigned(L, 1);
+        uint32 enchant = sEluna.CHECKVAL<uint32>(L, 1);
         if (!sSpellItemEnchantmentStore.LookupEntry(enchant))
         {
             sEluna.Push(L, false);
@@ -343,7 +343,7 @@ namespace LuaItem
 
     int GetEnchantmentId(lua_State* L, Item* item)
     {
-        uint32 enchant_slot = luaL_checkunsigned(L, 1);
+        uint32 enchant_slot = sEluna.CHECKVAL<uint32>(L, 1);
 
         if (enchant_slot >= MAX_INSPECTED_ENCHANTMENT_SLOT)
             return 0;
@@ -354,7 +354,7 @@ namespace LuaItem
 
     int GetSpellId(lua_State* L, Item* item)
     {
-        uint32 index = luaL_checkunsigned(L, 1);
+        uint32 index = sEluna.CHECKVAL<uint32>(L, 1);
         if (index >= MAX_ITEM_PROTO_SPELLS)
         {
             luaL_error(L, "Invalid index (%d)", index);
@@ -367,7 +367,7 @@ namespace LuaItem
 
     int GetSpellTrigger(lua_State* L, Item* item)
     {
-        uint32 index = luaL_checkunsigned(L, 1);
+        uint32 index = sEluna.CHECKVAL<uint32>(L, 1);
         if (index >= MAX_ITEM_PROTO_SPELLS)
         {
             luaL_error(L, "Invalid index (%d)", index);

@@ -36,8 +36,8 @@ namespace LuaWeather
 
     int SetWeather(lua_State* L, Weather* weather)
     {
-        uint32 weatherType = luaL_checkunsigned(L, 1);
-        float grade = luaL_checknumber(L, 2);
+        uint32 weatherType = sEluna.CHECKVAL<uint32>(L, 1);
+        float grade = sEluna.CHECKVAL<float>(L, 2);
 
         weather->SetWeather((WeatherType)weatherType, grade);
         return 0;

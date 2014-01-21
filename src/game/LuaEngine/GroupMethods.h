@@ -91,8 +91,8 @@ namespace LuaGroup
     int SendPacket(lua_State* L, Group* group)
     {
         WorldPacket* data = sEluna.CHECK_PACKET(L, 1);
-        bool ignorePlayersInBg = luaL_checkbool(L, 2);
-        uint64 ignore = sEluna.CHECK_ULONG(L, 3);
+        bool ignorePlayersInBg = sEluna.CHECKVAL<bool>(L, 2);
+        uint64 ignore = sEluna.CHECKVAL<uint64>(L, 3);
 
         if (data)
             group->BroadcastPacket(data, ignorePlayersInBg, -1, (ObjectGuid)ignore);
@@ -112,7 +112,7 @@ namespace LuaGroup
     int RemoveMember(lua_State* L, Group* group)
     {
         Player* player = sEluna.CHECK_PLAYER(L, 1);
-        int method = luaL_optint(L, 2, 0);
+        int method = sEluna.CHECKVAL<int>(L, 2, 0);
         if (!player)
             return 0;
 
@@ -187,7 +187,7 @@ namespace LuaGroup
 
     int HasFreeSlotSubGroup(lua_State* L, Group* group)
     {
-        uint8 subGroup = luaL_checkunsigned(L, 1);
+        uint8 subGroup = sEluna.CHECKVAL<uint8>(L, 1);
         sEluna.Push(L, group->HasFreeSlotSubGroup(subGroup));
         return 1;
     }
@@ -220,7 +220,7 @@ namespace LuaGroup
     int ChangeMembersGroup(lua_State* L, Group* group)
     {
         Player* player = sEluna.CHECK_PLAYER(L, 1);
-        uint8 groupID = luaL_checkunsigned(L, 2);
+        uint8 groupID = sEluna.CHECKVAL<uint8>(L, 2);
 
         if (player)
             group->ChangeMembersGroup(player->GetObjectGuid(), groupID);
