@@ -430,11 +430,11 @@ Item* Eluna::CHECK_ITEM(lua_State* L, int narg)
 
 template<> bool Eluna::CHECKVAL<bool>(lua_State* L, int narg)
 {
-    return luaL_checknumber(L, narg);
+    return lua_isnil(L, narg) || luaL_checkbool(L, narg);
 }
 template<> bool Eluna::CHECKVAL<bool>(lua_State* L, int narg, bool def)
 {
-    return luaL_optnumber(L, narg, def);
+    return lua_isnone(L, narg) ? def : lua_isnil(L, narg) || lua_toboolean(L, narg);
 }
 template<> float Eluna::CHECKVAL<float>(lua_State* L, int narg)
 {
