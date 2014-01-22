@@ -367,6 +367,16 @@ class Eluna
         lua_State* L;
         EventMgr m_EventMgr;
 
+        Eluna()
+        {
+            L = NULL;
+        }
+
+        ~Eluna()
+        {
+            lua_close(L); // Closing
+        }
+
         struct EventBind
         {
             typedef std::vector<int> ElunaBindingMap;
@@ -590,17 +600,6 @@ class Eluna
         template<typename T> static T CHECKVAL(lua_State* L, int narg);
         template<typename T> static T CHECKVAL(lua_State* L, int narg, T def);
         template<typename T> static T* CHECKOBJ(lua_State* L, int narg, bool error = true);
-
-        // Creates new binding stores
-        Eluna()
-        {
-            L = NULL;
-        }
-
-        ~Eluna()
-        {
-            lua_close(L); // Closing
-        }
 
         struct ObjectGUIDCheck
         {
