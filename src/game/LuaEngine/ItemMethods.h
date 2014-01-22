@@ -104,7 +104,7 @@ namespace LuaItem
 
     int SetOwner(lua_State* L, Item* item)
     {
-        Player* player = sEluna.CHECK_PLAYER(L, 1);
+        Player* player = sEluna.CHECKOBJ<Player>(L, 1);
 
         if (player)
             item->SetOwnerGuid(player->GetObjectGuid());
@@ -139,7 +139,7 @@ namespace LuaItem
 
     int IsNotBoundToPlayer(lua_State* L, Item* item)
     {
-        Player* player = sEluna.CHECK_PLAYER(L, 1);
+        Player* player = sEluna.CHECKOBJ<Player>(L, 1);
         if (!player)
             return 0;
 

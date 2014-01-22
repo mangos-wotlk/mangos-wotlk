@@ -150,7 +150,7 @@ namespace LuaCreature
 
     int IsTargetAcceptable(lua_State* L, Creature* creature)
     {
-        Unit* target = sEluna.CHECK_UNIT(L, 1);
+        Unit* target = sEluna.CHECKOBJ<Unit>(L, 1);
 
         if (!target)
             sEluna.Push(L, false);
@@ -161,8 +161,8 @@ namespace LuaCreature
 
     int CanAssistTo(lua_State* L, Creature* creature)
     {
-        Unit* u = sEluna.CHECK_UNIT(L, 1);
-        Unit* enemy = sEluna.CHECK_UNIT(L, 2);
+        Unit* u = sEluna.CHECKOBJ<Unit>(L, 1);
+        Unit* enemy = sEluna.CHECKOBJ<Unit>(L, 2);
         bool checkfaction = sEluna.CHECKVAL<bool>(L, 3, true);
 
         if (!u)
@@ -218,7 +218,7 @@ namespace LuaCreature
 
     int GetAggroRange(lua_State* L, Creature* creature)
     {
-        Unit* target = sEluna.CHECK_UNIT(L, 1);
+        Unit* target = sEluna.CHECKOBJ<Unit>(L, 1);
 
         if (!target)
             return 0;
@@ -228,7 +228,7 @@ namespace LuaCreature
 
     int GetAttackDistance(lua_State* L, Creature* creature)
     {
-        Unit* target = sEluna.CHECK_UNIT(L, 1);
+        Unit* target = sEluna.CHECKOBJ<Unit>(L, 1);
 
         if (!target)
             return 0;
@@ -239,7 +239,7 @@ namespace LuaCreature
 
     /*int CanStartAttack(lua_State* L, Creature* creature) // TODO: Implement core side
     {
-        Unit* target = sEluna.CHECK_UNIT(L, 1);
+        Unit* target = sEluna.CHECKOBJ<Unit>(L, 1);
         bool force = sEluna.CHECKVAL<bool>(L, 2, true);
 
         if (!target)
@@ -295,7 +295,7 @@ namespace LuaCreature
 
     int IsTappedBy(lua_State* L, Creature* creature)
     {
-        Player* player = sEluna.CHECK_PLAYER(L, 1);
+        Player* player = sEluna.CHECKOBJ<Player>(L, 1);
 
         if (!player)
             sEluna.Push(L, creature->isTappedBy(player));
@@ -479,7 +479,7 @@ namespace LuaCreature
 
     int AttackStart(lua_State* L, Creature* creature)
     {
-        Unit* target = sEluna.CHECK_UNIT(L, 1);
+        Unit* target = sEluna.CHECKOBJ<Unit>(L, 1);
         if (!target)
             return 0;
 

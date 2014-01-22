@@ -661,7 +661,7 @@ namespace LuaGlobalFunctions
 
     int Kick(lua_State* L)
     {
-        Player* player = sEluna.CHECK_PLAYER(L, 1);
+        Player* player = sEluna.CHECKOBJ<Player>(L, 1);
         if (!player)
             return 0;
         player->GetSession()->KickPlayer();
@@ -674,7 +674,7 @@ namespace LuaGlobalFunctions
         const char* nameOrIP_cstr = sEluna.CHECKVAL<const char*>(L, 2);
         uint32 duration = sEluna.CHECKVAL<uint32>(L, 3);
         const char* reason = sEluna.CHECKVAL<const char*>(L, 4);
-        Player* whoBanned = sEluna.CHECK_PLAYER(L, 5);
+        Player* whoBanned = sEluna.CHECKOBJ<Player>(L, 5);
         if (!nameOrIP_cstr)
             return 0;
         if (!reason)
@@ -737,7 +737,7 @@ namespace LuaGlobalFunctions
         const char* subject_cstr = sEluna.CHECKVAL<const char*>(L, ++i);
         const char* text_cstr = sEluna.CHECKVAL<const char*>(L, ++i);
         uint32 receiverGUIDLow = sEluna.CHECKVAL<uint32>(L, ++i);
-        Player* senderPlayer = sEluna.CHECK_PLAYER(L, ++i);
+        Player* senderPlayer = sEluna.CHECKOBJ<Player>(L, ++i);
         uint32 stationary = sEluna.CHECKVAL<uint32>(L, ++i, MAIL_STATIONERY_DEFAULT);
         uint32 delay = sEluna.CHECKVAL<uint32>(L, ++i, 0);
         int32 argAmount = lua_gettop(L);
@@ -952,7 +952,7 @@ namespace LuaGlobalFunctions
 
     int AddCorpse(lua_State* L)
     {
-        Corpse* corpse = sEluna.CHECK_CORPSE(L, 1);
+        Corpse* corpse = sEluna.CHECKOBJ<Corpse>(L, 1);
         if (!corpse)
             return 0;
 
@@ -962,7 +962,7 @@ namespace LuaGlobalFunctions
 
     int RemoveCorpse(lua_State* L)
     {
-        Corpse* corpse = sEluna.CHECK_CORPSE(L, 1);
+        Corpse* corpse = sEluna.CHECKOBJ<Corpse>(L, 1);
         sObjectAccessor.RemoveCorpse(corpse);
         return 1;
     }
@@ -1008,7 +1008,7 @@ namespace LuaGlobalFunctions
 
     int SendFineWeatherToPlayer(lua_State* L)
     {
-        Player* player = sEluna.CHECK_PLAYER(L, 1);
+        Player* player = sEluna.CHECKOBJ<Player>(L, 1);
         if (!player)
             return 0;
 

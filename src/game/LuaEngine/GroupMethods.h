@@ -65,7 +65,7 @@ namespace LuaGroup
 
     int ChangeLeader(lua_State* L, Group* group)
     {
-        Player* leader = sEluna.CHECK_PLAYER(L, 1);
+        Player* leader = sEluna.CHECKOBJ<Player>(L, 1);
         if (!leader)
             return 0;
 
@@ -76,7 +76,7 @@ namespace LuaGroup
 
     int IsLeader(lua_State* L, Group* group)
     {
-        Player* player = sEluna.CHECK_PLAYER(L, 1);
+        Player* player = sEluna.CHECKOBJ<Player>(L, 1);
         if (!player)
             if (const char* name = sEluna.CHECKVAL<const char*>(L, 1))
                 player = sObjectAccessor.FindPlayerByName(name);
@@ -90,7 +90,7 @@ namespace LuaGroup
     // SendPacket(packet, sendToPlayersInBattleground[, ignoreguid])
     int SendPacket(lua_State* L, Group* group)
     {
-        WorldPacket* data = sEluna.CHECK_PACKET(L, 1);
+        WorldPacket* data = sEluna.CHECKOBJ<WorldPacket>(L, 1);
         bool ignorePlayersInBg = sEluna.CHECKVAL<bool>(L, 2);
         uint64 ignore = sEluna.CHECKVAL<uint64>(L, 3);
 
@@ -101,7 +101,7 @@ namespace LuaGroup
 
     int AddInvite(lua_State* L, Group* group)
     {
-        Player* player = sEluna.CHECK_PLAYER(L, 1);
+        Player* player = sEluna.CHECKOBJ<Player>(L, 1);
         if (!player)
             return 0;
 
@@ -111,7 +111,7 @@ namespace LuaGroup
 
     int RemoveMember(lua_State* L, Group* group)
     {
-        Player* player = sEluna.CHECK_PLAYER(L, 1);
+        Player* player = sEluna.CHECKOBJ<Player>(L, 1);
         int method = sEluna.CHECKVAL<int>(L, 2, 0);
         if (!player)
             return 0;
@@ -158,7 +158,7 @@ namespace LuaGroup
 
     int IsMember(lua_State* L, Group* group)
     {
-        Player* player = sEluna.CHECK_PLAYER(L, 1);
+        Player* player = sEluna.CHECKOBJ<Player>(L, 1);
         if (!player)
             return 0;
         sEluna.Push(L, group->IsMember(player->GetObjectGuid()));
@@ -167,7 +167,7 @@ namespace LuaGroup
 
     int IsAssistant(lua_State* L, Group* group)
     {
-        Player* player = sEluna.CHECK_PLAYER(L, 1);
+        Player* player = sEluna.CHECKOBJ<Player>(L, 1);
         if (!player)
             return 0;
 
@@ -177,8 +177,8 @@ namespace LuaGroup
 
     int SameSubGroup(lua_State* L, Group* group)
     {
-        Player* player1 = sEluna.CHECK_PLAYER(L, 1);
-        Player* player2 = sEluna.CHECK_PLAYER(L, 2);
+        Player* player1 = sEluna.CHECKOBJ<Player>(L, 1);
+        Player* player2 = sEluna.CHECKOBJ<Player>(L, 2);
         if (!player1 || !player2)
             return 0;
         sEluna.Push(L, group->SameSubGroup(player1, player2));
@@ -219,7 +219,7 @@ namespace LuaGroup
 
     int ChangeMembersGroup(lua_State* L, Group* group)
     {
-        Player* player = sEluna.CHECK_PLAYER(L, 1);
+        Player* player = sEluna.CHECKOBJ<Player>(L, 1);
         uint8 groupID = sEluna.CHECKVAL<uint8>(L, 2);
 
         if (player)
@@ -229,7 +229,7 @@ namespace LuaGroup
 
     int GetMemberGroup(lua_State* L, Group* group)
     {
-        Player* player = sEluna.CHECK_PLAYER(L, 1);
+        Player* player = sEluna.CHECKOBJ<Player>(L, 1);
         if (!player)
             return 0;
 

@@ -61,7 +61,7 @@ namespace LuaGuild
 
     int SetLeader(lua_State* L, Guild* guild)
     {
-        Player* player = sEluna.CHECK_PLAYER(L, 1);
+        Player* player = sEluna.CHECKOBJ<Player>(L, 1);
         if (!player)
             return 0;
 
@@ -78,7 +78,7 @@ namespace LuaGuild
     // SendPacketToGuild(packet)
     int SendPacket(lua_State* L, Guild* guild)
     {
-        WorldPacket* data = sEluna.CHECK_PACKET(L, 1);
+        WorldPacket* data = sEluna.CHECKOBJ<WorldPacket>(L, 1);
 
         if (data)
             guild->BroadcastPacket(data);
@@ -88,7 +88,7 @@ namespace LuaGuild
     // SendPacketToRankedInGuild(packet, rankId)
     int SendPacketToRanked(lua_State* L, Guild* guild)
     {
-        WorldPacket* data = sEluna.CHECK_PACKET(L, 1);
+        WorldPacket* data = sEluna.CHECKOBJ<WorldPacket>(L, 1);
         uint8 ranked = sEluna.CHECKVAL<uint8>(L, 2);
 
         if (data)
@@ -128,7 +128,7 @@ namespace LuaGuild
 
     int AddMember(lua_State* L, Guild* guild)
     {
-        Player* player = sEluna.CHECK_PLAYER(L, 1);
+        Player* player = sEluna.CHECKOBJ<Player>(L, 1);
         uint8 rankId = sEluna.CHECKVAL<uint8>(L, 2, GUILD_RANK_NONE);
 
         if (player)
@@ -138,7 +138,7 @@ namespace LuaGuild
 
     int DeleteMember(lua_State* L, Guild* guild)
     {
-        Player* player = sEluna.CHECK_PLAYER(L, 1);
+        Player* player = sEluna.CHECKOBJ<Player>(L, 1);
         bool isDisbanding = sEluna.CHECKVAL<bool>(L, 2, false);
 
         if (player)
@@ -148,7 +148,7 @@ namespace LuaGuild
 
     int ChangeMemberRank(lua_State* L, Guild* guild)
     {
-        Player* player = sEluna.CHECK_PLAYER(L, 1);
+        Player* player = sEluna.CHECKOBJ<Player>(L, 1);
         uint8 newRank = sEluna.CHECKVAL<uint8>(L, 2);
 
         if (player)
@@ -172,7 +172,7 @@ namespace LuaGuild
 
     int WithdrawBankMoney(lua_State* L, Guild* guild)
     {
-        Player* player = sEluna.CHECK_PLAYER(L, 1);
+        Player* player = sEluna.CHECKOBJ<Player>(L, 1);
         uint32 money = sEluna.CHECKVAL<uint32>(L, 2);
 
         if (!player || (guild->GetGuildBankMoney() - money) < 0)
@@ -185,7 +185,7 @@ namespace LuaGuild
 
     int DepositBankMoney(lua_State* L, Guild* guild)
     {
-        Player* player = sEluna.CHECK_PLAYER(L, 1);
+        Player* player = sEluna.CHECKOBJ<Player>(L, 1);
         uint32 money = sEluna.CHECKVAL<uint32>(L, 2);
 
         if (!player || (player->GetMoney() - money) < 0)

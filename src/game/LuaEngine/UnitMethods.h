@@ -24,7 +24,7 @@ namespace LuaUnit
 {
     int Attack(lua_State* L, Unit* unit)
     {
-        Unit* who = sEluna.CHECK_UNIT(L, 1);
+        Unit* who = sEluna.CHECKOBJ<Unit>(L, 1);
         bool meleeAttack = sEluna.CHECKVAL<bool>(L, 2, false);
 
         if (!who)
@@ -128,7 +128,7 @@ namespace LuaUnit
 
     int IsWithinDistInMap(lua_State* L, Unit* unit)
     {
-        WorldObject* obj = sEluna.CHECK_WORLDOBJECT(L, 1);
+        WorldObject* obj = sEluna.CHECKOBJ<WorldObject>(L, 1);
         if (!obj)
             return 0;
         float radius = sEluna.CHECKVAL<float>(L, 2);
@@ -139,7 +139,7 @@ namespace LuaUnit
 
     int IsInAccessiblePlaceFor(lua_State* L, Unit* unit)
     {
-        Creature* creature = sEluna.CHECK_CREATURE(L, 1);
+        Creature* creature = sEluna.CHECKOBJ<Creature>(L, 1);
         if (!creature)
             return 0;
 
@@ -155,7 +155,7 @@ namespace LuaUnit
 
     int GetDistance(lua_State* L, Unit* unit)
     {
-        WorldObject* obj = sEluna.CHECK_WORLDOBJECT(L, 1);
+        WorldObject* obj = sEluna.CHECKOBJ<WorldObject>(L, 1);
         if (obj && obj->IsInWorld())
             sEluna.Push(L, unit->GetDistance(obj));
         else
@@ -403,7 +403,7 @@ namespace LuaUnit
         uint8 type = sEluna.CHECKVAL<uint8>(L, 1);
         uint32 lang = sEluna.CHECKVAL<uint32>(L, 2);
         const char* msg = sEluna.CHECKVAL<const char*>(L, 3);
-        Player* target = sEluna.CHECK_PLAYER(L, 4);
+        Player* target = sEluna.CHECKOBJ<Player>(L, 4);
         if (!target || type == CHAT_MSG_CHANNEL)
             return 0;
 
@@ -489,7 +489,7 @@ namespace LuaUnit
 
     /*int DealDamage(lua_State* L, Unit* unit)
     {
-        Unit* target = sEluna.CHECK_UNIT(L, 1);
+        Unit* target = sEluna.CHECKOBJ<Unit>(L, 1);
         uint32 amount = sEluna.CHECKVAL<uint32>(L, 2);
 
         if (!target)
@@ -517,7 +517,7 @@ namespace LuaUnit
 
     /*int JumpTo(lua_State* L, Unit* unit)
     {
-        WorldObject* obj = sEluna.CHECK_WORLDOBJECT(L, 1);
+        WorldObject* obj = sEluna.CHECKOBJ<WorldObject>(L, 1);
         float speedZ = sEluna.CHECKVAL<float>(L, 2);
         if (!obj)
             return 0;
@@ -558,7 +558,7 @@ namespace LuaUnit
 
     int MoveChase(lua_State* L, Unit* unit)
     {
-        Unit* target = sEluna.CHECK_UNIT(L, 1);
+        Unit* target = sEluna.CHECKOBJ<Unit>(L, 1);
         float dist = sEluna.CHECKVAL<float>(L, 2, 0.0f);
         float angle = sEluna.CHECKVAL<float>(L, 3, 0.0f);
         unit->GetMotionMaster()->MoveChase(target, dist, angle);
@@ -614,7 +614,7 @@ namespace LuaUnit
 
     int MoveFollow(lua_State* L, Unit* unit)
     {
-        Unit* target = sEluna.CHECK_UNIT(L, 1);
+        Unit* target = sEluna.CHECKOBJ<Unit>(L, 1);
         float dist = sEluna.CHECKVAL<float>(L, 2);
         float angle = sEluna.CHECKVAL<float>(L, 3);
         unit->GetMotionMaster()->MoveFollow(target, dist, angle);
@@ -963,7 +963,7 @@ namespace LuaUnit
 
     int SetFacingToObject(lua_State* L, Unit* unit)
     {
-        WorldObject* obj = sEluna.CHECK_WORLDOBJECT(L, 1);
+        WorldObject* obj = sEluna.CHECKOBJ<WorldObject>(L, 1);
         if (obj)
             unit->SetFacingToObject(obj);
         return 0;
@@ -1094,7 +1094,7 @@ namespace LuaUnit
     int SendUnitWhisper(lua_State* L, Unit* unit)
     {
         const char* msg = sEluna.CHECKVAL<const char*>(L, 1);
-        Unit* receiver = sEluna.CHECK_UNIT(L, 2);
+        Unit* receiver = sEluna.CHECKOBJ<Unit>(L, 2);
         bool bossWhisper = sEluna.CHECKVAL<bool>(L, 3, false);
         if (receiver && std::string(msg).length() > 0)
             unit->MonsterWhisper(msg, receiver, bossWhisper);
@@ -1104,7 +1104,7 @@ namespace LuaUnit
     int SendUnitEmote(lua_State* L, Unit* unit)
     {
         const char* msg = sEluna.CHECKVAL<const char*>(L, 1);
-        Unit* receiver = sEluna.CHECK_UNIT(L, 2);
+        Unit* receiver = sEluna.CHECKOBJ<Unit>(L, 2);
         bool bossEmote = sEluna.CHECKVAL<bool>(L, 3, false);
         if (std::string(msg).length() > 0)
             unit->MonsterTextEmote(msg, receiver ? receiver : 0, bossEmote);
@@ -1137,7 +1137,7 @@ namespace LuaUnit
 
     int CastSpell(lua_State* L, Unit* unit)
     {
-        Unit* target = sEluna.CHECK_UNIT(L, 1);
+        Unit* target = sEluna.CHECKOBJ<Unit>(L, 1);
         if (!target)
             return 0;
         uint32 spell = sEluna.CHECKVAL<uint32>(L, 2);
@@ -1214,7 +1214,7 @@ namespace LuaUnit
     int AddAura(lua_State* L, Unit* unit)
     {
         uint32 spellId = sEluna.CHECKVAL<uint32>(L, 1);
-        Unit* target = sEluna.CHECK_UNIT(L, 2);
+        Unit* target = sEluna.CHECKOBJ<Unit>(L, 2);
         if (!target)
             return 0;
         SpellEntry const* spellInfo = sSpellStore.LookupEntry(spellId);
@@ -1273,7 +1273,7 @@ namespace LuaUnit
     int PlayDirectSound(lua_State* L, Unit* unit)
     {
         uint32 soundId = sEluna.CHECKVAL<uint32>(L, 1);
-        Player* player = sEluna.CHECK_PLAYER(L, 2);
+        Player* player = sEluna.CHECKOBJ<Player>(L, 2);
         if (!sSoundEntriesStore.LookupEntry(soundId))
             return 0;
 
@@ -1287,7 +1287,7 @@ namespace LuaUnit
     int PlayDistanceSound(lua_State* L, Unit* unit)
     {
         uint32 soundId = sEluna.CHECKVAL<uint32>(L, 1);
-        Player* player = sEluna.CHECK_PLAYER(L, 2);
+        Player* player = sEluna.CHECKOBJ<Player>(L, 2);
         if (!sSoundEntriesStore.LookupEntry(soundId))
             return 0;
 
@@ -1300,7 +1300,7 @@ namespace LuaUnit
 
     /*int Kill(lua_State* L, Unit* unit)
     {
-        Unit* target = sEluna.CHECK_UNIT(L, 1);
+        Unit* target = sEluna.CHECKOBJ<Unit>(L, 1);
         bool durLoss = sEluna.CHECKVAL<bool>(L, 2, true);
         unit->Kill((target ? target : unit), durLoss);
         return 0;
@@ -1348,7 +1348,7 @@ namespace LuaUnit
 
     /*int AddVehiclePassenger(lua_State* L, Unit* unit)
     {
-        Unit* passenger = sEluna.CHECK_UNIT(L, 1);
+        Unit* passenger = sEluna.CHECKOBJ<Unit>(L, 1);
         int8 seatId = sEluna.CHECKVAL<int8>(L, 2);
         Vehicle* _vehicle = unit->GetVehicle();
         if (!_vehicle)
@@ -1361,7 +1361,7 @@ namespace LuaUnit
     /* Not coded in core
     int EjectPassenger(lua_State* L, Unit* unit)
     {
-        Unit* passenger = sEluna.CHECK_UNIT(L, 1);
+        Unit* passenger = sEluna.CHECKOBJ<Unit>(L, 1);
         Vehicle* _vehicle = unit->GetVehicle();
         if (!_vehicle)
             return 0;
@@ -1373,7 +1373,7 @@ namespace LuaUnit
 
     /*int RemovePassenger(lua_State* L, Unit* unit)
     {
-        Unit* passenger = sEluna.CHECK_UNIT(L, 1);
+        Unit* passenger = sEluna.CHECKOBJ<Unit>(L, 1);
         Vehicle* _vehicle = unit->GetVehicle();
         if (!_vehicle)
             return 0;

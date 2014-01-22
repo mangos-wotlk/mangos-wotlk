@@ -46,7 +46,7 @@ namespace LuaPlayer
 
     int SummonPlayer(lua_State* L, Player* player)
     {
-        Player* target = sEluna.CHECK_PLAYER(L, 1);
+        Player* target = sEluna.CHECKOBJ<Player>(L, 1);
         uint32 map = sEluna.CHECKVAL<uint32>(L, 2);
         float x = sEluna.CHECKVAL<float>(L, 3);
         float y = sEluna.CHECKVAL<float>(L, 4);
@@ -124,7 +124,7 @@ namespace LuaPlayer
 
     int SendAuctionMenu(lua_State* L, Player* player)
     {
-        Creature* creature = sEluna.CHECK_CREATURE(L, 1);
+        Creature* creature = sEluna.CHECKOBJ<Creature>(L, 1);
 
         uint64 guid = creature ? creature->GetGUIDLow() : player->GetGUIDLow();
 
@@ -142,7 +142,7 @@ namespace LuaPlayer
 
     int SendMailMenu(lua_State* L, Player* player)
     {
-        GameObject* object = sEluna.CHECK_GAMEOBJECT(L, 1);
+        GameObject* object = sEluna.CHECKOBJ<GameObject>(L, 1);
         if (!object)
             return 0;
 
@@ -154,7 +154,7 @@ namespace LuaPlayer
 
     int SendTaxiMenu(lua_State* L, Player* player)
     {
-        Creature* creature = sEluna.CHECK_CREATURE(L, 1);
+        Creature* creature = sEluna.CHECKOBJ<Creature>(L, 1);
 
         if (creature)
             player->GetSession()->SendTaxiMenu(creature);
@@ -169,7 +169,7 @@ namespace LuaPlayer
 
     int SendTabardVendorActivate(lua_State* L, Player* player)
     {
-        WorldObject* obj = sEluna.CHECK_WORLDOBJECT(L, 1);
+        WorldObject* obj = sEluna.CHECKOBJ<WorldObject>(L, 1);
 
         if (obj)
             player->GetSession()->SendTabardVendorActivate(obj->GetObjectGuid());
@@ -178,7 +178,7 @@ namespace LuaPlayer
 
     int SendShowBank(lua_State* L, Player* player)
     {
-        WorldObject* obj = sEluna.CHECK_WORLDOBJECT(L, 1);
+        WorldObject* obj = sEluna.CHECKOBJ<WorldObject>(L, 1);
 
         if (obj)
             player->GetSession()->SendShowBank(obj->GetObjectGuid());
@@ -187,7 +187,7 @@ namespace LuaPlayer
 
     int SendListInventory(lua_State* L, Player* player)
     {
-        WorldObject* obj = sEluna.CHECK_WORLDOBJECT(L, 1);
+        WorldObject* obj = sEluna.CHECKOBJ<WorldObject>(L, 1);
         uint32 entry = sEluna.CHECKVAL<uint32>(L, 2, 0);
 
         if (obj)
@@ -197,7 +197,7 @@ namespace LuaPlayer
 
     int SendTrainerList(lua_State* L, Player* player)
     {
-        WorldObject* obj = sEluna.CHECK_WORLDOBJECT(L, 1);
+        WorldObject* obj = sEluna.CHECKOBJ<WorldObject>(L, 1);
 
         if (obj)
             player->GetSession()->SendTrainerList(obj->GetObjectGuid());
@@ -206,7 +206,7 @@ namespace LuaPlayer
 
     int SendGuildInvite(lua_State* L, Player* player)
     {
-        Player* plr = sEluna.CHECK_PLAYER(L, 1);
+        Player* plr = sEluna.CHECKOBJ<Player>(L, 1);
 
         if (plr)
             player->GetSession()->SendGuildInvite(plr);
@@ -337,7 +337,7 @@ namespace LuaPlayer
 
     int IsVisibleForPlayer(lua_State* L, Player* player)
     {
-        Player* target = sEluna.CHECK_PLAYER(L, 1);
+        Player* target = sEluna.CHECKOBJ<Player>(L, 1);
 
         if (target)
             sEluna.Push(L, player->IsVisibleGloballyFor(target));
@@ -527,7 +527,7 @@ namespace LuaPlayer
 
     int IsHonorOrXPTarget(lua_State* L, Player* player)
     {
-        Unit* victim = sEluna.CHECK_UNIT(L, 1);
+        Unit* victim = sEluna.CHECKOBJ<Unit>(L, 1);
 
         if (victim)
             sEluna.Push(L, player->isHonorOrXPTarget(victim));
@@ -668,7 +668,7 @@ namespace LuaPlayer
 
     int DurabilityPointsLoss(lua_State* L, Player* player)
     {
-        Item* item = sEluna.CHECK_ITEM(L, 1);
+        Item* item = sEluna.CHECKOBJ<Item>(L, 1);
         int32 points = sEluna.CHECKVAL<int32>(L, 2);
 
         if (item)
@@ -678,7 +678,7 @@ namespace LuaPlayer
 
     int DurabilityLoss(lua_State* L, Player* player)
     {
-        Item* item = sEluna.CHECK_ITEM(L, 1);
+        Item* item = sEluna.CHECKOBJ<Item>(L, 1);
         double percent = sEluna.CHECKVAL<double>(L, 2);
 
         if (item)
@@ -749,7 +749,7 @@ namespace LuaPlayer
 
     int IsGroupVisibleFor(lua_State* L, Player* player)
     {
-        Player* target = sEluna.CHECK_PLAYER(L, 1);
+        Player* target = sEluna.CHECKOBJ<Player>(L, 1);
         if (!target)
             sEluna.Push(L, false);
         else
@@ -759,7 +759,7 @@ namespace LuaPlayer
 
     int IsInSameRaidWith(lua_State* L, Player* player)
     {
-        Player* target = sEluna.CHECK_PLAYER(L, 1);
+        Player* target = sEluna.CHECKOBJ<Player>(L, 1);
         if (!target)
             sEluna.Push(L, false);
         else
@@ -769,7 +769,7 @@ namespace LuaPlayer
 
     int IsInSameGroupWith(lua_State* L, Player* player)
     {
-        Player* target = sEluna.CHECK_PLAYER(L, 1);
+        Player* target = sEluna.CHECKOBJ<Player>(L, 1);
         if (!target)
             sEluna.Push(L, false);
         else
@@ -902,7 +902,7 @@ namespace LuaPlayer
 
     int AddComboPoints(lua_State* L, Player* player)
     {
-        Unit* target = sEluna.CHECK_UNIT(L, 1);
+        Unit* target = sEluna.CHECKOBJ<Unit>(L, 1);
         int8 count = sEluna.CHECKVAL<int8>(L, 2);
         if (!target)
             return 0;
@@ -968,7 +968,7 @@ namespace LuaPlayer
     int TalkedToCreature(lua_State* L, Player* player)
     {
         uint32 entry = sEluna.CHECKVAL<uint32>(L, 1);
-        Creature* creature = sEluna.CHECK_CREATURE(L, 2);
+        Creature* creature = sEluna.CHECKOBJ<Creature>(L, 2);
         if (!creature)
             return 0;
 
@@ -1001,7 +1001,7 @@ namespace LuaPlayer
     int GroupEventHappens(lua_State* L, Player* player)
     {
         uint32 questId = sEluna.CHECKVAL<uint32>(L, 1);
-        WorldObject* obj = sEluna.CHECK_WORLDOBJECT(L, 2);
+        WorldObject* obj = sEluna.CHECKOBJ<WorldObject>(L, 2);
         if (!obj)
             return 0;
 
@@ -1128,7 +1128,7 @@ namespace LuaPlayer
 
     int GetQuestLevel(lua_State* L, Player* player)
     {
-        Quest* quest = sEluna.CHECK_QUEST(L, 1);
+        Quest* quest = sEluna.CHECKOBJ<Quest>(L, 1);
         if (!quest)
             return 0;
 
@@ -1265,7 +1265,7 @@ namespace LuaPlayer
     int GiveXP(lua_State* L, Player* player)
     {
         uint32 xp = sEluna.CHECKVAL<uint32>(L, 1);
-        Unit* victim = sEluna.CHECK_UNIT(L, 2);
+        Unit* victim = sEluna.CHECKOBJ<Unit>(L, 2);
         bool pureXP = sEluna.CHECKVAL<bool>(L, 3, true);
         bool triggerHook = sEluna.CHECKVAL<bool>(L, 4, true);
 
@@ -1446,7 +1446,7 @@ namespace LuaPlayer
     int EquipItem(lua_State* L, Player* player)
     {
         uint16 dest = 0;
-        Item* item = sEluna.CHECK_ITEM(L, 1);
+        Item* item = sEluna.CHECKOBJ<Item>(L, 1);
         uint32 slot = sEluna.CHECKVAL<uint32>(L, 2);
 
         if (slot >= INVENTORY_SLOT_BAG_END)
@@ -1482,7 +1482,7 @@ namespace LuaPlayer
 
     int CanEquipItem(lua_State* L, Player* player)
     {
-        Item* item = sEluna.CHECK_ITEM(L, 1);
+        Item* item = sEluna.CHECKOBJ<Item>(L, 1);
         uint32 slot = sEluna.CHECKVAL<uint32>(L, 2);
         if (slot >= EQUIPMENT_SLOT_END)
         {
@@ -1568,7 +1568,7 @@ namespace LuaPlayer
 
     int GetGossipTextId(lua_State* L, Player* player)
     {
-        WorldObject* obj = sEluna.CHECK_WORLDOBJECT(L, 1);
+        WorldObject* obj = sEluna.CHECKOBJ<WorldObject>(L, 1);
         if (!obj)
             return 0;
         sEluna.Push(L, player->GetGossipTextId(obj));
@@ -1841,7 +1841,7 @@ namespace LuaPlayer
 
     int RemoveItem(lua_State* L, Player* player)
     {
-        Item* item = sEluna.CHECK_ITEM(L, 1);
+        Item* item = sEluna.CHECKOBJ<Item>(L, 1);
         uint32 itemCount = sEluna.CHECKVAL<uint32>(L, 2);
         if (!item)
         {
@@ -1888,7 +1888,7 @@ namespace LuaPlayer
     int SendClearCooldowns(lua_State* L, Player* player)
     {
         uint32 spellId = sEluna.CHECKVAL<uint32>(L, 1);
-        Unit* target = sEluna.CHECK_UNIT(L, 2);
+        Unit* target = sEluna.CHECKOBJ<Unit>(L, 2);
         if (!target)
             return 0;
 
@@ -1922,7 +1922,7 @@ namespace LuaPlayer
 
     int SendPacketToPlayer(lua_State* L, Player* player)
     {
-        WorldPacket* data = sEluna.CHECK_PACKET(L, 1);
+        WorldPacket* data = sEluna.CHECKOBJ<WorldPacket>(L, 1);
         if (data)
             player->GetSession()->SendPacket(data);
         return 0;
@@ -1930,7 +1930,7 @@ namespace LuaPlayer
 
     int SendPacket(lua_State* L, Player* player)
     {
-        WorldPacket* data = sEluna.CHECK_PACKET(L, 1);
+        WorldPacket* data = sEluna.CHECKOBJ<WorldPacket>(L, 1);
         if (data)
             player->SendMessageToSet(data, false);
         return 0;
@@ -1938,7 +1938,7 @@ namespace LuaPlayer
 
     /*int SendPacketToGroup(lua_State* L, Player* player)
     {
-        WorldPacket* data = sEluna.CHECK_PACKET(L, 1);
+        WorldPacket* data = sEluna.CHECKOBJ<WorldPacket>(L, 1);
         bool ignorePlayersInBg = sEluna.CHECKVAL<bool>(L, 2, false);
         if (data && player->GetGroup())
             player->GetGroup()->BroadcastPacket(data, ignorePlayersInBg, -1, player->GetGUIDLow());
@@ -1947,7 +1947,7 @@ namespace LuaPlayer
 
     /*int SendPacketToGuild(lua_State* L, Player* player)
     {
-        WorldPacket* data = sEluna.CHECK_PACKET(L, 1);
+        WorldPacket* data = sEluna.CHECKOBJ<WorldPacket>(L, 1);
         if (data && player->GetGuild())
             player->GetGuild()->BroadcastPacket(data);
         return 0;
@@ -1955,7 +1955,7 @@ namespace LuaPlayer
 
     /*int SendPacketToRankedInGuild(lua_State* L, Player* player)
     {
-        WorldPacket* data = sEluna.CHECK_PACKET(L, 1);
+        WorldPacket* data = sEluna.CHECKOBJ<WorldPacket>(L, 1);
         uint8 ranked = sEluna.CHECKVAL<uint8>(L, 2);
         if (data && player->GetGuild())
             player->GetGuild()->BroadcastPacketToRank(data, ranked);
@@ -1964,7 +1964,7 @@ namespace LuaPlayer
 
     int SendVendorWindow(lua_State* L, Player* player)
     {
-        Unit* sendTo = sEluna.CHECK_UNIT(L, 1);
+        Unit* sendTo = sEluna.CHECKOBJ<Unit>(L, 1);
         if (!sendTo)
             return 0;
         player->GetSession()->SendListInventory(sendTo->GetObjectGuid());
@@ -2045,7 +2045,7 @@ namespace LuaPlayer
     int GossipSendMenu(lua_State* L, Player* player)
     {
         uint32 _npcText = sEluna.CHECKVAL<uint32>(L, 1);
-        WorldObject* sender = sEluna.CHECK_WORLDOBJECT(L, 2);
+        WorldObject* sender = sEluna.CHECKOBJ<WorldObject>(L, 2);
         if (sender)
         {
             if (sender->GetTypeId() == TYPEID_PLAYER)
@@ -2122,7 +2122,7 @@ namespace LuaPlayer
 
     int GossipAddQuests(lua_State* L, Player* player)
     {
-        WorldObject* source = sEluna.CHECK_WORLDOBJECT(L, 1);
+        WorldObject* source = sEluna.CHECKOBJ<WorldObject>(L, 1);
         if (!source)
             return 0;
 
@@ -2160,7 +2160,7 @@ namespace LuaPlayer
 
     int RemovedInsignia(lua_State* L, Player* player)
     {
-        Player* looter = sEluna.CHECK_PLAYER(L, 1);
+        Player* looter = sEluna.CHECKOBJ<Player>(L, 1);
         if (!looter)
             return 0;
         player->RemovedInsignia(looter);
@@ -2181,7 +2181,7 @@ namespace LuaPlayer
 
     int CanUseItem(lua_State* L, Player* player)
     {
-        Item* item = sEluna.CHECK_ITEM(L, 1);
+        Item* item = sEluna.CHECKOBJ<Item>(L, 1);
         if (item)
             sEluna.Push(L, player->CanUseItem(item));
         else

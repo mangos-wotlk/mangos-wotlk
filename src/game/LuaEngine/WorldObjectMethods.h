@@ -257,7 +257,7 @@ namespace LuaWorldObject
 
     int GetDistance(lua_State* L, WorldObject* obj)
     {
-        WorldObject* target = sEluna.CHECK_WORLDOBJECT(L, 1);
+        WorldObject* target = sEluna.CHECKOBJ<WorldObject>(L, 1);
         if (target && target->IsInWorld())
             sEluna.Push(L, obj->GetDistance(target));
         else
@@ -286,7 +286,7 @@ namespace LuaWorldObject
 
     int GetAngle(lua_State* L, WorldObject* obj)
     {
-        WorldObject* target = sEluna.CHECK_WORLDOBJECT(L, 1);
+        WorldObject* target = sEluna.CHECKOBJ<WorldObject>(L, 1);
 
         if (target && target->IsInWorld())
             sEluna.Push(L, obj->GetAngle(target));
