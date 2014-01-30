@@ -55,7 +55,7 @@
 #include "Weather.h"
 #include "World.h"
 #include "WorldPacket.h"
-#include "SystemConfig.h"
+// #include "SystemConfig.h"
 #include "revision_nr.h"
 #include "SharedDefines.h"
 

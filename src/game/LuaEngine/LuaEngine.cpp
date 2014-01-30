@@ -287,147 +287,127 @@ void Eluna::EndCall(int res)
     }
 }
 
-/* Pushes */
 void Eluna::Push(lua_State* L)
 {
     lua_pushnil(L);
 }
-
 void Eluna::Push(lua_State* L, const uint64 l)
 {
     std::ostringstream ss;
     ss << l;
     sEluna.Push(L, ss.str());
 }
-
 void Eluna::Push(lua_State* L, const int64 l)
 {
     std::ostringstream ss;
     ss << l;
     sEluna.Push(L, ss.str());
 }
-
 void Eluna::Push(lua_State* L, const uint32 u)
 {
     lua_pushunsigned(L, u);
 }
-
 void Eluna::Push(lua_State* L, const int32 i)
 {
     lua_pushinteger(L, i);
 }
-
 void Eluna::Push(lua_State* L, const double d)
 {
     lua_pushnumber(L, d);
 }
-
 void Eluna::Push(lua_State* L, const float f)
 {
     lua_pushnumber(L, f);
 }
-
 void Eluna::Push(lua_State* L, const bool b)
 {
     lua_pushboolean(L, b);
 }
-
 void Eluna::Push(lua_State* L, const std::string str)
 {
     lua_pushstring(L, str.c_str());
 }
-
 void Eluna::Push(lua_State* L, const char* str)
 {
     lua_pushstring(L, str);
 }
-
-Object* Eluna::CHECK_OBJECT(lua_State* L, int narg)
+void Eluna::Push(lua_State* L, Pet const* pet)
 {
-    return ElunaTemplate<Object>::check(L, narg);
+    Push(L, pet->ToCreature());
 }
-
-WorldObject* Eluna::CHECK_WORLDOBJECT(lua_State* L, int narg)
+void Eluna::Push(lua_State* L, TemporarySummon const* summon)
 {
-    return ElunaTemplate<WorldObject>::check(L, narg);
+    Push(L, summon->ToCreature());
 }
-
-Unit* Eluna::CHECK_UNIT(lua_State* L, int narg)
+void Eluna::Push(lua_State* L, Unit const* unit)
 {
-    WorldObject* obj = CHECK_WORLDOBJECT(L, narg);
+    if (!unit)
+    {
+        Push(L);
+        return;
+    }
+    switch (unit->GetTypeId())
+    {
+    case TYPEID_UNIT:
+        Push(L, unit->ToCreature());
+        break;
+    case TYPEID_PLAYER:
+        Push(L, unit->ToPlayer());
+        break;
+    default:
+        ElunaTemplate<Unit>::push(L, unit);
+    }
+}
+void Eluna::Push(lua_State* L, WorldObject const* obj)
+{
     if (!obj)
-        return NULL;
-    return obj->ToUnit();
+    {
+        Push(L);
+        return;
+    }
+    switch (obj->GetTypeId())
+    {
+    case TYPEID_UNIT:
+        Push(L, obj->ToCreature());
+        break;
+    case TYPEID_PLAYER:
+        Push(L, obj->ToPlayer());
+        break;
+    case TYPEID_GAMEOBJECT:
+        Push(L, obj->ToGameObject());
+        break;
+    case TYPEID_CORPSE:
+        Push(L, obj->ToCorpse());
+        break;
+    default:
+        ElunaTemplate<WorldObject>::push(L, obj);
+    }
 }
-
-Player* Eluna::CHECK_PLAYER(lua_State* L, int narg)
+void Eluna::Push(lua_State* L, Object const* obj)
 {
-    WorldObject* obj = CHECK_WORLDOBJECT(L, narg);
     if (!obj)
-        return NULL;
-    return obj->ToPlayer();
+    {
+        Push(L);
+        return;
+    }
+    switch (obj->GetTypeId())
+    {
+    case TYPEID_UNIT:
+        Push(L, obj->ToCreature());
+        break;
+    case TYPEID_PLAYER:
+        Push(L, obj->ToPlayer());
+        break;
+    case TYPEID_GAMEOBJECT:
+        Push(L, obj->ToGameObject());
+        break;
+    case TYPEID_CORPSE:
+        Push(L, obj->ToCorpse());
+        break;
+    default:
+        ElunaTemplate<Object>::push(L, obj);
+    }
 }
-
-Creature* Eluna::CHECK_CREATURE(lua_State* L, int narg)
-{
-    WorldObject* obj = CHECK_WORLDOBJECT(L, narg);
-    if (!obj)
-        return NULL;
-    return obj->ToCreature();
-}
-
-GameObject* Eluna::CHECK_GAMEOBJECT(lua_State* L, int narg)
-{
-    WorldObject* obj = CHECK_WORLDOBJECT(L, narg);
-    if (!obj)
-        return NULL;
-    return obj->ToGameObject();
-}
-
-Corpse* Eluna::CHECK_CORPSE(lua_State* L, int narg)
-{
-    WorldObject* obj = CHECK_WORLDOBJECT(L, narg);
-    if (!obj)
-        return NULL;
-    return obj->ToCorpse();
-}
-
-WorldPacket* Eluna::CHECK_PACKET(lua_State* L, int narg)
-{
-    return ElunaTemplate<WorldPacket>::check(L, narg);
-}
-
-Quest* Eluna::CHECK_QUEST(lua_State* L, int narg)
-{
-    return ElunaTemplate<Quest>::check(L, narg);
-}
-
-Spell* Eluna::CHECK_SPELL(lua_State* L, int narg)
-{
-    return ElunaTemplate<Spell>::check(L, narg);
-}
-
-uint64 Eluna::CHECK_ULONG(lua_State* L, int narg)
-{
-    uint64 l = 0;
-    const char* c_str = luaL_optstring(L, narg, "0");
-    sscanf(c_str, UI64FMTD, &l);
-    return l;
-}
-
-int64 Eluna::CHECK_LONG(lua_State* L, int narg)
-{
-    int64 l = 0;
-    const char* c_str = luaL_optstring(L, narg, "0");
-    sscanf(c_str, SI64FMTD, &l);
-    return l;
-}
-
-Item* Eluna::CHECK_ITEM(lua_State* L, int narg)
-{
-    return ElunaTemplate<Item>::check(L, narg);
-}
-
 template<> bool Eluna::CHECKVAL<bool>(lua_State* L, int narg)
 {
     return lua_isnil(L, narg) || luaL_checkbool(L, narg);
@@ -552,50 +532,6 @@ template<> int64 Eluna::CHECKVAL<int64>(lua_State* L, int narg, int64 def)
     sscanf(c_str, SI64FMTD, &l);
     return l;
 }
-#define TEST_OBJ(T, O, E, F)\
-{\
-    if (!O || !O->F())\
-    {\
-        if (E)\
-        {\
-            std::string errmsg(ElunaTemplate<T>::tname);\
-            errmsg += " expected";\
-            luaL_argerror(L, narg, errmsg.c_str());\
-        }\
-        return NULL;\
-    }\
-    return O->F();\
-}
-template<typename T> T* Eluna::CHECKOBJ(lua_State* L, int narg, bool error)
-{
-    return ElunaTemplate<T>::check(L, narg, error);
-}
-template<> Unit* Eluna::CHECKOBJ<Unit>(lua_State* L, int narg, bool error)
-{
-    WorldObject* obj = CHECKOBJ<WorldObject>(L, narg, false);
-    TEST_OBJ(Unit, obj, error, ToUnit);
-}
-template<> Player* Eluna::CHECKOBJ<Player>(lua_State* L, int narg, bool error)
-{
-    WorldObject* obj = CHECKOBJ<WorldObject>(L, narg, false);
-    TEST_OBJ(Player, obj, error, ToPlayer);
-}
-template<> Creature* Eluna::CHECKOBJ<Creature>(lua_State* L, int narg, bool error)
-{
-    WorldObject* obj = CHECKOBJ<WorldObject>(L, narg, false);
-    TEST_OBJ(Creature, obj, error, ToCreature);
-}
-template<> GameObject* Eluna::CHECKOBJ<GameObject>(lua_State* L, int narg, bool error)
-{
-    WorldObject* obj = CHECKOBJ<WorldObject>(L, narg, false);
-    TEST_OBJ(GameObject, obj, error, ToGameObject);
-}
-template<> Corpse* Eluna::CHECKOBJ<Corpse>(lua_State* L, int narg, bool error)
-{
-    WorldObject* obj = CHECKOBJ<WorldObject>(L, narg, false);
-    TEST_OBJ(Corpse, obj, error, ToCorpse);
-}
-#undef TEST_OBJ
 
 // Saves the function reference ID given to the register type's store for given entry under the given event
 void Eluna::Register(uint8 regtype, uint32 id, uint32 evt, int functionRef)

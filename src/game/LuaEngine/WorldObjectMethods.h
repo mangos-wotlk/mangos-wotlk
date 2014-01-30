@@ -239,7 +239,7 @@ namespace LuaWorldObject
     }
     int GetWorldObject(lua_State* L, WorldObject* obj)
     {
-        ObjectGuid guid = ObjectGuid(sEluna.CHECK_ULONG(L, 1));
+        ObjectGuid guid = ObjectGuid(sEluna.CHECKVAL<uint64>(L, 1));
 
         switch (guid.GetHigh())
         {
