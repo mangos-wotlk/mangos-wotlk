@@ -164,8 +164,6 @@ class ElunaTemplate
         static int thunk(lua_State* L)
         {
             T* obj = check(L, 1); // get self
-            if (!lua_isnone(L, 1))
-                lua_remove(L, 1); // remove self
             ElunaRegister<T>* l = static_cast<ElunaRegister<T>*>(lua_touserdata(L, lua_upvalueindex(1)));
             if (!obj)
                 return 0;

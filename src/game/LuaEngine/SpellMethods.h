@@ -67,7 +67,7 @@ namespace LuaSpell
 
     int SetAutoRepeat(lua_State* L, Spell* spell)
     {
-        bool repeat = sEluna.CHECKVAL<bool>(L, 1);
+        bool repeat = sEluna.CHECKVAL<bool>(L, 2);
         spell->SetAutoRepeat(repeat);
         return 0;
     }

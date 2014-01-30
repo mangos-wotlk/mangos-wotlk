@@ -34,9 +34,9 @@ namespace LuaItem
         // LOCALE_esMX = 7,
         // LOCALE_ruRU = 8
 
-        int loc_idx = sEluna.CHECKVAL<int>(L, 1, DEFAULT_LOCALE);
+        int loc_idx = sEluna.CHECKVAL<int>(L, 2, DEFAULT_LOCALE);
         if (loc_idx < 0 || loc_idx >= MAX_LOCALE)
-            return luaL_argerror(L, 1, "valid LocaleConstant expected");
+            return luaL_argerror(L, 2, "valid LocaleConstant expected");
 
         const ItemPrototype* temp = item->GetProto();
         std::string name = temp->Name1;
@@ -104,7 +104,7 @@ namespace LuaItem
 
     int SetOwner(lua_State* L, Item* item)
     {
-        Player* player = sEluna.CHECKOBJ<Player>(L, 1);
+        Player* player = sEluna.CHECKOBJ<Player>(L, 2);
 
         if (player)
             item->SetOwnerGuid(player->GetObjectGuid());
@@ -113,7 +113,7 @@ namespace LuaItem
 
     int SetBinding(lua_State* L, Item* item)
     {
-        bool soulbound = sEluna.CHECKVAL<bool>(L, 1);
+        bool soulbound = sEluna.CHECKVAL<bool>(L, 2);
 
         item->SetBinding(soulbound);
         return 0;
@@ -139,7 +139,7 @@ namespace LuaItem
 
     int IsNotBoundToPlayer(lua_State* L, Item* item)
     {
-        Player* player = sEluna.CHECKOBJ<Player>(L, 1);
+        Player* player = sEluna.CHECKOBJ<Player>(L, 2);
         if (!player)
             return 0;
 
@@ -179,7 +179,7 @@ namespace LuaItem
 
     int CanBeTraded(lua_State* L, Item* item) // TODO: Implement trade bool
     {
-        bool mail = sEluna.CHECKVAL<bool>(L, 1, false);
+        bool mail = sEluna.CHECKVAL<bool>(L, 2, false);
         // bool trade = luaL_optbool(L, 2, false);
         sEluna.Push(L, item->CanBeTraded(mail/*, trade*/));
         return 1;
@@ -199,7 +199,7 @@ namespace LuaItem
 
     int SetCount(lua_State* L, Item* item)
     {
-        uint32 count = sEluna.CHECKVAL<uint32>(L, 1);
+        uint32 count = sEluna.CHECKVAL<uint32>(L, 2);
         item->SetCount(count);
         return 0;
     }
@@ -236,7 +236,7 @@ namespace LuaItem
 
     int HasQuest(lua_State* L, Item* item)
     {
-        uint32 quest = sEluna.CHECKVAL<uint32>(L, 1);
+        uint32 quest = sEluna.CHECKVAL<uint32>(L, 2);
         sEluna.Push(L, item->HasQuest(quest));
         return 1;
     }
@@ -281,16 +281,16 @@ namespace LuaItem
             return 1;
         }
 
-        uint32 enchant = sEluna.CHECKVAL<uint32>(L, 1);
+        uint32 enchant = sEluna.CHECKVAL<uint32>(L, 2);
         if (!sSpellItemEnchantmentStore.LookupEntry(enchant))
         {
             sEluna.Push(L, false);
             return 1;
         }
         
-        EnchantmentSlot slot = (EnchantmentSlot)sEluna.CHECKVAL<uint32>(L, 2);
+        EnchantmentSlot slot = (EnchantmentSlot)sEluna.CHECKVAL<uint32>(L, 3);
         if (slot >= MAX_INSPECTED_ENCHANTMENT_SLOT)
-            return luaL_argerror(L, 1, "valid EnchantmentSlot expected");
+            return luaL_argerror(L, 2, "valid EnchantmentSlot expected");
 
         owner->ApplyEnchantment(item, slot, false);
         item->SetEnchantment(slot, enchant, 0, 0);
@@ -308,9 +308,9 @@ namespace LuaItem
             return 1;
         }
 
-        EnchantmentSlot slot = (EnchantmentSlot)sEluna.CHECKVAL<uint32>(L, 1);
+        EnchantmentSlot slot = (EnchantmentSlot)sEluna.CHECKVAL<uint32>(L, 2);
         if (slot >= MAX_INSPECTED_ENCHANTMENT_SLOT)
-            return luaL_argerror(L, 1, "valid EnchantmentSlot expected");
+            return luaL_argerror(L, 2, "valid EnchantmentSlot expected");
 
         if (!item->GetEnchantmentId(slot))
         {
@@ -332,7 +332,7 @@ namespace LuaItem
 
     int GetEnchantmentId(lua_State* L, Item* item)
     {
-        uint32 enchant_slot = sEluna.CHECKVAL<uint32>(L, 1);
+        uint32 enchant_slot = sEluna.CHECKVAL<uint32>(L, 2);
 
         if (enchant_slot >= MAX_INSPECTED_ENCHANTMENT_SLOT)
             return 0;
@@ -343,9 +343,9 @@ namespace LuaItem
 
     int GetSpellId(lua_State* L, Item* item)
     {
-        uint32 index = sEluna.CHECKVAL<uint32>(L, 1);
+        uint32 index = sEluna.CHECKVAL<uint32>(L, 2);
         if (index >= MAX_ITEM_PROTO_SPELLS)
-            return luaL_argerror(L, 1, "valid SpellIndex expected");
+            return luaL_argerror(L, 2, "valid SpellIndex expected");
 
         sEluna.Push(L, item->GetProto()->Spells[index].SpellId);
         return 1;
@@ -353,9 +353,9 @@ namespace LuaItem
 
     int GetSpellTrigger(lua_State* L, Item* item)
     {
-        uint32 index = sEluna.CHECKVAL<uint32>(L, 1);
+        uint32 index = sEluna.CHECKVAL<uint32>(L, 2);
         if (index >= MAX_ITEM_PROTO_SPELLS)
-            return luaL_argerror(L, 1, "valid SpellIndex expected");
+            return luaL_argerror(L, 2, "valid SpellIndex expected");
 
         sEluna.Push(L, item->GetProto()->Spells[index].SpellTrigger);
         return 1;

@@ -36,7 +36,7 @@ namespace LuaCreature
 
     int SetDisableReputationGain(lua_State* L, Creature* creature)
     {
-        bool disable = sEluna.CHECKVAL<bool>(L, 1, true);
+        bool disable = sEluna.CHECKVAL<bool>(L, 2, true);
 
         creature->SetDisableReputationGain(disable);
         return 0;
@@ -74,7 +74,7 @@ namespace LuaCreature
 
     int HasInvolvedQuest(lua_State* L, Creature* creature)
     {
-        uint32 quest_id = sEluna.CHECKVAL<uint32>(L, 1);
+        uint32 quest_id = sEluna.CHECKVAL<uint32>(L, 2);
 
         sEluna.Push(L, creature->HasInvolvedQuest(quest_id));
         return 1;
@@ -88,7 +88,7 @@ namespace LuaCreature
 
     int SetRespawnRadius(lua_State* L, Creature* creature)
     {
-        float dist = sEluna.CHECKVAL<float>(L, 1);
+        float dist = sEluna.CHECKVAL<float>(L, 2);
 
         creature->SetRespawnRadius(dist);
         return 0;
@@ -108,7 +108,7 @@ namespace LuaCreature
 
     int SetRespawnDelay(lua_State* L, Creature* creature)
     {
-        uint32 delay = sEluna.CHECKVAL<uint32>(L, 1);
+        uint32 delay = sEluna.CHECKVAL<uint32>(L, 2);
 
         creature->SetRespawnDelay(delay);
         return 0;
@@ -122,7 +122,7 @@ namespace LuaCreature
 
     int DespawnOrUnsummon(lua_State* L, Creature* creature)
     {
-        uint32 msTimeToDespawn = sEluna.CHECKVAL<uint32>(L, 1, 0);
+        uint32 msTimeToDespawn = sEluna.CHECKVAL<uint32>(L, 2, 0);
 
         creature->ForcedDespawn(msTimeToDespawn);
         return 0;
@@ -136,7 +136,7 @@ namespace LuaCreature
 
     int SetDefaultMovementType(lua_State* L, Creature* creature)
     {
-        int32 type = sEluna.CHECKVAL<int32>(L, 1);
+        int32 type = sEluna.CHECKVAL<int32>(L, 2);
 
         creature->SetDefaultMovementType((MovementGeneratorType)type);
         return 0;
@@ -150,7 +150,7 @@ namespace LuaCreature
 
     int IsTargetAcceptable(lua_State* L, Creature* creature)
     {
-        Unit* target = sEluna.CHECKOBJ<Unit>(L, 1);
+        Unit* target = sEluna.CHECKOBJ<Unit>(L, 2);
 
         if (!target)
             sEluna.Push(L, false);
@@ -161,9 +161,9 @@ namespace LuaCreature
 
     int CanAssistTo(lua_State* L, Creature* creature)
     {
-        Unit* u = sEluna.CHECKOBJ<Unit>(L, 1);
-        Unit* enemy = sEluna.CHECKOBJ<Unit>(L, 2);
-        bool checkfaction = sEluna.CHECKVAL<bool>(L, 3, true);
+        Unit* u = sEluna.CHECKOBJ<Unit>(L, 2);
+        Unit* enemy = sEluna.CHECKOBJ<Unit>(L, 3);
+        bool checkfaction = sEluna.CHECKVAL<bool>(L, 4, true);
 
         if (!u)
             sEluna.Push(L, false);
@@ -182,7 +182,7 @@ namespace LuaCreature
 
     int SetNoSearchAssistance(lua_State* L, Creature* creature)
     {
-        bool val = sEluna.CHECKVAL<bool>(L, 1, true);
+        bool val = sEluna.CHECKVAL<bool>(L, 2, true);
 
         creature->SetNoSearchAssistance(val);
         return 0;
@@ -190,7 +190,7 @@ namespace LuaCreature
 
     int SetNoCallAssistance(lua_State* L, Creature* creature)
     {
-        bool val = sEluna.CHECKVAL<bool>(L, 1, true);
+        bool val = sEluna.CHECKVAL<bool>(L, 2, true);
 
         creature->SetNoCallAssistance(val);
         return 0;
@@ -204,7 +204,7 @@ namespace LuaCreature
 
     int CallForHelp(lua_State* L, Creature* creature)
     {
-        float radius = sEluna.CHECKVAL<float>(L, 1);
+        float radius = sEluna.CHECKVAL<float>(L, 2);
 
         creature->CallForHelp(radius);
         return 0;
@@ -218,7 +218,7 @@ namespace LuaCreature
 
     int GetAggroRange(lua_State* L, Creature* creature)
     {
-        Unit* target = sEluna.CHECKOBJ<Unit>(L, 1);
+        Unit* target = sEluna.CHECKOBJ<Unit>(L, 2);
 
         if (!target)
             return 0;
@@ -228,7 +228,7 @@ namespace LuaCreature
 
     int GetAttackDistance(lua_State* L, Creature* creature)
     {
-        Unit* target = sEluna.CHECKOBJ<Unit>(L, 1);
+        Unit* target = sEluna.CHECKOBJ<Unit>(L, 2);
 
         if (!target)
             return 0;
@@ -239,8 +239,8 @@ namespace LuaCreature
 
     /*int CanStartAttack(lua_State* L, Creature* creature) // TODO: Implement core side
     {
-        Unit* target = sEluna.CHECKOBJ<Unit>(L, 1);
-        bool force = sEluna.CHECKVAL<bool>(L, 2, true);
+        Unit* target = sEluna.CHECKOBJ<Unit>(L, 2);
+        bool force = sEluna.CHECKVAL<bool>(L, 3, true);
 
         if (!target)
             return 0;
@@ -257,7 +257,7 @@ namespace LuaCreature
 
     /*int RemoveLootMode(lua_State* L, Creature* creature) // TODO: Implement LootMode features
     {
-        uint16 lootMode = sEluna.CHECKVAL<uint16>(L, 1);
+        uint16 lootMode = sEluna.CHECKVAL<uint16>(L, 2);
 
         creature->RemoveLootMode(lootMode);
         return 0;
@@ -265,7 +265,7 @@ namespace LuaCreature
 
     /*int AddLootMode(lua_State* L, Creature* creature) // TODO: Implement LootMode features
     {
-        uint16 lootMode = sEluna.CHECKVAL<uint16>(L, 1);
+        uint16 lootMode = sEluna.CHECKVAL<uint16>(L, 2);
 
         creature->AddLootMode(lootMode);
         return 0;
@@ -273,7 +273,7 @@ namespace LuaCreature
 
     /*int SetLootMode(lua_State* L, Creature* creature) // TODO: Implement LootMode features
     {
-        uint16 lootMode = sEluna.CHECKVAL<uint16>(L, 1);
+        uint16 lootMode = sEluna.CHECKVAL<uint16>(L, 2);
 
         creature->SetLootMode(lootMode);
         return 0;
@@ -281,7 +281,7 @@ namespace LuaCreature
 
     /*int HasLootMode(lua_State* L, Creature* creature) // TODO: Implement LootMode features
     {
-        uint16 lootMode = sEluna.CHECKVAL<uint16>(L, 1);
+        uint16 lootMode = sEluna.CHECKVAL<uint16>(L, 2);
 
         sEluna.Push(L, creature->HasLootMode(lootMode));
         return 1;
@@ -295,7 +295,7 @@ namespace LuaCreature
 
     int IsTappedBy(lua_State* L, Creature* creature)
     {
-        Player* player = sEluna.CHECKOBJ<Player>(L, 1);
+        Player* player = sEluna.CHECKOBJ<Player>(L, 2);
 
         if (!player)
             sEluna.Push(L, creature->isTappedBy(player));
@@ -324,7 +324,7 @@ namespace LuaCreature
 
     int SetDeathState(lua_State* L, Creature* creature)
     {
-        int32 state = sEluna.CHECKVAL<int32>(L, 1);
+        int32 state = sEluna.CHECKVAL<int32>(L, 2);
 
         creature->SetDeathState((DeathState)state);
         return 0;
@@ -332,7 +332,7 @@ namespace LuaCreature
 
     int SetWalk(lua_State* L, Creature* creature)           // TODO: Move same to Player ?
     {
-        bool enable = sEluna.CHECKVAL<bool>(L, 1, true);
+        bool enable = sEluna.CHECKVAL<bool>(L, 2, true);
 
         creature->SetWalk(enable);
         return 0;
@@ -340,7 +340,7 @@ namespace LuaCreature
 
     int SetReactState(lua_State* L, Creature* creature)
     {
-        int32 state = sEluna.CHECKVAL<int32>(L, 1);
+        int32 state = sEluna.CHECKVAL<int32>(L, 2);
 
         creature->GetCharmInfo()->SetReactState((ReactStates)state);
         return 0;
@@ -354,7 +354,7 @@ namespace LuaCreature
 
     int HasReactState(lua_State* L, Creature* creature)
     {
-        int32 state = sEluna.CHECKVAL<int32>(L, 1);
+        int32 state = sEluna.CHECKVAL<int32>(L, 2);
 
         sEluna.Push(L, creature->GetCharmInfo()->HasReactState((ReactStates)state));
         return 1;
@@ -374,8 +374,8 @@ namespace LuaCreature
 
     /*int SetDisableGravity(lua_State* L, Creature* creature)
     {
-        bool disable = sEluna.CHECKVAL<bool>(L, 1, true);
-        bool packetOnly = sEluna.CHECKVAL<bool>(L, 2, false);
+        bool disable = sEluna.CHECKVAL<bool>(L, 2, true);
+        bool packetOnly = sEluna.CHECKVAL<bool>(L, 3, false);
 
         sEluna.Push(L, creature->SetDisableGravity(disable, packetOnly));
         return 1;
@@ -383,7 +383,7 @@ namespace LuaCreature
 
     int SetHover(lua_State* L, Creature* creature)
     {
-        bool enable = sEluna.CHECKVAL<bool>(L, 1, true);
+        bool enable = sEluna.CHECKVAL<bool>(L, 2, true);
 
         creature->SetLevitate(enable);
         return 1;
@@ -427,7 +427,7 @@ namespace LuaCreature
 
     int HasCategoryCooldown(lua_State* L, Creature* creature)
     {
-        uint32 spell = sEluna.CHECKVAL<uint32>(L, 1);
+        uint32 spell = sEluna.CHECKVAL<uint32>(L, 2);
 
         sEluna.Push(L, creature->HasCategoryCooldown(spell));
         return 1;
@@ -453,7 +453,7 @@ namespace LuaCreature
 
     int GetCreatureSpellCooldownDelay(lua_State* L, Creature* creature)
     {
-        uint32 spell = sEluna.CHECKVAL<uint32>(L, 1);
+        uint32 spell = sEluna.CHECKVAL<uint32>(L, 2);
 
         sEluna.Push(L, creature->GetCreatureSpellCooldownDelay(spell));
         return 1;
@@ -479,7 +479,7 @@ namespace LuaCreature
 
     int AttackStart(lua_State* L, Creature* creature)
     {
-        Unit* target = sEluna.CHECKOBJ<Unit>(L, 1);
+        Unit* target = sEluna.CHECKOBJ<Unit>(L, 2);
         if (!target)
             return 0;
 
@@ -489,47 +489,47 @@ namespace LuaCreature
 
     /*int GetNearestTargetInAttackDistance(lua_State* L, Creature* creature)
     {
-        float dist = sEluna.CHECKVAL<float>(L, 1, 0.0f);
+        float dist = sEluna.CHECKVAL<float>(L, 2, 0.0f);
         sEluna.Push(L, creature->SelectNearestTargetInAttackDistance(dist));
         return 1;
     }*/
 
     /*int GetNearestTarget(lua_State* L, Creature* creature)
     {
-        float dist = sEluna.CHECKVAL<float>(L, 1, 0.0f);
+        float dist = sEluna.CHECKVAL<float>(L, 2, 0.0f);
         sEluna.Push(L, creature->SelectNearestTarget(dist));
         return 1;
     }*/
 
     /*int GetNearestHostileTargetInAggroRange(lua_State* L, Creature* creature)
     {
-        bool checkLOS = sEluna.CHECKVAL<bool>(L, 1, false);
+        bool checkLOS = sEluna.CHECKVAL<bool>(L, 2, false);
         sEluna.Push(L, creature->SelectNearestHostileUnitInAggroRange(checkLOS));
         return 1;
     }*/
 
     /*int Despawn(lua_State* L, Creature* creature)
     {
-        uint32 time = sEluna.CHECKVAL<uint32>(L, 1, 0);
+        uint32 time = sEluna.CHECKVAL<uint32>(L, 2, 0);
         creature->DespawnOrUnsummon(time);
         return 0;
     }*/
 
     /*int SendCreatureTalk(lua_State* L, Creature* creature)
     {
-        uint8 id = sEluna.CHECKVAL<uint8>(L, 1);
-        uint64 playerGUID = sEluna.CHECKVAL<uint64>(L, 2);
+        uint8 id = sEluna.CHECKVAL<uint8>(L, 2);
+        uint64 playerGUID = sEluna.CHECKVAL<uint64>(L, 3);
         creature->AI()->Talk(id, playerGUID);
         return 0;
     }*/
 
     int GetAITarget(lua_State* L, Creature* creature)
     {
-        uint32 targetType = sEluna.CHECKVAL<uint32>(L, 1);
-        bool playerOnly = sEluna.CHECKVAL<bool>(L, 2, false);
-        uint32 position = sEluna.CHECKVAL<uint32>(L, 3, 0);
-        float dist = sEluna.CHECKVAL<float>(L, 4, 0.0f);
-        int32 aura = sEluna.CHECKVAL<int32>(L, 5, 0);
+        uint32 targetType = sEluna.CHECKVAL<uint32>(L, 2);
+        bool playerOnly = sEluna.CHECKVAL<bool>(L, 3, false);
+        uint32 position = sEluna.CHECKVAL<uint32>(L, 4, 0);
+        float dist = sEluna.CHECKVAL<float>(L, 5, 0.0f);
+        int32 aura = sEluna.CHECKVAL<int32>(L, 6, 0);
 
         ThreatList const&  threatlist = creature->getThreatManager().getThreatList();
         if (position >= threatlist.size())
@@ -590,7 +590,7 @@ namespace LuaCreature
                 return 1;
             }
             default:
-                luaL_argerror(L, 1, "SelectAggroTarget expected");
+                luaL_argerror(L, 2, "SelectAggroTarget expected");
         }
 
         sEluna.Push(L);
@@ -646,7 +646,7 @@ namespace LuaCreature
 
     int SetNPCFlags(lua_State* L, Creature* creature)
     {
-        uint32 flags = sEluna.CHECKVAL<uint32>(L, 1);
+        uint32 flags = sEluna.CHECKVAL<uint32>(L, 2);
 
         creature->SetUInt32Value(UNIT_NPC_FLAGS, flags);
         return 0;
@@ -654,7 +654,7 @@ namespace LuaCreature
 
     int HasSpell(lua_State* L, Creature* creature)
     {
-        uint32 id = sEluna.CHECKVAL<uint32>(L, 1);
+        uint32 id = sEluna.CHECKVAL<uint32>(L, 2);
 
         sEluna.Push(L, creature->HasSpell(id));
         return 1;
@@ -662,7 +662,7 @@ namespace LuaCreature
 
     int HasQuest(lua_State* L, Creature* creature)
     {
-        uint32 questId = sEluna.CHECKVAL<uint32>(L, 1);
+        uint32 questId = sEluna.CHECKVAL<uint32>(L, 2);
 
         sEluna.Push(L, creature->HasQuest(questId));
         return 1;
@@ -676,7 +676,7 @@ namespace LuaCreature
 
     int HasSpellCooldown(lua_State* L, Creature* creature)
     {
-        uint32 spellId = sEluna.CHECKVAL<uint32>(L, 1);
+        uint32 spellId = sEluna.CHECKVAL<uint32>(L, 2);
 
         sEluna.Push(L, creature->HasSpellCooldown(spellId));
         return 1;
