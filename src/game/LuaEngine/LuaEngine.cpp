@@ -532,6 +532,46 @@ template<> int64 Eluna::CHECKVAL<int64>(lua_State* L, int narg, int64 def)
     sscanf(c_str, SI64FMTD, &l);
     return l;
 }
+#define TEST_OBJ(T, O, E, F)\
+{\
+    if (!O || !O->F())\
+    {\
+        if (E)\
+        {\
+            std::string errmsg(ElunaTemplate<T>::tname);\
+            errmsg += " expected";\
+            luaL_argerror(L, narg, errmsg.c_str());\
+        }\
+        return NULL;\
+    }\
+    return O->F();\
+}
+template<> Unit* Eluna::CHECKOBJ<Unit>(lua_State* L, int narg, bool error)
+{
+    WorldObject* obj = CHECKOBJ<WorldObject>(L, narg, false);
+    TEST_OBJ(Unit, obj, error, ToUnit);
+}
+template<> Player* Eluna::CHECKOBJ<Player>(lua_State* L, int narg, bool error)
+{
+    WorldObject* obj = CHECKOBJ<WorldObject>(L, narg, false);
+    TEST_OBJ(Player, obj, error, ToPlayer);
+}
+template<> Creature* Eluna::CHECKOBJ<Creature>(lua_State* L, int narg, bool error)
+{
+    WorldObject* obj = CHECKOBJ<WorldObject>(L, narg, false);
+    TEST_OBJ(Creature, obj, error, ToCreature);
+}
+template<> GameObject* Eluna::CHECKOBJ<GameObject>(lua_State* L, int narg, bool error)
+{
+    WorldObject* obj = CHECKOBJ<WorldObject>(L, narg, false);
+    TEST_OBJ(GameObject, obj, error, ToGameObject);
+}
+template<> Corpse* Eluna::CHECKOBJ<Corpse>(lua_State* L, int narg, bool error)
+{
+    WorldObject* obj = CHECKOBJ<WorldObject>(L, narg, false);
+    TEST_OBJ(Corpse, obj, error, ToCorpse);
+}
+#undef TEST_OBJ
 
 // Saves the function reference ID given to the register type's store for given entry under the given event
 void Eluna::Register(uint8 regtype, uint32 id, uint32 evt, int functionRef)

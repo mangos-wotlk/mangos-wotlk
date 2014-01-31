@@ -511,49 +511,11 @@ class Eluna
         {
             return ElunaTemplate<T>::check(L, narg, error);
         }
-
-#define TEST_OBJ(T, O, E, F)\
-{\
-    if (!O || !O->F())\
-    {\
-        if (E)\
-        {\
-            std::string errmsg(ElunaTemplate<T>::tname);\
-            errmsg += " expected";\
-            luaL_argerror(L, narg, errmsg.c_str());\
-        }\
-        return NULL;\
-    }\
-    return O->F();\
-}
-
-        template<> Unit* CHECKOBJ<Unit>(lua_State* L, int narg, bool error)
-        {
-            WorldObject* obj = CHECKOBJ<WorldObject>(L, narg, false);
-            TEST_OBJ(Unit, obj, error, ToUnit);
-        }
-        template<> Player* CHECKOBJ<Player>(lua_State* L, int narg, bool error)
-        {
-            WorldObject* obj = CHECKOBJ<WorldObject>(L, narg, false);
-            TEST_OBJ(Player, obj, error, ToPlayer);
-        }
-        template<> Creature* CHECKOBJ<Creature>(lua_State* L, int narg, bool error)
-        {
-            WorldObject* obj = CHECKOBJ<WorldObject>(L, narg, false);
-            TEST_OBJ(Creature, obj, error, ToCreature);
-        }
-        template<> GameObject* CHECKOBJ<GameObject>(lua_State* L, int narg, bool error)
-        {
-            WorldObject* obj = CHECKOBJ<WorldObject>(L, narg, false);
-            TEST_OBJ(GameObject, obj, error, ToGameObject);
-        }
-        template<> Corpse* CHECKOBJ<Corpse>(lua_State* L, int narg, bool error)
-        {
-            WorldObject* obj = CHECKOBJ<WorldObject>(L, narg, false);
-            TEST_OBJ(Corpse, obj, error, ToCorpse);
-        }
-
-#undef TEST_OBJ
+        template<> Unit* CHECKOBJ<Unit>(lua_State* L, int narg, bool error);
+        template<> Player* CHECKOBJ<Player>(lua_State* L, int narg, bool error);
+        template<> Creature* CHECKOBJ<Creature>(lua_State* L, int narg, bool error);
+        template<> GameObject* CHECKOBJ<GameObject>(lua_State* L, int narg, bool error);
+        template<> Corpse* CHECKOBJ<Corpse>(lua_State* L, int narg, bool error);
 
         struct ObjectGUIDCheck
         {
