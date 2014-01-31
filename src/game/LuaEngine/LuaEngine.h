@@ -527,27 +527,27 @@ class Eluna
     return O->F();\
 }
 
-        template<> Unit* Eluna::CHECKOBJ<Unit>(lua_State* L, int narg, bool error)
+        template<> Unit* CHECKOBJ<Unit>(lua_State* L, int narg, bool error)
         {
             WorldObject* obj = CHECKOBJ<WorldObject>(L, narg, false);
             TEST_OBJ(Unit, obj, error, ToUnit);
         }
-        template<> Player* Eluna::CHECKOBJ<Player>(lua_State* L, int narg, bool error)
+        template<> Player* CHECKOBJ<Player>(lua_State* L, int narg, bool error)
         {
             WorldObject* obj = CHECKOBJ<WorldObject>(L, narg, false);
             TEST_OBJ(Player, obj, error, ToPlayer);
         }
-        template<> Creature* Eluna::CHECKOBJ<Creature>(lua_State* L, int narg, bool error)
+        template<> Creature* CHECKOBJ<Creature>(lua_State* L, int narg, bool error)
         {
             WorldObject* obj = CHECKOBJ<WorldObject>(L, narg, false);
             TEST_OBJ(Creature, obj, error, ToCreature);
         }
-        template<> GameObject* Eluna::CHECKOBJ<GameObject>(lua_State* L, int narg, bool error)
+        template<> GameObject* CHECKOBJ<GameObject>(lua_State* L, int narg, bool error)
         {
             WorldObject* obj = CHECKOBJ<WorldObject>(L, narg, false);
             TEST_OBJ(GameObject, obj, error, ToGameObject);
         }
-        template<> Corpse* Eluna::CHECKOBJ<Corpse>(lua_State* L, int narg, bool error)
+        template<> Corpse* CHECKOBJ<Corpse>(lua_State* L, int narg, bool error)
         {
             WorldObject* obj = CHECKOBJ<WorldObject>(L, narg, false);
             TEST_OBJ(Corpse, obj, error, ToCorpse);
