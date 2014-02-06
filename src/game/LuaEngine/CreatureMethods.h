@@ -409,7 +409,7 @@ namespace LuaCreature
 
     /*int IsTrigger(lua_State* L, Creature* creature)
     {
-        sEluna.Push(L, creature->isTrigger());
+        sEluna.Push(L, creature->IsTrigger());
         return 1;
     }*/
 
