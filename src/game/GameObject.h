@@ -620,6 +620,8 @@ class MANGOS_DLL_SPEC GameObject : public WorldObject
         void AddToWorld() override;
         void RemoveFromWorld() override;
 
+        void CleanupsBeforeDelete() override;
+
         bool Create(uint32 guidlow, uint32 name_id, Map* map, uint32 phaseMask, float x, float y, float z, float ang,
                     QuaternionData rotation = QuaternionData(), uint8 animprogress = GO_ANIMPROGRESS_DEFAULT, GOState go_state = GO_STATE_READY);
         void Update(uint32 update_diff, uint32 p_time) override;
@@ -773,6 +775,9 @@ class MANGOS_DLL_SPEC GameObject : public WorldObject
         GridReference<GameObject>& GetGridRef() { return m_gridRef; }
 
         GameObjectModel* m_model;
+
+        // Event handler
+        EventProcessor m_Events;
 
     protected:
         uint32      m_spellId;
