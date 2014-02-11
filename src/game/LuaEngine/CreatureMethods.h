@@ -134,6 +134,13 @@ namespace LuaCreature
         return 0;
     }
 
+    int MoveWaypoint(lua_State* L, Creature* creature)
+    {
+        // LuaUnit::PrepareMove(creature);
+        creature->GetMotionMaster()->MoveWaypoint();
+        return 0;
+    }
+
     int SetDefaultMovementType(lua_State* L, Creature* creature)
     {
         int32 type = sEluna.CHECKVAL<int32>(L, 2);
@@ -409,7 +416,7 @@ namespace LuaCreature
 
     /*int IsTrigger(lua_State* L, Creature* creature)
     {
-        sEluna.Push(L, creature->isTrigger());
+        sEluna.Push(L, creature->IsTrigger());
         return 1;
     }*/
 

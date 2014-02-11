@@ -1157,7 +1157,7 @@ namespace LuaPlayer
 
     int Whisper(lua_State* L, Player* player)
     {
-        std::string text = sEluna.CHECKVAL<std::string>(L, 1);
+        std::string text = sEluna.CHECKVAL<std::string>(L, 2);
         uint32 lang = sEluna.CHECKVAL<uint32>(L, 3);
         uint64 guid = sEluna.CHECKVAL<uint64>(L, 4);
 
@@ -1167,7 +1167,7 @@ namespace LuaPlayer
 
     int TextEmote(lua_State* L, Player* player)
     {
-        std::string text = sEluna.CHECKVAL<std::string>(L, 1);
+        std::string text = sEluna.CHECKVAL<std::string>(L, 2);
 
         player->TextEmote(text);
         return 0;
@@ -1175,7 +1175,7 @@ namespace LuaPlayer
 
     int Yell(lua_State* L, Player* player)
     {
-        std::string text = sEluna.CHECKVAL<std::string>(L, 1);
+        std::string text = sEluna.CHECKVAL<std::string>(L, 2);
         uint32 lang = sEluna.CHECKVAL<uint32>(L, 3);
 
         player->Yell(text, lang);
@@ -1184,7 +1184,7 @@ namespace LuaPlayer
 
     int Say(lua_State* L, Player* player)
     {
-        std::string text = sEluna.CHECKVAL<std::string>(L, 1);
+        std::string text = sEluna.CHECKVAL<std::string>(L, 2);
         uint32 lang = sEluna.CHECKVAL<uint32>(L, 3);
 
         player->Say(text, lang);

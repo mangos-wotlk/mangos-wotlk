@@ -147,7 +147,7 @@ namespace LuaPacket
     // WriteString(string)
     int WriteString(lua_State* L, WorldPacket* packet)
     {
-        std::string _val = sEluna.CHECKVAL<std::string>(L, 1);
+        std::string _val = sEluna.CHECKVAL<std::string>(L, 2);
         (*packet) << _val;
         return 0;
     }

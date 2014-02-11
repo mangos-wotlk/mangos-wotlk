@@ -54,7 +54,7 @@ namespace LuaSpell
 
     int Cast(lua_State* L, Spell* spell)
     {
-        bool skipCheck = lua_toboolean(L, 1);
+        bool skipCheck = sEluna.CHECKVAL<bool>(L, 2);
         spell->cast(skipCheck);
         return 0;
     }

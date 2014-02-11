@@ -22,21 +22,6 @@
 
 namespace LuaGameObject
 {
-    int GetRelativePoint(lua_State* L, GameObject* go)
-    {
-        if (!go || !go->IsInWorld())
-            return 0;
-
-        float dist = sEluna.CHECKVAL<float>(L, 2);
-        int deg = sEluna.CHECKVAL<int>(L, 3);
-
-        float o = MapManager::NormalizeOrientation(go->GetOrientation() + (deg * M_PI / 180));
-        sEluna.Push(L, go->GetPositionX() + (dist * cosf(o)));
-        sEluna.Push(L, go->GetPositionY() + (dist * sinf(o)));
-        sEluna.Push(L, o);
-        return 3;
-    }
-
     int SummonCreature(lua_State* L, GameObject* go)
     {
         if (!go || !go->IsInWorld())
@@ -191,20 +176,24 @@ namespace LuaGameObject
 
         lua_settop(L, 1);
         int functionRef = lua_ref(L, true);
-        sEluna.Push(L, sEluna.m_EventMgr.AddEvent(go->GetObjectGuid().GetRawValue(), functionRef, delay, repeats, go));
+        functionRef = sEluna.m_EventMgr.AddEvent(&go->m_Events, functionRef, delay, repeats, go);
+        if (functionRef)
+            sEluna.Push(L, functionRef);
+        else
+            sEluna.Push(L);
         return 1;
     }
 
     int RemoveEventById(lua_State* L, GameObject* go)
     {
         int eventId = sEluna.CHECKVAL<int>(L, 2);
-        sEluna.m_EventMgr.RemoveEvent(go->GetObjectGuid().GetRawValue(), eventId);
+        sEluna.m_EventMgr.RemoveEvent(&go->m_Events, eventId);
         return 0;
     }
 
     int RemoveEvents(lua_State* L, GameObject* go)
     {
-        sEluna.m_EventMgr.RemoveEvents(go->GetObjectGuid().GetRawValue());
+        sEluna.m_EventMgr.RemoveEvents(&go->m_Events);
         return 0;
     }
 

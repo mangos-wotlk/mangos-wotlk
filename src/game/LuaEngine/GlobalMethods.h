@@ -20,7 +20,7 @@
 #ifndef GLOBALMETHODS_H
 #define GLOBALMETHODS_H
 
-extern void StartEluna(bool restart);
+extern bool StartEluna();
 
 namespace LuaGlobalFunctions
 {
@@ -191,8 +191,8 @@ namespace LuaGlobalFunctions
 
     int ReloadEluna(lua_State* L)
     {
-        StartEluna(true);
-        return 0;
+        sEluna.Push(L, StartEluna());
+        return 1;
     }
 
     int GetPlayerByGUID(lua_State* L)
@@ -293,11 +293,11 @@ namespace LuaGlobalFunctions
         if (!query)
             return 0;
 
-        QueryResult* Result = WorldDatabase.Query(query);
-        if (!Result)
+        QueryResult* result = WorldDatabase.Query(query);
+        if (!result)
             return 0;
 
-        sEluna.Push(L, Result);
+        sEluna.Push(L, result);
         return 1;
     }
 
@@ -317,11 +317,11 @@ namespace LuaGlobalFunctions
         if (!query)
             return 0;
 
-        QueryResult* Result = CharacterDatabase.Query(query);
-        if (!Result)
+        QueryResult* result = CharacterDatabase.Query(query);
+        if (!result)
             return 0;
 
-        sEluna.Push(L, Result);
+        sEluna.Push(L, result);
         return 1;
     }
 
@@ -341,11 +341,11 @@ namespace LuaGlobalFunctions
         if (!query)
             return 0;
 
-        QueryResult* Result = LoginDatabase.Query(query);
-        if (!Result)
+        QueryResult* result = LoginDatabase.Query(query);
+        if (!result)
             return 0;
 
-        sEluna.Push(L, Result);
+        sEluna.Push(L, result);
         return 1;
     }
 
@@ -427,7 +427,11 @@ namespace LuaGlobalFunctions
 
         lua_settop(L, 1);
         int functionRef = lua_ref(L, true);
-        sEluna.Push(L, sEluna.m_EventMgr.AddEvent(&sEluna.m_EventMgr.GlobalEvents, functionRef, delay, repeats));
+        functionRef = sEluna.m_EventMgr.AddEvent(&sEluna.m_EventMgr.GlobalEvents, functionRef, delay, repeats);
+        if (functionRef)
+            sEluna.Push(L, functionRef);
+        else
+            sEluna.Push(L);
         return 1;
     }
 
@@ -613,9 +617,7 @@ namespace LuaGlobalFunctions
         if (opcode >= NUM_MSG_TYPES)
             return luaL_argerror(L, 1, "valid opcode expected");
 
-        WorldPacket* data = new WorldPacket((Opcodes)opcode, size);
-        sEluna.Push(L, data); // copies the packet
-        delete data; // Can delete original
+        sEluna.Push(L, new WorldPacket((Opcodes)opcode, size));
         return 1;
     }
 

@@ -26,41 +26,44 @@ INSTANTIATE_SINGLETON_1(Eluna);
 #include <dirent.h>
 #endif
 
-template<> WorldPacket const* ElunaTemplate<WorldPacket>::GetTPointer(WorldPacket const& obj) { return GetNewTPointer(obj); }
-// Mangos doesnt use autoptr, no need to copy object
-// template<> QueryResult const* ElunaTemplate<QueryResult>::GetTPointer(QueryResult const& obj) { return GetNewTPointer(obj); }
-
 extern void RegisterFunctions(lua_State* L);
 
-void StartEluna(bool restart)
+// Start or restart eluna. Returns true if started
+bool StartEluna()
 {
-    if (restart)
+    bool restart = false;
+    if (sEluna.L)
     {
+        restart = true;
         sHookMgr.OnEngineRestart();
         sLog.outString("[Eluna]: Restarting Lua Engine");
 
         // Unregisters and stops all timed events
         sEluna.m_EventMgr.RemoveEvents();
 
-        if (sEluna.L)
-        {
-            // Remove bindings
-            sEluna.PacketEventBindings.Clear();
-            sEluna.ServerEventBindings.Clear();
-            sEluna.PlayerEventBindings.Clear();
-            sEluna.GuildEventBindings.Clear();
-            sEluna.GroupEventBindings.Clear();
+        // Remove bindings
+        sEluna.PacketEventBindings.Clear();
+        sEluna.ServerEventBindings.Clear();
+        sEluna.PlayerEventBindings.Clear();
+        sEluna.GuildEventBindings.Clear();
+        sEluna.GroupEventBindings.Clear();
 
-            sEluna.CreatureEventBindings.Clear();
-            sEluna.CreatureGossipBindings.Clear();
-            sEluna.GameObjectEventBindings.Clear();
-            sEluna.GameObjectGossipBindings.Clear();
-            sEluna.ItemEventBindings.Clear();
-            sEluna.ItemGossipBindings.Clear();
-            sEluna.playerGossipBindings.Clear();
+        sEluna.CreatureEventBindings.Clear();
+        sEluna.CreatureGossipBindings.Clear();
+        sEluna.GameObjectEventBindings.Clear();
+        sEluna.GameObjectGossipBindings.Clear();
+        sEluna.ItemEventBindings.Clear();
+        sEluna.ItemGossipBindings.Clear();
+        sEluna.playerGossipBindings.Clear();
 
-            lua_close(sEluna.L);
-        }
+        lua_close(sEluna.L);
+    }
+
+    // Check config file for eluna is enabled or disabled
+    if (!sWorld.getConfig(CONFIG_BOOL_ELUNA_ENABLED))
+    {
+        sLog.outError("[Eluna]: LuaEngine is Disabled. (If you want to use it please set config in 'mangosd.conf')");
+        return false;
     }
 
     sEluna.L = luaL_newstate();
@@ -127,6 +130,7 @@ void StartEluna(bool restart)
 
     sLog.outString("[Eluna]: Loaded %u Lua scripts..", count);
     sLog.outString();
+    return true;
 }
 
 // Loads lua scripts from given directory
@@ -222,15 +226,6 @@ void Eluna::LoadDirectory(char* Dirname, LoadedScripts* lscr)
     }
     free(list);
 #endif
-}
-
-void Eluna::Initialize()
-{
-    // Check config file for eluna is enabled or disabled
-    if (sWorld.getConfig(CONFIG_BOOL_ELUNA_ENABLED))
-        StartEluna(false);
-    else
-        sLog.outError("[Eluna]: LuaEngine is Disabled. (If you want to use it please set config in 'mangosd.conf')");
 }
 
 void Eluna::report(lua_State* L)
@@ -410,11 +405,11 @@ void Eluna::Push(lua_State* L, Object const* obj)
 }
 template<> bool Eluna::CHECKVAL<bool>(lua_State* L, int narg)
 {
-    return lua_isnil(L, narg) || luaL_checkbool(L, narg);
+    return !lua_toboolean(L, narg) ? false : luaL_optnumber(L, narg, 1) ? true : false;
 }
 template<> bool Eluna::CHECKVAL<bool>(lua_State* L, int narg, bool def)
 {
-    return lua_isnone(L, narg) ? def : lua_isnil(L, narg) || lua_toboolean(L, narg);
+    return lua_isnone(L, narg) ? def : !lua_toboolean(L, narg) ? false : luaL_optnumber(L, narg, 1) ? true : false;
 }
 template<> float Eluna::CHECKVAL<float>(lua_State* L, int narg)
 {
@@ -719,8 +714,6 @@ void Eluna::Register(uint8 regtype, uint32 id, uint32 evt, int functionRef)
 
 void Eluna::EventBind::Clear()
 {
-    if (Bindings.empty())
-        return;
     for (ElunaEntryMap::iterator itr = Bindings.begin(); itr != Bindings.end(); ++itr)
     {
         for (ElunaBindingMap::iterator it = itr->second.begin(); it != itr->second.end(); ++it)
@@ -770,8 +763,6 @@ void Eluna::EventBind::EndCall() const
 
 void Eluna::EntryBind::Clear()
 {
-    if (Bindings.empty())
-        return;
     for (ElunaEntryMap::iterator itr = Bindings.begin(); itr != Bindings.end(); ++itr)
     {
         for (ElunaBindingMap::const_iterator it = itr->second.begin(); it != itr->second.end(); ++it)
@@ -795,7 +786,6 @@ void Eluna::EntryBind::Insert(uint32 entryId, int eventId, int funcRef)
 EventMgr::LuaEvent::LuaEvent(EventProcessor* _events, int _funcRef, uint32 _delay, uint32 _calls, Object* _obj) :
     events(_events), funcRef(_funcRef), delay(_delay), calls(_calls), obj(_obj)
 {
-    hasObject = _obj;
     if (_events)
         sEluna.m_EventMgr.LuaEvents[_events].insert(this); // Able to access the event if we have the processor
 }
@@ -814,8 +804,6 @@ EventMgr::LuaEvent::~LuaEvent()
 
 bool EventMgr::LuaEvent::Execute(uint64 time, uint32 diff)
 {
-    if (hasObject && !obj) // interrupt event if object doesnt exist anymore and should exist.
-        return true;
     bool remove = (calls == 1);
     if (!remove)
         events->AddEvent(this, events->CalculateTime(delay)); // Reschedule before calling incase RemoveEvents used

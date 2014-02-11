@@ -505,63 +505,121 @@ namespace LuaUnit
         return 0;
     }
 
-    /*int KnockbackFrom(lua_State* L, Unit* unit)
+    static void PrepareMove(Unit* unit)
     {
-        float x = sEluna.CHECKVAL<float>(L, 2);
-        float y = sEluna.CHECKVAL<float>(L, 3);
-        float speedXY = sEluna.CHECKVAL<float>(L, 4);
-        float speedZ = sEluna.CHECKVAL<float>(L, 5);
-        unit->KnockbackFrom(x, y, speedXY, speedZ);
-        return 0;
-    }*/
+        unit->GetMotionMaster()->MovementExpired(); // Chase
+        unit->StopMoving(); // Some
+        unit->GetMotionMaster()->Clear(); // all
+    }
 
-    /*int JumpTo(lua_State* L, Unit* unit)
+    int MoveStop(lua_State* L, Unit* unit)
     {
-        WorldObject* obj = sEluna.CHECKOBJ<WorldObject>(L, 2);
-        float speedZ = sEluna.CHECKVAL<float>(L, 3);
-        if (!obj)
-            return 0;
-
-        unit->JumpTo(obj, speedZ);
-        return 0;
-    }*/
-
-    /*int Jump(lua_State* L, Unit* unit)
-    {
-        float speedXY = sEluna.CHECKVAL<float>(L, 2);
-        float speedZ = sEluna.CHECKVAL<float>(L, 3);
-        bool forward = sEluna.CHECKVAL<bool>(L, 4, true);
-        unit->JumpTo(speedXY, speedZ, forward);
-        return 0;
-    }*/
-
-    int JumpToCoords(lua_State* L, Unit* unit)
-    {
-        float x = sEluna.CHECKVAL<float>(L, 2);
-        float y = sEluna.CHECKVAL<float>(L, 3);
-        float z = sEluna.CHECKVAL<float>(L, 4);
-        float speedXY = sEluna.CHECKVAL<float>(L, 5);
-        float speedZ = sEluna.CHECKVAL<float>(L, 6);
-        unit->GetMotionMaster()->MoveJump(x, y, z, speedXY, speedZ);
+        unit->StopMoving();
         return 0;
     }
 
-    /*int MoveCharge(lua_State* L, Unit* unit)
+    int MoveExpire(lua_State* L, Unit* unit)
     {
-        float x = sEluna.CHECKVAL<float>(L, 2);
-        float y = sEluna.CHECKVAL<float>(L, 3);
-        float z = sEluna.CHECKVAL<float>(L, 4);
-        float speed = sEluna.CHECKVAL<float>(L, 5);
-        unit->GetMotionMaster()->MoveCharge(x, y, z, speed);
+        bool reset = sEluna.CHECKVAL<bool>(L, 2, true);
+        unit->GetMotionMaster()->MovementExpired(reset);
         return 0;
-    }*/
+    }
+
+    int MoveClear(lua_State* L, Unit* unit)
+    {
+        bool reset = luaL_optbool(L, 2, true);
+        unit->GetMotionMaster()->Clear(reset);
+        return 0;
+    }
+
+    int MoveIdle(lua_State* L, Unit* unit)
+    {
+        // PrepareMove(unit);
+        unit->GetMotionMaster()->MoveIdle();
+        return 0;
+    }
+
+    int MoveRandom(lua_State* L, Unit* unit)
+    {
+        float radius = sEluna.CHECKVAL<float>(L, 2);
+        // PrepareMove(unit);
+        float x, y, z;
+        unit->GetPosition(x, y, z);
+        unit->GetMotionMaster()->MoveRandomAroundPoint(x, y, z, radius);
+        return 0;
+    }
+
+    int MoveHome(lua_State* L, Unit* unit)
+    {
+        // PrepareMove(unit);
+        unit->GetMotionMaster()->MoveTargetedHome();
+        return 0;
+    }
+
+    int MoveFollow(lua_State* L, Unit* unit)
+    {
+        Unit* target = sEluna.CHECKOBJ<Unit>(L, 2);
+        float dist = sEluna.CHECKVAL<float>(L, 3, 0.0f);
+        float angle = sEluna.CHECKVAL<float>(L, 4, 0.0f);
+        if (!target)
+            return 0;
+        // PrepareMove(unit);
+        unit->GetMotionMaster()->MoveFollow(target, dist, angle);
+        return 0;
+    }
 
     int MoveChase(lua_State* L, Unit* unit)
     {
         Unit* target = sEluna.CHECKOBJ<Unit>(L, 2);
         float dist = sEluna.CHECKVAL<float>(L, 3, 0.0f);
         float angle = sEluna.CHECKVAL<float>(L, 4, 0.0f);
+        if (!target)
+            return 0;
+        // PrepareMove(unit);
         unit->GetMotionMaster()->MoveChase(target, dist, angle);
+        return 0;
+    }
+
+    int MoveConfused(lua_State* L, Unit* unit)
+    {
+        // PrepareMove(unit);
+        unit->GetMotionMaster()->MoveConfused();
+        return 0;
+    }
+
+    int MoveFleeing(lua_State* L, Unit* unit)
+    {
+        Unit* target = sEluna.CHECKOBJ<Unit>(L, 2);
+        uint32 time = sEluna.CHECKVAL<uint32>(L, 3, 0);
+        if (!target)
+            return 0;
+        // PrepareMove(unit);
+        unit->GetMotionMaster()->MoveFleeing(target, time);
+        return 0;
+    }
+
+    int MoveTo(lua_State* L, Unit* unit)
+    {
+        uint32 id = sEluna.CHECKVAL<uint32>(L, 2);
+        float x = sEluna.CHECKVAL<float>(L, 3);
+        float y = sEluna.CHECKVAL<float>(L, 4);
+        float z = sEluna.CHECKVAL<float>(L, 5);
+        bool genPath = sEluna.CHECKVAL<bool>(L, 6, true);
+        // PrepareMove(unit);
+        unit->GetMotionMaster()->MovePoint(id, x, y, z, genPath);
+        return 0;
+    }
+
+    int MoveJump(lua_State* L, Unit* unit)
+    {
+        float x = sEluna.CHECKVAL<float>(L, 2);
+        float y = sEluna.CHECKVAL<float>(L, 3);
+        float z = sEluna.CHECKVAL<float>(L, 4);
+        float zSpeed = sEluna.CHECKVAL<float>(L, 5);
+        float maxHeight = sEluna.CHECKVAL<float>(L, 6);
+        uint32 id = sEluna.CHECKVAL<uint32>(L, 7, 0);
+        // PrepareMove(unit);
+        unit->GetMotionMaster()->MoveJump(x, y, z, zSpeed, maxHeight, id);
         return 0;
     }
 
@@ -598,49 +656,6 @@ namespace LuaUnit
     {
         bool apply = sEluna.CHECKVAL<bool>(L, 2, true);
         unit->SetControlled(apply, UNIT_STATE_FLEEING);
-        return 0;
-    }*/
-
-    int MoveTo(lua_State* L, Unit* unit)
-    {
-        float id = sEluna.CHECKVAL<float>(L, 2);
-        float x = sEluna.CHECKVAL<float>(L, 3);
-        float y = sEluna.CHECKVAL<float>(L, 4);
-        float z = sEluna.CHECKVAL<float>(L, 5);
-        bool generatePath = sEluna.CHECKVAL<bool>(L, 6, true);
-        unit->GetMotionMaster()->MovePoint(id, x, y, z, generatePath);
-        return 0;
-    }
-
-    int MoveFollow(lua_State* L, Unit* unit)
-    {
-        Unit* target = sEluna.CHECKOBJ<Unit>(L, 2);
-        float dist = sEluna.CHECKVAL<float>(L, 3);
-        float angle = sEluna.CHECKVAL<float>(L, 4);
-        unit->GetMotionMaster()->MoveFollow(target, dist, angle);
-        return 0;
-    }
-
-    int MoveClear(lua_State* L, Unit* unit)
-    {
-        unit->GetMotionMaster()->Clear();
-        return 0;
-    }
-
-    int MoveRandom(lua_State* L, Unit* unit)
-    {
-        float radius = sEluna.CHECKVAL<float>(L, 2);
-        float x, y, z;
-        unit->GetPosition(x, y, z);
-        unit->GetMotionMaster()->MoveRandomAroundPoint(x, y, z, radius);
-        return 0;
-    }
-
-    /*int MoveRotate(lua_State* L, Unit* unit)
-    {
-        uint32 time = sEluna.CHECKVAL<uint32>(L, 2);
-        bool left = sEluna.CHECKVAL<bool>(L, 3, true);
-        unit->GetMotionMaster()->MoveRotate(time, left ? ROTATE_DIRECTION_LEFT : ROTATE_DIRECTION_RIGHT);
         return 0;
     }*/
 
@@ -1308,13 +1323,17 @@ namespace LuaUnit
 
     int RegisterEvent(lua_State* L, Unit* unit)
     {
-        luaL_checktype(L, 1, LUA_TFUNCTION);
+        luaL_checktype(L, 2, LUA_TFUNCTION);
         uint32 delay = sEluna.CHECKVAL<uint32>(L, 3);
         uint32 repeats = sEluna.CHECKVAL<uint32>(L, 4);
 
-        lua_settop(L, 1);
+        lua_settop(L, 2);
         int functionRef = lua_ref(L, true);
-        sEluna.Push(L, sEluna.m_EventMgr.AddEvent(&unit->m_Events, functionRef, delay, repeats, unit));
+        functionRef = sEluna.m_EventMgr.AddEvent(&unit->m_Events, functionRef, delay, repeats, unit);
+        if (functionRef)
+            sEluna.Push(L, functionRef);
+        else
+            sEluna.Push(L);
         return 1;
     }
 
@@ -1569,12 +1588,6 @@ namespace LuaUnit
         unit->RemoveCharmAuras();
         return 0;
     }*/
-
-    int StopMoving(lua_State* L, Unit* unit)
-    {
-        unit->StopMoving();
-        return 0;
-    }
 
     int AddUnitState(lua_State* L, Unit* unit)
     {
