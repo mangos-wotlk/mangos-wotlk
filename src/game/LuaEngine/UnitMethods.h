@@ -1026,7 +1026,7 @@ namespace LuaUnit
         unit->SetWaterWalk(enable);
         return 0;
     }
-	
+
     int SetStandState(lua_State* L, Unit* unit)
     {
         uint8 state = sEluna.CHECKVAL<uint8>(L, 2);
