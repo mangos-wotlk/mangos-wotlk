@@ -511,11 +511,6 @@ class Eluna
         {
             return ElunaTemplate<T>::check(L, narg, error);
         }
-        template<> Unit* CHECKOBJ<Unit>(lua_State* L, int narg, bool error);
-        template<> Player* CHECKOBJ<Player>(lua_State* L, int narg, bool error);
-        template<> Creature* CHECKOBJ<Creature>(lua_State* L, int narg, bool error);
-        template<> GameObject* CHECKOBJ<GameObject>(lua_State* L, int narg, bool error);
-        template<> Corpse* CHECKOBJ<Corpse>(lua_State* L, int narg, bool error);
 
         struct ObjectGUIDCheck
         {
@@ -586,6 +581,12 @@ class Eluna
             WorldObjectInRangeCheck(WorldObjectInRangeCheck const&);
         };
 };
+template<> Unit* Eluna::CHECKOBJ<Unit>(lua_State* L, int narg, bool error);
+template<> Player* Eluna::CHECKOBJ<Player>(lua_State* L, int narg, bool error);
+template<> Creature* Eluna::CHECKOBJ<Creature>(lua_State* L, int narg, bool error);
+template<> GameObject* Eluna::CHECKOBJ<GameObject>(lua_State* L, int narg, bool error);
+template<> Corpse* Eluna::CHECKOBJ<Corpse>(lua_State* L, int narg, bool error);
+
 #define sEluna MaNGOS::Singleton<Eluna>::Instance()
 
 class LuaTaxiMgr
