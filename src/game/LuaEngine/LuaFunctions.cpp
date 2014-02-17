@@ -532,6 +532,8 @@ ElunaRegister<Player> PlayerMethods[] =
     {"HasSpellCooldown", &LuaPlayer::HasSpellCooldown},     // :HasSpellCooldown(spellId) - Returns true if the spell is on cooldown
     {"IsInWater", &LuaPlayer::IsInWater},                   // :IsInWater() - Returns true if the player is in water
     {"CanFly", &LuaPlayer::CanFly},                         // :CanFly() - Returns true if the player can fly
+    {"IsMoving", &LuaPlayer::IsMoving},                     // :IsMoving()
+    {"IsFlying", &LuaPlayer::IsFlying},                     // :IsFlying()
 
     // Gossip
     {"GossipMenuAddItem", &LuaPlayer::GossipMenuAddItem},   // :GossipMenuAddItem(icon, msg, sender, intid[, code, popup, money])
@@ -879,7 +881,7 @@ ElunaRegister<Quest> QuestMethods[] =
     // Getters
     {"GetId", &LuaQuest::GetId},                            // :GetId() - Returns the quest's Id
     {"GetLevel", &LuaQuest::GetLevel},                      // :GetLevel() - Returns the quest's level
-    {"GetMaxLevel", &LuaQuest::GetMaxLevel},                // :GetMaxLevel() - Returns the quest's max level
+    // {"GetMaxLevel", &LuaQuest::GetMaxLevel},             // :GetMaxLevel() - Returns the quest's max level
     {"GetMinLevel", &LuaQuest::GetMinLevel},                // :GetMinLevel() - Returns the quest's min level
     {"GetNextQuestId", &LuaQuest::GetNextQuestId},          // :GetNextQuestId() - Returns the quest's next quest ID
     {"GetPrevQuestId", &LuaQuest::GetPrevQuestId},          // :GetPrevQuestId() - Returns the quest's previous quest ID
@@ -1065,7 +1067,7 @@ ElunaRegister<Corpse> CorpseMethods[] =
 ElunaRegister<Weather> WeatherMethods[] =
 {
     // Getters
-    {"GetScriptId", &LuaWeather::GetScriptId},              // :GetScriptId() - Returns the weather's scriptId
+    // {"GetScriptId", &LuaWeather::GetScriptId},           // :GetScriptId() - Returns the weather's scriptId
     {"GetZoneId", &LuaWeather::GetZoneId},                  // :GetZoneId() - Returns the weather's zoneId
 
     // Setters
