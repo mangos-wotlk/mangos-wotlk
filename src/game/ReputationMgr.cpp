@@ -235,7 +235,7 @@ void ReputationMgr::Initialize()
 void ReputationMgr::SetReputation(FactionEntry const* factionEntry, int32 standing, bool incremental)
 {
     // used by eluna
-    sHookMgr.OnReputationChange(m_player, factionEntry->ID, standing, incremental);
+    sHookMgr->OnReputationChange(m_player, factionEntry->ID, standing, incremental);
 
     bool anyRankIncreased = false;
 

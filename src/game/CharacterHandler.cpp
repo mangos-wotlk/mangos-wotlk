@@ -484,7 +484,7 @@ void WorldSession::HandleCharCreateOpcode(WorldPacket& recv_data)
     sLog.outChar("Account: %d (IP: %s) Create Character:[%s] (guid: %u)", GetAccountId(), IP_str.c_str(), name.c_str(), pNewChar->GetGUIDLow());
 
     // used by eluna
-    sHookMgr.OnCreate(pNewChar);
+    sHookMgr->OnCreate(pNewChar);
 
     delete pNewChar;                                        // created only to call SaveToDB()
 }
@@ -539,7 +539,7 @@ void WorldSession::HandleCharDeleteOpcode(WorldPacket& recv_data)
     sLog.outChar("Account: %d (IP: %s) Delete Character:[%s] (guid: %u)", GetAccountId(), IP_str.c_str(), name.c_str(), lowguid);
 
     // used by eluna
-    sHookMgr.OnDelete(lowguid);
+    sHookMgr->OnDelete(lowguid);
 
     if (sLog.IsOutCharDump())                               // optimize GetPlayerDump call
     {
@@ -805,7 +805,7 @@ void WorldSession::HandlePlayerLogin(LoginQueryHolder* holder)
 
     // used by eluna
     if (pCurrChar->HasAtLoginFlag(AT_LOGIN_FIRST))
-        sHookMgr.OnFirstLogin(pCurrChar);
+        sHookMgr->OnFirstLogin(pCurrChar);
 
     if (pCurrChar->HasAtLoginFlag(AT_LOGIN_FIRST))
         pCurrChar->RemoveAtLoginFlag(AT_LOGIN_FIRST);
@@ -841,7 +841,7 @@ void WorldSession::HandlePlayerLogin(LoginQueryHolder* holder)
     pCurrChar->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_ON_LOGIN, 1);
 
     // used by eluna
-    sHookMgr.OnLogin(pCurrChar);
+    sHookMgr->OnLogin(pCurrChar);
 
     delete holder;
 }

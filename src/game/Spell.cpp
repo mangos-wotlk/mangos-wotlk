@@ -3328,7 +3328,7 @@ void Spell::cast(bool skipCheck)
         ((Player*)m_caster)->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_CAST_SPELL, m_spellInfo->Id);
 
         // used by eluna
-        sHookMgr.OnSpellCast(m_caster->ToPlayer(), this, skipCheck);
+        sHookMgr->OnSpellCast(m_caster->ToPlayer(), this, skipCheck);
     }
 
     FillTargetMap();
