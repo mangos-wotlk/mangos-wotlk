@@ -385,17 +385,6 @@ bool ChatHandler::HandleReloadConfigCommand(char* /*args*/)
     return true;
 }
 
-extern bool StartEluna();
-bool ChatHandler::HandleReloadElunaCommand(char* /*args*/)
-{
-    sLog.outString("Re-Loading Eluna LuaEngine...");
-    if (StartEluna())
-        SendGlobalSysMessage("Eluna LuaEngine reloaded.");
-    else
-        SendGlobalSysMessage("Eluna Lua Engine is disabled can't reload.");
-    return true;
-}
-
 bool ChatHandler::HandleReloadAchievementCriteriaRequirementCommand(char* /*args*/)
 {
     sLog.outString("Re-Loading Additional Achievement Criteria Requirements Data...");
