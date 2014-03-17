@@ -33,12 +33,12 @@ compiler:
 
 before_install:
 # Get Eluna
-# Go to /src/LuaEngine/
+# Go to Source/src/LuaEngine/
     - cd src/game/LuaEngine/
 # init git and get latest eluna
     - git init
     - git pull https://github.com/Rochet2/Eluna.git master
-# Go to source/
+# Go to Source/
     - cd ../../../
 
 script:
