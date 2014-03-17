@@ -33,7 +33,7 @@ compiler:
 
 before_install:
 # Get Eluna
-# Go to Source/src/LuaEngine/
+# Go to Source/src/game/LuaEngine/
     - cd src/game/LuaEngine/
 # init git and get latest eluna
     - git init
