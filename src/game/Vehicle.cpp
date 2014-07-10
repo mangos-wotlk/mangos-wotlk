@@ -517,9 +517,16 @@ void VehicleInfo::ApplySeatMods(Unit* passenger, uint32 seatFlags)
 {
     Unit* pVehicle = (Unit*)m_owner;                        // Vehicles are alawys Unit
 
+    if (seatFlags & SEAT_FLAG_NOT_SELECTABLE)
+        passenger->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
+
     if (passenger->GetTypeId() == TYPEID_PLAYER)
     {
         Player* pPlayer = (Player*)passenger;
+
+        // group update
+        if (pPlayer->GetGroup())
+            pPlayer->SetGroupUpdateFlag(GROUP_UPDATE_FLAG_VEHICLE_SEAT);
 
         if (seatFlags & SEAT_FLAG_CAN_CONTROL)
         {
@@ -546,9 +553,6 @@ void VehicleInfo::ApplySeatMods(Unit* passenger, uint32 seatFlags)
                     ((Creature*)pVehicle)->SetWalk(true, true);
                 }
             }
-
-            // Reinitialize AI after player control is set
-            ((Creature*)pVehicle)->AIM_Initialize();
         }
 
         if (seatFlags & SEAT_FLAG_CAN_CAST)
@@ -567,9 +571,6 @@ void VehicleInfo::ApplySeatMods(Unit* passenger, uint32 seatFlags)
             pVehicle->SetCharmerGuid(passenger->GetObjectGuid());
         }
 
-        if (seatFlags & SEAT_FLAG_NOT_SELECTABLE)
-            passenger->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
-
         ((Creature*)passenger)->AI()->SetCombatMovement(false);
         // Not entirely sure how this must be handled in relation to CONTROL
         // But in any way this at least would require some changes in the movement system most likely
@@ -583,9 +584,16 @@ void VehicleInfo::RemoveSeatMods(Unit* passenger, uint32 seatFlags)
 {
     Unit* pVehicle = (Unit*)m_owner;
 
+    if (seatFlags & SEAT_FLAG_NOT_SELECTABLE)
+        passenger->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
+
     if (passenger->GetTypeId() == TYPEID_PLAYER)
     {
         Player* pPlayer = (Player*)passenger;
+
+        // group update
+        if (pPlayer->GetGroup())
+            pPlayer->SetGroupUpdateFlag(GROUP_UPDATE_FLAG_VEHICLE_SEAT);
 
         if (seatFlags & SEAT_FLAG_CAN_CONTROL)
         {
@@ -600,9 +608,6 @@ void VehicleInfo::RemoveSeatMods(Unit* passenger, uint32 seatFlags)
 
             // must be called after movement control unapplying
             pPlayer->GetCamera().ResetView();
-
-            // Reinitialize AI after player control is removed
-            ((Creature*)pVehicle)->AIM_Initialize();
         }
 
         if (seatFlags & SEAT_FLAG_CAN_CAST)
@@ -615,9 +620,6 @@ void VehicleInfo::RemoveSeatMods(Unit* passenger, uint32 seatFlags)
             passenger->SetCharm(NULL);
             pVehicle->SetCharmerGuid(ObjectGuid());
         }
-
-        if (seatFlags & SEAT_FLAG_NOT_SELECTABLE)
-            passenger->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
 
         // Reinitialize movement
         ((Creature*)passenger)->AI()->SetCombatMovement(true, true);
