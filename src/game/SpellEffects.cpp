@@ -10813,7 +10813,10 @@ void Spell::EffectWMODamage(SpellEffectIndex /*effIdx*/)
 {
     DEBUG_LOG("Effect: WMODamage");
 
-    if (!gameObjTarget || gameObjTarget->GetGoType() != GAMEOBJECT_TYPE_DESTRUCTIBLE_BUILDING)
+    if (!gameObjTarget)
+        return;
+
+    if (gameObjTarget->GetGoType() != GAMEOBJECT_TYPE_DESTRUCTIBLE_BUILDING)
     {
         sLog.outError("Spell::EffectWMODamage called without valid targets. Spell Id %u", m_spellInfo->Id);
         return;
@@ -10834,7 +10837,10 @@ void Spell::EffectWMORepair(SpellEffectIndex /*effIdx*/)
 {
     DEBUG_LOG("Effect: WMORepair");
 
-    if (!gameObjTarget || gameObjTarget->GetGoType() != GAMEOBJECT_TYPE_DESTRUCTIBLE_BUILDING)
+    if (!gameObjTarget)
+        return;
+
+    if (gameObjTarget->GetGoType() != GAMEOBJECT_TYPE_DESTRUCTIBLE_BUILDING)
     {
         sLog.outError("Spell::EffectWMORepair called without valid targets. Spell Id %u", m_spellInfo->Id);
         return;
@@ -10852,7 +10858,10 @@ void Spell::EffectWMOChange(SpellEffectIndex effIdx)
 {
     DEBUG_LOG("Effect: WMOChange");
 
-    if (!gameObjTarget || gameObjTarget->GetGoType() != GAMEOBJECT_TYPE_DESTRUCTIBLE_BUILDING)
+    if (!gameObjTarget)
+        return;
+
+    if (gameObjTarget->GetGoType() != GAMEOBJECT_TYPE_DESTRUCTIBLE_BUILDING)
     {
         sLog.outError("Spell::EffectWMOChange called without valid targets. Spell Id %u", m_spellInfo->Id);
         return;
