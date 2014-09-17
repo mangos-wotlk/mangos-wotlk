@@ -75,6 +75,7 @@ class UpdateMask;
 class InstanceData;
 class TerrainInfo;
 class TransportInfo;
+class ElunaEventProcessor;
 struct MangosStringLocale;
 
 typedef UNORDERED_MAP<Player*, UpdateData> UpdateDataMapType;
@@ -457,7 +458,7 @@ class MANGOS_DLL_SPEC WorldObject : public Object
 
         virtual ~WorldObject();
 
-        virtual void Update(uint32 /*update_diff*/, uint32 /*time_diff*/) {}
+        virtual void Update(uint32 update_diff, uint32 /*time_diff*/);
 
         void _Create(uint32 guidlow, HighGuid guidhigh, uint32 phaseMask);
 
@@ -635,6 +636,8 @@ class MANGOS_DLL_SPEC WorldObject : public Object
         bool PrintCoordinatesError(float x, float y, float z, char const* descr) const;
 
         virtual void StartGroupLoot(Group* /*group*/, uint32 /*timer*/) {}
+
+        ElunaEventProcessor* const elunaEvents;
 
     protected:
         explicit WorldObject();
