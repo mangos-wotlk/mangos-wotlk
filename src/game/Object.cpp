@@ -972,7 +972,7 @@ void WorldObject::Update(uint32 update_diff, uint32 /*time_diff*/)
     elunaEvents->Update(update_diff);
 }
 
-void WorldObject::_Create(uint32 guidlow, HighGuid guidhigh)
+void WorldObject::_Create(uint32 guidlow, HighGuid guidhigh, uint32 phaseMask)
 {
     Object::_Create(guidlow, 0, guidhigh);
     m_phaseMask = phaseMask;
