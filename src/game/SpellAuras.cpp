@@ -301,7 +301,7 @@ pAuraHandler AuraHandler[TOTAL_AURAS] =
     &Aura::HandleAuraModExpertise,                          //240 SPELL_AURA_MOD_EXPERTISE
     &Aura::HandleForceMoveForward,                          //241 Forces the caster to move forward
     &Aura::HandleUnused,                                    //242 SPELL_AURA_MOD_SPELL_DAMAGE_FROM_HEALING (only 2 test spels in 3.2.2a)
-    &Aura::HandleNULL,                                      //243 faction reaction override spells
+    &Aura::HandleFactionOverride,                           //243 SPELL_AURA_FACTION_OVERRIDE
     &Aura::HandleComprehendLanguage,                        //244 SPELL_AURA_COMPREHEND_LANGUAGE
     &Aura::HandleNoImmediateEffect,                         //245 SPELL_AURA_MOD_DURATION_OF_MAGIC_EFFECTS     implemented in Unit::CalculateAuraDuration
     &Aura::HandleNoImmediateEffect,                         //246 SPELL_AURA_MOD_DURATION_OF_EFFECTS_BY_DISPEL implemented in Unit::CalculateAuraDuration
@@ -337,12 +337,12 @@ pAuraHandler AuraHandler[TOTAL_AURAS] =
     &Aura::HandleNULL,                                      //276 mod damage % mechanic?
     &Aura::HandleNoImmediateEffect,                         //277 SPELL_AURA_MOD_MAX_AFFECTED_TARGETS Use SpellClassMask for spell select
     &Aura::HandleAuraModDisarm,                             //278 SPELL_AURA_MOD_DISARM_RANGED disarm ranged weapon
-    &Aura::HandleNULL,                                      //279 visual effects? 58836 and 57507
+    &Aura::HandleMirrorName,                                //279 SPELL_AURA_MIRROR_NAME                target receives the casters name
     &Aura::HandleModTargetArmorPct,                         //280 SPELL_AURA_MOD_TARGET_ARMOR_PCT
     &Aura::HandleNoImmediateEffect,                         //281 SPELL_AURA_MOD_HONOR_GAIN             implemented in Player::RewardHonor
     &Aura::HandleAuraIncreaseBaseHealthPercent,             //282 SPELL_AURA_INCREASE_BASE_HEALTH_PERCENT
     &Aura::HandleNoImmediateEffect,                         //283 SPELL_AURA_MOD_HEALING_RECEIVED       implemented in Unit::SpellHealingBonusTaken
-    &Aura::HandleNULL,                                      //284 51 spells
+    &Aura::HandleTriggerLinkedAura,                         //284 SPELL_AURA_TRIGGER_LINKED_AURA
     &Aura::HandleAuraModAttackPowerOfArmor,                 //285 SPELL_AURA_MOD_ATTACK_POWER_OF_ARMOR  implemented in Player::UpdateAttackPowerAndDamage
     &Aura::HandleNoImmediateEffect,                         //286 SPELL_AURA_ABILITY_PERIODIC_CRIT      implemented in Aura::IsCritFromAbilityAura called from Aura::PeriodicTick
     &Aura::HandleNoImmediateEffect,                         //287 SPELL_AURA_DEFLECT_SPELLS             implemented in Unit::MagicSpellHitResult and Unit::MeleeSpellHitResult
@@ -372,7 +372,7 @@ pAuraHandler AuraHandler[TOTAL_AURAS] =
     &Aura::HandleNULL,                                      //311 0 spells in 3.3
     &Aura::HandleNULL,                                      //312 0 spells in 3.3
     &Aura::HandleNULL,                                      //313 0 spells in 3.3
-    &Aura::HandleNULL,                                      //314 1 test spell (reduce duration of silince/magic)
+    &Aura::HandlePreventResurrection,                       //314 SPELL_AURA_PREVENT_RESURRECTION
     &Aura::HandleNULL,                                      //315 underwater walking
     &Aura::HandleNULL                                       //316 makes haste affect HOT/DOT ticks
 };
@@ -2267,6 +2267,9 @@ void Aura::HandleAuraDummy(bool apply, bool Real)
 
                         return;
                     }
+                    case 46637:                             // Break Ice
+                        target->CastSpell(target, 46638, true, NULL, this);
+                        return;
                     case 46699:                             // Requires No Ammo
                         if (target->GetTypeId() == TYPEID_PLAYER)
                             // not use ammo and not allow use
@@ -2763,7 +2766,7 @@ void Aura::HandleAuraDummy(bool apply, bool Real)
             }
             case 46637:                                     // Break Ice
             {
-                target->CastSpell(target, 46638, true);
+                target->CastSpell(target, 47030, true, NULL, this);
                 return;
             }
             case 48385:                                     // Create Spirit Fount Beam
@@ -3461,7 +3464,6 @@ void Aura::HandleAuraModShapeshift(bool apply, bool Real)
     }
 
     uint32 modelid = 0;
-    Powers PowerType = POWER_MANA;
     Unit* target = GetTarget();
 
     if (ssEntry->modelID_A)
@@ -3537,6 +3539,8 @@ void Aura::HandleAuraModShapeshift(bool apply, bool Real)
 
     if (apply)
     {
+        Powers PowerType = POWER_MANA;
+
         // remove other shapeshift before applying a new one
         target->RemoveSpellsCausingAura(SPELL_AURA_MOD_SHAPESHIFT, GetHolder());
 
@@ -8390,9 +8394,19 @@ void Aura::PeriodicDummyTick()
         }
         case SPELLFAMILY_MAGE:
         {
-            // Mirror Image
-//            if (spell->Id == 55342)
-//                return;
+            switch (spell->Id)
+            {
+                case 55342:                                 // Mirror Image
+                {
+                    if (GetAuraTicks() != 1)
+                        return;
+                    if (Unit* pCaster = GetCaster())
+                        pCaster->CastSpell(pCaster, spell->EffectTriggerSpell[GetEffIndex()], true, NULL, this);
+                    return;
+                }
+                default:
+                    break;
+            }
             break;
         }
         case SPELLFAMILY_DRUID:
@@ -8754,6 +8768,29 @@ void Aura::HandleAuraMirrorImage(bool apply, bool Real)
     }
 }
 
+void Aura::HandleMirrorName(bool apply, bool Real)
+{
+    if (!Real)
+        return;
+
+    Unit* caster = GetCaster();
+    Unit* target = GetTarget();
+
+    if (!target || !caster || target->GetTypeId() != TYPEID_UNIT)
+        return;
+
+    if (apply)
+        target->SetName(caster->GetName());
+    else
+    {
+        CreatureInfo const* cinfo = ((Creature*)target)->GetCreatureInfo();
+        if (!cinfo)
+            return;
+
+        target->SetName(cinfo->Name);
+    }
+}
+
 void Aura::HandleAuraConvertRune(bool apply, bool Real)
 {
     if (!Real)
@@ -8890,6 +8927,60 @@ void Aura::HandleAuraSetVehicleId(bool apply, bool Real)
         return;
 
     GetTarget()->SetVehicleId(apply ? GetMiscValue() : 0, 0);
+}
+
+void Aura::HandlePreventResurrection(bool apply, bool Real)
+{
+    if (!Real)
+        return;
+
+    Unit* target = GetTarget();
+    if (!target || target->GetTypeId() != TYPEID_PLAYER)
+        return;
+
+    if (apply)
+        target->RemoveByteFlag(PLAYER_FIELD_BYTES, 0, PLAYER_FIELD_BYTE_RELEASE_TIMER);
+    else if (!target->GetMap()->Instanceable())
+        target->SetByteFlag(PLAYER_FIELD_BYTES, 0, PLAYER_FIELD_BYTE_RELEASE_TIMER);
+}
+
+void Aura::HandleFactionOverride(bool apply, bool Real)
+{
+    if (!Real)
+        return;
+
+    Unit* target = GetTarget();
+    if (!target || !sFactionTemplateStore.LookupEntry(GetMiscValue()))
+        return;
+
+    if (apply)
+        target->setFaction(GetMiscValue());
+    else
+        target->RestoreOriginalFaction();
+}
+
+void Aura::HandleTriggerLinkedAura(bool apply, bool Real)
+{
+    if (!Real)
+        return;
+
+    uint32 linkedSpell = GetSpellProto()->EffectTriggerSpell[m_effIndex];
+    SpellEntry const* spellInfo = sSpellStore.LookupEntry(linkedSpell);
+    if (!spellInfo)
+    {
+        sLog.outError("Aura::HandleTriggerLinkedAura for spell %u effect %u triggering unknown spell id %u", GetSpellProto()->Id, m_effIndex, linkedSpell);
+        return;
+    }
+
+    Unit* target = GetTarget();
+
+    if (apply)
+    {
+        // ToDo: handle various cases where base points need to be applied!
+        target->CastSpell(target, spellInfo, true, NULL, this);
+    }
+    else
+        target->RemoveAurasByCasterSpell(linkedSpell, GetCasterGuid());
 }
 
 bool Aura::IsLastAuraOnHolder()

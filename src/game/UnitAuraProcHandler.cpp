@@ -50,7 +50,7 @@ pAuraProcHandler AuraProcHandler[TOTAL_AURAS] =
     &Unit::HandleNULLProc,                                  // 15 SPELL_AURA_DAMAGE_SHIELD
     &Unit::HandleNULLProc,                                  // 16 SPELL_AURA_MOD_STEALTH
     &Unit::HandleNULLProc,                                  // 17 SPELL_AURA_MOD_STEALTH_DETECT
-    &Unit::HandleNULLProc,                                  // 18 SPELL_AURA_MOD_INVISIBILITY
+    &Unit::HandleInvisibilityAuraProc,                      // 18 SPELL_AURA_MOD_INVISIBILITY
     &Unit::HandleNULLProc,                                  // 19 SPELL_AURA_MOD_INVISIBILITY_DETECTION
     &Unit::HandleNULLProc,                                  // 20 SPELL_AURA_OBS_MOD_HEALTH
     &Unit::HandleNULLProc,                                  // 21 SPELL_AURA_OBS_MOD_MANA
@@ -1171,7 +1171,6 @@ SpellAuraProcResult Unit::HandleDummyAuraProc(Unit* pVictim, uint32 damage, Aura
                     // Remove only single aura from stack and remove holder if its last stack
                     RemoveAuraHolderFromStack(74396);
                     return SPELL_AURA_PROC_OK;
-                    break;
                 }
             }
             break;
@@ -4164,4 +4163,13 @@ SpellAuraProcResult Unit::HandleRemoveByDamageChanceProc(Unit* /*pVictim*/, uint
     }
 
     return SPELL_AURA_PROC_FAILED;
+}
+
+SpellAuraProcResult Unit::HandleInvisibilityAuraProc(Unit* pVictim, uint32 damage, Aura* triggeredByAura, SpellEntry const *procSpell, uint32 procFlag, uint32 procEx, uint32 cooldown)
+{
+    if (triggeredByAura->GetSpellProto()->HasAttribute(SPELL_ATTR_PASSIVE) || triggeredByAura->GetSpellProto()->HasAttribute(SPELL_ATTR_EX_NEGATIVE))
+        return SPELL_AURA_PROC_FAILED;
+
+    RemoveAurasDueToSpell(triggeredByAura->GetId());
+    return SPELL_AURA_PROC_OK;
 }

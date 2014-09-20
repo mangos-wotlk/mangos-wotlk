@@ -202,11 +202,11 @@ pEffect SpellEffects[TOTAL_SPELL_EFFECTS] =
     &Spell::EffectLeapBack,                                 //138 SPELL_EFFECT_LEAP_BACK                Leap back
     &Spell::EffectClearQuest,                               //139 SPELL_EFFECT_CLEAR_QUEST              (misc - is quest ID)
     &Spell::EffectForceCast,                                //140 SPELL_EFFECT_FORCE_CAST
-    &Spell::EffectNULL,                                     //141 SPELL_EFFECT_141                      damage and reduce speed?
+    &Spell::EffectForceCast,                                //141 SPELL_EFFECT_FORCE_CAST_WITH_VALUE
     &Spell::EffectTriggerSpellWithValue,                    //142 SPELL_EFFECT_TRIGGER_SPELL_WITH_VALUE
     &Spell::EffectApplyAreaAura,                            //143 SPELL_EFFECT_APPLY_AREA_AURA_OWNER
     &Spell::EffectKnockBackFromPosition,                    //144 SPELL_EFFECT_KNOCKBACK_FROM_POSITION
-    &Spell::EffectNULL,                                     //145 SPELL_EFFECT_145                      Black Hole Effect
+    &Spell::EffectGravityPull,                              //145 SPELL_EFFECT_GRAVITY_PULL
     &Spell::EffectActivateRune,                             //146 SPELL_EFFECT_ACTIVATE_RUNE
     &Spell::EffectQuestFail,                                //147 SPELL_EFFECT_QUEST_FAIL               quest fail
     &Spell::EffectNULL,                                     //148 SPELL_EFFECT_148                      single spell: Inflicts Fire damage to an enemy.
@@ -1931,6 +1931,28 @@ void Spell::EffectDummy(SpellEffectIndex eff_idx)
                         pGo->Refresh();
                     }
 
+                    return;
+                }
+                case 46292:                                 // Cataclysm Breath
+                {
+                    if (!unitTarget || unitTarget->GetTypeId() != TYPEID_PLAYER)
+                        return;
+
+                    uint32 spellId = 0;
+
+                    switch (urand(0, 7))
+                    {
+                        case 0: spellId = 46293; break;     // Corrosive Poison
+                        case 1: spellId = 46294; break;     // Fevered Fatigue
+                        case 2: spellId = 46295; break;     // Hex
+                        case 3: spellId = 46296; break;     // Necrotic Poison
+                        case 4: spellId = 46297; break;     // Piercing Shadow
+                        case 5: spellId = 46298; break;     // Shrink
+                        case 6: spellId = 46299; break;     // Wavering Will
+                        case 7: spellId = 46300; break;     // Withered Touch
+                    }
+
+                    m_caster->CastSpell(unitTarget, spellId, true);
                     return;
                 }
                 case 46372:                                 // Ice Spear Target Picker
@@ -3889,7 +3911,13 @@ void Spell::EffectForceCast(SpellEffectIndex eff_idx)
         return;
     }
 
-    unitTarget->CastSpell(unitTarget, spellInfo, true, NULL, NULL, m_originalCasterGUID, m_spellInfo);
+    int32 basePoints = damage;
+
+    // spell effect 141 has BasePoints greater than 1
+    if (basePoints > 1)
+        unitTarget->CastCustomSpell(unitTarget, spellInfo, &basePoints, &basePoints, &basePoints, true, NULL , NULL, m_originalCasterGUID, m_spellInfo);
+    else
+        unitTarget->CastSpell(unitTarget, spellInfo, true, NULL, NULL, m_originalCasterGUID, m_spellInfo);
 }
 
 void Spell::EffectTriggerSpell(SpellEffectIndex effIndex)
@@ -3970,6 +3998,13 @@ void Spell::EffectTriggerSpell(SpellEffectIndex effIndex)
                     ((Player*)unitTarget)->ResyncRunes();
             }
             return;
+        }
+        case 58832:                                         // Mirror Image
+        {
+            // Glyph of Mirror Image
+            if (m_caster->HasAura(63093))
+               m_caster->CastSpell(m_caster, 65047, true, m_CastItem, NULL, m_originalCasterGUID);
+            break;
         }
     }
 
@@ -7565,6 +7600,8 @@ void Spell::EffectScriptEffect(SpellEffectIndex eff_idx)
                     return;
                 }
                 case 41055:                                 // Copy Weapon
+                case 63416:                                 // Copy Weapon
+                case 69891:                                 // Copy Weapon (No Threat)
                 {
                     if (m_caster->GetTypeId() != TYPEID_UNIT || !unitTarget || unitTarget->GetTypeId() != TYPEID_PLAYER)
                         return;
@@ -7577,6 +7614,14 @@ void Spell::EffectScriptEffect(SpellEffectIndex eff_idx)
                         unitTarget->CastSpell(m_caster, m_spellInfo->CalculateSimpleValue(eff_idx), true);
                     }
 
+                    return;
+                }
+                case 41072:                                 // Bloodbolt
+                {
+                    if (!unitTarget)
+                        return;
+
+                    m_caster->CastSpell(unitTarget, m_spellInfo->CalculateSimpleValue(eff_idx), true);
                     return;
                 }
                 case 41126:                                 // Flame Crash
@@ -7787,6 +7832,7 @@ void Spell::EffectScriptEffect(SpellEffectIndex eff_idx)
                     return;
                 }
                 case 45206:                                 // Copy Off-hand Weapon
+                case 69892:                                 // Copy Off-hand Weapon (No Threat)
                 {
                     if (m_caster->GetTypeId() != TYPEID_UNIT || !unitTarget || unitTarget->GetTypeId() != TYPEID_PLAYER)
                         return;
@@ -11161,4 +11207,21 @@ void Spell::EffectKnockBackFromPosition(SpellEffectIndex eff_idx)
     float horizontalSpeed = m_spellInfo->EffectMiscValue[eff_idx] * 0.1f;
     float verticalSpeed = damage * 0.1f;
     unitTarget->KnockBackWithAngle(angle, horizontalSpeed, verticalSpeed);
+}
+
+void Spell::EffectGravityPull(SpellEffectIndex eff_idx)
+{
+    if (!unitTarget)
+        return;
+
+    float x, y, z;
+    if (m_targets.m_targetMask & TARGET_FLAG_DEST_LOCATION)
+        m_targets.getDestination(x, y, z);
+    else
+        m_caster->GetPosition(x, y, z);
+
+    float speed = float(m_spellInfo->EffectMiscValue[eff_idx]) * 0.15f;
+    float height = float(unitTarget->GetDistance(x, y, z) * 0.2f);
+
+    unitTarget->GetMotionMaster()->MoveJump(x, y, z, speed, height);
 }

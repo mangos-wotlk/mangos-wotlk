@@ -52,6 +52,7 @@
 #include "movement/MoveSpline.h"
 #include "CreatureLinkingMgr.h"
 #include "LuaEngine.h"
+#include "ElunaEventMgr.h"
 
 #include <math.h>
 #include <stdarg.h>
@@ -309,6 +310,8 @@ void Unit::Update(uint32 update_diff, uint32 p_time)
     _UpdateAura();
     }else
     m_AurasCheck -= p_time;*/
+
+    elunaEvents->Update(update_diff);
 
     // WARNING! Order of execution here is important, do not change.
     // Spells must be processed with event system BEFORE they go to _UpdateSpells.
@@ -587,9 +590,6 @@ uint32 Unit::DealDamage(Unit* pVictim, uint32 damage, CleanDamage const* cleanDa
         if (damagetype != SELF_DAMAGE_ROGUE_FALL)
             RemoveSpellsCausingAura(SPELL_AURA_MOD_STEALTH);
         RemoveSpellsCausingAura(SPELL_AURA_FEIGN_DEATH);
-
-        if (pVictim != this)
-            RemoveSpellsCausingAura(SPELL_AURA_MOD_INVISIBILITY);
 
         if (pVictim->GetTypeId() == TYPEID_PLAYER && !pVictim->IsStandState() && !pVictim->hasUnitState(UNIT_STAT_STUNNED))
             pVictim->SetStandState(UNIT_STAND_STATE_STAND);
@@ -4139,7 +4139,7 @@ bool Unit::AddSpellAuraHolder(SpellAuraHolder* holder)
                     case SPELL_AURA_OBS_MOD_MANA:
                     case SPELL_AURA_POWER_BURN_MANA:
                     case SPELL_AURA_CONTROL_VEHICLE:
-                    case SPELL_AURA_284: // SPELL_AURA_LINKED_AURA, unknown how it is handled, but let it stack like vehicle control aura
+                    case SPELL_AURA_TRIGGER_LINKED_AURA:
                     case SPELL_AURA_PERIODIC_DUMMY:
                         break;
                     case SPELL_AURA_PERIODIC_ENERGIZE:      // all or self or clear non-stackable
@@ -4160,7 +4160,7 @@ bool Unit::AddSpellAuraHolder(SpellAuraHolder* holder)
     if (!IsPassiveSpell(aurSpellInfo) || !IsPassiveSpellStackableWithRanks(aurSpellInfo))
     {
         // Hack exceptions for Vehicle/Linked auras
-        if (!IsSpellHaveAura(aurSpellInfo, SPELL_AURA_CONTROL_VEHICLE) && !IsSpellHaveAura(aurSpellInfo, SPELL_AURA_284) &&
+        if (!IsSpellHaveAura(aurSpellInfo, SPELL_AURA_CONTROL_VEHICLE) && !IsSpellHaveAura(aurSpellInfo, SPELL_AURA_TRIGGER_LINKED_AURA) &&
                 !RemoveNoStackAurasDueToAuraHolder(holder))
         {
             delete holder;
@@ -5548,9 +5548,12 @@ void Unit::SetPowerType(Powers new_powertype)
                 break;
         }
 
-        // set power
-        SetMaxPower(new_powertype, maxValue);
-        SetPower(new_powertype, curValue);
+        // set power (except for mana)
+        if (new_powertype != POWER_MANA)
+        {
+            SetMaxPower(new_powertype, maxValue);
+            SetPower(new_powertype, curValue);
+        }
 
         // send power type update to client
         WorldPacket data(SMSG_POWER_UPDATE);
@@ -9828,7 +9831,6 @@ void CharmInfo::InitCharmCreateSpells()
             bool onlyselfcast = true;
             SpellEntry const* spellInfo = sSpellStore.LookupEntry(spellId);
 
-            if (!spellInfo) onlyselfcast = false;
             for (uint32 i = 0; i < 3 && onlyselfcast; ++i)  // nonexistent spell will not make any problems as onlyselfcast would be false -> break right away
             {
                 if (spellInfo->EffectImplicitTargetA[i] != TARGET_SELF && spellInfo->EffectImplicitTargetA[i] != 0)
@@ -10888,6 +10890,24 @@ void Unit::SetFFAPvP(bool state)
         RemoveByteFlag(UNIT_FIELD_BYTES_2, 1, UNIT_BYTE2_FLAG_FFA_PVP);
 
     CallForAllControlledUnits(SetFFAPvPHelper(state), CONTROLLED_PET | CONTROLLED_TOTEMS | CONTROLLED_GUARDIANS | CONTROLLED_CHARM);
+}
+
+void Unit::RestoreOriginalFaction()
+{
+    if (GetTypeId() == TYPEID_PLAYER)
+        ((Player*)this)->setFactionForRace(getRace());
+    else
+    {
+        Creature* creature = (Creature*)this;
+
+        if (creature->IsPet() || creature->IsTotem())
+        {
+            if (Unit* owner = GetOwner())
+                setFaction(owner->getFaction());
+        }
+        else
+            setFaction(creature->GetCreatureInfo()->FactionAlliance);
+    }
 }
 
 void Unit::KnockBackFrom(Unit* target, float horizontalSpeed, float verticalSpeed)

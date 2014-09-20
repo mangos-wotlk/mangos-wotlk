@@ -45,6 +45,7 @@
 #include "CreatureLinkingMgr.h"
 #include "Chat.h"
 #include "LuaEngine.h"
+#include "ElunaEventMgr.h"
 
 Object::Object()
 {
@@ -948,6 +949,7 @@ void Object::MarkForClientUpdate()
 }
 
 WorldObject::WorldObject() :
+    elunaEvents(new ElunaEventProcessor(this)),
     m_transportInfo(NULL), m_currMap(NULL),
     m_mapId(0), m_InstanceId(0), m_phaseMask(PHASEMASK_NORMAL),
     m_isActiveObject(false)
@@ -957,11 +959,17 @@ WorldObject::WorldObject() :
 WorldObject::~WorldObject()
 {
     Eluna::RemoveRef(this);
+    delete elunaEvents;
 }
 
 void WorldObject::CleanupsBeforeDelete()
 {
     RemoveFromWorld();
+}
+
+void WorldObject::Update(uint32 update_diff, uint32 /*time_diff*/)
+{
+    elunaEvents->Update(update_diff);
 }
 
 void WorldObject::_Create(uint32 guidlow, HighGuid guidhigh, uint32 phaseMask)
