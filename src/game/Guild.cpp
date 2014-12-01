@@ -103,8 +103,6 @@ Guild::Guild()
 
 Guild::~Guild()
 {
-    Eluna::RemoveRef(this);
-
     DeleteGuildBankItems();
 }
 

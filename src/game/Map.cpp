@@ -44,7 +44,6 @@
 Map::~Map()
 {
     sEluna->OnDestroy(this);
-    Eluna::RemoveRef(this);
 
     UnloadAll(true);
 
