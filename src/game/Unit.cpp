@@ -7961,6 +7961,10 @@ void Unit::Mount(uint32 mount, uint32 spellId)
                     pet->ApplyModeFlags(PET_MODE_DISABLE_ACTIONS, true);
             }
         }
+
+		float height = ((Player*)this)->GetCollisionHeight(true);
+		if (height)
+			SendCollisionHeightUpdate(height);
     }
 }
 
@@ -7991,6 +7995,10 @@ void Unit::Unmount(bool from_aura)
             pet->ApplyModeFlags(PET_MODE_DISABLE_ACTIONS, false);
         else
             ((Player*)this)->ResummonPetTemporaryUnSummonedIfAny();
+
+		float height = ((Player*)this)->GetCollisionHeight(false);
+		if (height)
+			SendCollisionHeightUpdate(height);
     }
 }
 
@@ -11271,4 +11279,16 @@ void Unit::DisableSpline()
 {
     m_movementInfo.RemoveMovementFlag(MovementFlags(MOVEFLAG_SPLINE_ENABLED | MOVEFLAG_FORWARD));
     movespline->_Interrupt();
+}
+
+void Unit::SendCollisionHeightUpdate(float height)
+{
+    if (GetTypeId() == TYPEID_PLAYER)
+    {
+		WorldPacket data(SMSG_MOVE_SET_COLLISION_HGT, GetPackGUID().size() + 4 + 4);
+		data << GetPackGUID();
+		data << uint32(sWorld.GetGameTime());
+		data << height;
+		((Player*)this)->GetSession()->SendPacket(&data);
+    }
 }
