@@ -7962,9 +7962,9 @@ void Unit::Mount(uint32 mount, uint32 spellId)
             }
         }
 
-		float height = ((Player*)this)->GetCollisionHeight(true);
-		if (height)
-			SendCollisionHeightUpdate(height);
+        float height = ((Player*)this)->GetCollisionHeight(true);
+        if (height)
+            SendCollisionHeightUpdate(height);
     }
 }
 
@@ -7996,9 +7996,9 @@ void Unit::Unmount(bool from_aura)
         else
             ((Player*)this)->ResummonPetTemporaryUnSummonedIfAny();
 
-		float height = ((Player*)this)->GetCollisionHeight(false);
-		if (height)
-			SendCollisionHeightUpdate(height);
+        float height = ((Player*)this)->GetCollisionHeight(false);
+        if (height)
+            SendCollisionHeightUpdate(height);
     }
 }
 
@@ -11285,10 +11285,10 @@ void Unit::SendCollisionHeightUpdate(float height)
 {
     if (GetTypeId() == TYPEID_PLAYER)
     {
-		WorldPacket data(SMSG_MOVE_SET_COLLISION_HGT, GetPackGUID().size() + 4 + 4);
-		data << GetPackGUID();
-		data << uint32(sWorld.GetGameTime());
-		data << height;
-		((Player*)this)->GetSession()->SendPacket(&data);
+        WorldPacket data(SMSG_MOVE_SET_COLLISION_HGT, GetPackGUID().size() + 4 + 4);
+        data << GetPackGUID();
+        data << uint32(sWorld.GetGameTime());
+        data << height;
+        ((Player*)this)->GetSession()->SendPacket(&data);
     }
 }
