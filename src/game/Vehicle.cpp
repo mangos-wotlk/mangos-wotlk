@@ -46,6 +46,7 @@
 #include "movement/MoveSpline.h"
 #include "MapManager.h"
 #include "TemporarySummon.h"
+#include "LuaEngine.h"
 
 void ObjectMgr::LoadVehicleAccessory()
 {
@@ -138,6 +139,8 @@ void VehicleInfo::Initialize()
             m_accessoryGuids.insert(summoned->GetObjectGuid());
             int32 basepoint0 = itr->seatId + 1;
             summoned->CastCustomSpell((Unit*)m_owner, SPELL_RIDE_VEHICLE_HARDCODED, &basepoint0, NULL, NULL, true);
+
+            sEluna->OnInstallAccessory(this, summoned);
         }
     }
 
@@ -164,6 +167,8 @@ void VehicleInfo::Initialize()
     }
 
     m_isInitialized = true;
+
+    sEluna->OnInstall(this);
 }
 
 /**
@@ -235,6 +240,8 @@ void VehicleInfo::Board(Unit* passenger, uint8 seat)
 
     // Apply passenger modifications
     ApplySeatMods(passenger, seatEntry->m_flags);
+
+    sEluna->OnAddPassenger(this, passenger, seat);
 }
 
 /**
@@ -349,6 +356,8 @@ void VehicleInfo::UnBoard(Unit* passenger, bool changeVehicle)
 
     // Remove passenger modifications
     RemoveSeatMods(passenger, seatEntry->m_flags);
+
+    sEluna->OnRemovePassenger(this, passenger);
 
     // Some creature vehicles get despawned after passenger unboarding
     if (m_owner->GetTypeId() == TYPEID_UNIT)
